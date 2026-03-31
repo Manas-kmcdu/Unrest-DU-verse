@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Astro Arun Pandit — Growth Intelligence Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #06090F;
+  --bg-card: #0C1220;
+  --bg-card-hover: #101829;
+  --bg-elevated: #141E30;
+  --border: #1C2A42;
+  --border-accent: #2A3F5F;
+  --gold: #D4A03C;
+  --gold-dim: #C8963E44;
+  --gold-glow: #D4A03C22;
+  --blue: #3B82F6;
+  --blue-dim: #3B82F633;
+  --green: #10B981;
+  --green-dim: #10B98133;
+  --red: #EF4444;
+  --red-dim: #EF444433;
+  --orange: #F59E0B;
+  --orange-dim: #F59E0B33;
+  --purple: #8B5CF6;
+  --purple-dim: #8B5CF633;
+  --cyan: #06B6D4;
+  --cyan-dim: #06B6D433;
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --text-dim: #475569;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border-accent); border-radius: 3px; }
+
+/* ═══ HEADER ═══ */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: linear-gradient(180deg, #06090Fee 0%, #06090Fdd 100%);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+}
+.header-inner {
+  max-width: 1440px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px;
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--gold) 0%, #B8860B 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 900; color: var(--bg-primary);
+}
+.brand-text h1 { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+.brand-text span { font-size: 11px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; }
+
+.header-kpis {
+  display: flex; gap: 20px; align-items: center;
+}
+.header-kpi { text-align: right; }
+.header-kpi .val { font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+.header-kpi .lbl { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
+
+/* ═══ NAVIGATION ═══ */
+.nav {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  overflow-x: auto;
+  display: flex;
+}
+.nav-inner {
+  max-width: 1440px; margin: 0 auto; width: 100%;
+  display: flex; gap: 0;
+}
+.nav-btn {
+  background: none; border: none; color: var(--text-muted);
+  padding: 14px 20px; font-family: 'Outfit', sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap; transition: all 0.2s;
+  position: relative;
+}
+.nav-btn:hover { color: var(--text-secondary); }
+.nav-btn.active {
+  color: var(--gold); border-bottom-color: var(--gold);
+}
+.nav-btn .badge {
+  display: inline-block; background: var(--red); color: white;
+  font-size: 9px; padding: 1px 5px; border-radius: 8px;
+  margin-left: 6px; font-weight: 700; vertical-align: middle;
+}
+
+/* ═══ MAIN CONTENT ═══ */
+.main { max-width: 1440px; margin: 0 auto; padding: 24px 28px; }
+.tab-panel { display: none; animation: fadeUp 0.4s ease; }
+.tab-panel.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ GRIDS ═══ */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+.grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }
+
+@media (max-width: 900px) {
+  .grid-2, .grid-3, .grid-4, .grid-5, .grid-2-1, .grid-1-2 {
+    grid-template-columns: 1fr;
+  }
+  .header-kpis { display: none; }
+}
+
+/* ═══ CARDS ═══ */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: var(--border-accent); }
+.card.highlight { border-color: var(--gold-dim); background: linear-gradient(135deg, var(--bg-card) 0%, #1A1510 100%); }
+.card.danger { border-color: var(--red-dim); background: linear-gradient(135deg, var(--bg-card) 0%, #1A0C0C 100%); }
+.card.success { border-color: var(--green-dim); background: linear-gradient(135deg, var(--bg-card) 0%, #0C1A10 100%); }
+
+.card-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 16px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.card-title .icon { font-size: 16px; }
+
+/* ═══ KPI CARDS ═══ */
+.kpi {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 20px;
+  position: relative; overflow: hidden;
+}
+.kpi::after {
+  content: ''; position: absolute; top: 0; right: 0;
+  width: 80px; height: 80px; border-radius: 0 0 0 80px;
+  opacity: 0.04;
+}
+.kpi .label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+.kpi .value { font-size: 26px; font-weight: 900; font-family: 'JetBrains Mono', monospace; line-height: 1.1; }
+.kpi .sub { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+.kpi .delta { font-size: 11px; font-weight: 700; margin-top: 4px; }
+.kpi .delta.up { color: var(--green); }
+.kpi .delta.down { color: var(--red); }
+
+/* ═══ SECTION TITLE ═══ */
+.section-title {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+}
+.section-title h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; }
+.section-title .line { flex: 1; height: 1px; background: var(--border); }
+.section-title .emoji { font-size: 22px; }
+
+.mb-16 { margin-bottom: 16px; }
+.mb-20 { margin-bottom: 20px; }
+.mb-24 { margin-bottom: 24px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+
+/* ═══ BARS ═══ */
+.bar-chart { display: flex; align-items: flex-end; gap: 4px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.bar-col .bar-val { font-size: 9px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.bar-col .bar-fill { width: 100%; max-width: 52px; border-radius: 6px 6px 2px 2px; min-height: 2px; transition: height 0.6s ease; }
+.bar-col .bar-lbl { font-size: 9px; color: var(--text-muted); text-align: center; line-height: 1.15; }
+
+.h-bar { margin-bottom: 12px; }
+.h-bar .h-bar-header { display: flex; justify-content: space-between; margin-bottom: 3px; }
+.h-bar .h-bar-label { font-size: 12px; color: var(--text-secondary); }
+.h-bar .h-bar-value { font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.h-bar .h-bar-track { height: 8px; background: var(--bg-elevated); border-radius: 4px; overflow: hidden; }
+.h-bar .h-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+
+/* ═══ INSIGHTS ═══ */
+.insight {
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  margin-bottom: 8px; font-size: 12.5px; line-height: 1.6;
+  border: 1px solid;
+}
+.insight.opp { background: var(--green-dim); border-color: #10B98144; color: var(--green); }
+.insight.warn { background: var(--red-dim); border-color: #EF444444; color: var(--red); }
+.insight.info { background: var(--blue-dim); border-color: #3B82F644; color: var(--blue); }
+.insight.gold { background: var(--gold-glow); border-color: var(--gold-dim); color: var(--gold); }
+
+/* ═══ TABLE ═══ */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table th {
+  text-align: left; padding: 10px 12px; font-size: 10px;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+  font-weight: 700;
+}
+.data-table td {
+  padding: 10px 12px; border-bottom: 1px solid #0C1220;
+  color: var(--text-secondary);
+}
+.data-table tr:hover td { background: var(--bg-elevated); }
+.data-table .mono { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+/* ═══ DONUT ═══ */
+.donut-container { display: flex; align-items: center; gap: 20px; }
+.donut-legend { display: flex; flex-direction: column; gap: 8px; }
+.donut-legend-item { display: flex; align-items: center; gap: 8px; }
+.donut-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+/* ═══ FUNNEL ═══ */
+.funnel-step {
+  border-radius: var(--radius-sm); padding: 14px 18px;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 4px; border: 1px solid;
+}
+.funnel-drop { text-align: center; font-size: 11px; padding: 3px 0; font-weight: 600; }
+
+/* ═══ SIMULATOR ═══ */
+.sim-group { margin-bottom: 20px; }
+.sim-label {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 6px;
+}
+.sim-label span { font-size: 12px; color: var(--text-secondary); }
+.sim-label .sim-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; }
+input[type="range"] {
+  -webkit-appearance: none; width: 100%; height: 6px;
+  background: var(--bg-elevated); border-radius: 3px;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px;
+  background: var(--gold); border-radius: 50%; cursor: pointer;
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 10px #D4A03C55;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px; height: 18px;
+  background: var(--gold); border-radius: 50%; cursor: pointer;
+  border: 2px solid var(--bg-primary);
+}
+
+.sim-output {
+  background: linear-gradient(135deg, #0C1220 0%, #1A1510 100%);
+  border: 2px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 24px; text-align: center;
+}
+.sim-output .big { font-size: 42px; font-weight: 900; font-family: 'JetBrains Mono', monospace; }
+.sim-output .sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+.sim-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.sim-breakdown-item {
+  background: var(--bg-elevated); border-radius: var(--radius-sm);
+  padding: 12px; text-align: center;
+}
+.sim-breakdown-item .val { font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+.sim-breakdown-item .lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+/* ═══ STACKED BAR ═══ */
+.stacked-bar { display: flex; height: 28px; border-radius: 6px; overflow: hidden; margin-bottom: 4px; }
+.stacked-bar-seg { display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+.stacked-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
+.stacked-legend span { font-size: 10px; display: flex; align-items: center; gap: 4px; }
+.stacked-legend .dot { width: 8px; height: 8px; border-radius: 2px; }
+
+/* ═══ GLOWING ACCENTS ═══ */
+.glow-gold { text-shadow: 0 0 20px #D4A03C44; }
+.glow-green { text-shadow: 0 0 20px #10B98144; }
+.glow-red { text-shadow: 0 0 20px #EF444444; }
+
+/* ═══ SCENARIO CARDS ═══ */
+.scenario-card {
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+  cursor: pointer; transition: all 0.2s;
+}
+.scenario-card:hover { border-color: var(--gold-dim); transform: translateY(-2px); }
+.scenario-card.selected { border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); }
+.scenario-card .sc-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.scenario-card .sc-desc { font-size: 11px; color: var(--text-muted); }
+
+/* Toggle */
+.toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.toggle {
+  width: 40px; height: 22px; border-radius: 11px;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  cursor: pointer; position: relative; transition: all 0.2s;
+}
+.toggle.on { background: var(--gold-dim); border-color: var(--gold); }
+.toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--text-muted); transition: all 0.2s;
+}
+.toggle.on::after { left: 20px; background: var(--gold); }
+.toggle-label { font-size: 12px; color: var(--text-secondary); }
+
+/* Pulse animation for alerts */
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.pulse { animation: pulse 2s infinite; }
+
+/* Counter animation */
+@keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.count-up { animation: countUp 0.6s ease forwards; }
+
+/* Watermark */
+.watermark {
+  position: fixed; bottom: 12px; right: 16px;
+  font-size: 9px; color: var(--text-dim); letter-spacing: 2px;
+  text-transform: uppercase; opacity: 0.3;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<div class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-icon">AP</div>
+      <div class="brand-text">
+        <h1>Growth Intelligence Command Center</h1>
+        <span>Astro Arun Pandit · Name Numerology</span>
+      </div>
+    </div>
+    <div class="header-kpis">
+      <div class="header-kpi">
+        <div class="val glow-green" style="color:var(--green)">₹28.2L</div>
+        <div class="lbl">Total Revenue</div>
+      </div>
+      <div class="header-kpi">
+        <div class="val glow-gold" style="color:var(--gold)">577</div>
+        <div class="lbl">Total Orders</div>
+      </div>
+      <div class="header-kpi">
+        <div class="val" style="color:var(--blue)">₹4,943</div>
+        <div class="lbl">Avg Order Value</div>
+      </div>
+      <div class="header-kpi">
+        <div class="val" style="color:var(--orange)">40.7%</div>
+        <div class="lbl">Completion Rate</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ NAVIGATION ═══════════════════ -->
+<div class="nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="showTab(0)">📊 Executive</button>
+    <button class="nav-btn" onclick="showTab(1)">💰 Revenue Intel</button>
+    <button class="nav-btn" onclick="showTab(2)">👥 Customer Intel</button>
+    <button class="nav-btn" onclick="showTab(3)">🔻 Funnel & Leaks<span class="badge">!</span></button>
+    <button class="nav-btn" onclick="showTab(4)">📡 Channel Intel</button>
+    <button class="nav-btn" onclick="showTab(5)">🧪 Growth Simulator</button>
+    <button class="nav-btn" onclick="showTab(6)">💎 Revenue Simulator</button>
+    <button class="nav-btn" onclick="showTab(7)">🚀 90-Day Playbook</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<div class="main">
+
+<!-- ═══ TAB 0: EXECUTIVE ═══ -->
+<div class="tab-panel active" id="tab-0">
+  <div class="section-title mb-16">
+    <span class="emoji">📊</span>
+    <h2>Executive Command View</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="grid-5 mb-20">
+    <div class="kpi" style="border-left: 3px solid var(--green)">
+      <div class="label">Total Revenue</div>
+      <div class="value" style="color:var(--green)">₹28.2L</div>
+      <div class="sub">₹2,817,205 lifetime</div>
+    </div>
+    <div class="kpi" style="border-left: 3px solid var(--blue)">
+      <div class="label">Total Orders</div>
+      <div class="value" style="color:var(--blue)">577</div>
+      <div class="sub">235 completed · 339 draft</div>
+    </div>
+    <div class="kpi" style="border-left: 3px solid var(--gold)">
+      <div class="label">Avg Order Value</div>
+      <div class="value" style="color:var(--gold)">₹4,943</div>
+      <div class="sub">Premium: ₹5,963</div>
+    </div>
+    <div class="kpi" style="border-left: 3px solid var(--red)">
+      <div class="label">Revenue at Risk</div>
+      <div class="value" style="color:var(--red)">₹16.7L</div>
+      <div class="sub">339 unfulfilled orders</div>
+    </div>
+    <div class="kpi" style="border-left: 3px solid var(--purple)">
+      <div class="label">Premium Upsell Rate</div>
+      <div class="value" style="color:var(--purple)">62%</div>
+      <div class="sub">358 chose correction</div>
+    </div>
+  </div>
+
+  <!-- Monthly Revenue Chart -->
+  <div class="grid-2-1 mb-20">
+    <div class="card">
+      <div class="card-title"><span class="icon">📈</span> Monthly Revenue Trend</div>
+      <div class="bar-chart" style="height:200px" id="monthly-revenue-chart"></div>
+    </div>
+    <div class="card danger">
+      <div class="card-title"><span class="icon">🚨</span> Critical Alerts</div>
+      <div class="insight warn">⚠️ <b>59% of orders stuck in DRAFT</b> — ₹16.7L+ revenue locked. This is your #1 problem before any marketing spend.</div>
+      <div class="insight warn">⚠️ <b>International pricing broken</b> — 86 Stripe orders averaging ₹237 vs ₹5,779 Razorpay. Fix immediately.</div>
+      <div class="insight opp">✅ <b>WhatsApp = highest AOV</b> at ₹8,036 but only 14 orders. 10× this channel = ₹11L+ additional revenue.</div>
+      <div class="insight gold">🏆 <b>Jan 2026 spike:</b> 114 orders, ₹4.5L. Decode the campaign that drove this and replicate.</div>
+    </div>
+  </div>
+
+  <!-- Product Mix -->
+  <div class="card mb-20">
+    <div class="card-title"><span class="icon">💎</span> Product Mix Intelligence</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Product</th><th>Orders</th><th>Revenue</th><th>Avg Value</th><th>Completion</th><th>Rev Share</th><th>Performance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--gold)">Analysis+Correction+Consult</strong></td>
+          <td class="mono">217</td><td class="mono" style="color:var(--green)">₹14.0L</td><td class="mono">₹6,530</td>
+          <td class="mono">40.6%</td><td class="mono">49.8%</td>
+          <td><div style="height:6px;background:var(--bg-elevated);border-radius:3px"><div style="width:100%;height:100%;background:var(--gold);border-radius:3px"></div></div></td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--blue)">Analysis+Correction</strong></td>
+          <td class="mono">141</td><td class="mono" style="color:var(--green)">₹7.2L</td><td class="mono">₹5,100</td>
+          <td class="mono">45.4%</td><td class="mono">25.5%</td>
+          <td><div style="height:6px;background:var(--bg-elevated);border-radius:3px"><div style="width:51%;height:100%;background:var(--blue);border-radius:3px"></div></div></td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--cyan)">Analysis+Consultation</strong></td>
+          <td class="mono">114</td><td class="mono" style="color:var(--green)">₹5.8L</td><td class="mono">₹5,074</td>
+          <td class="mono">36.0%</td><td class="mono">20.5%</td>
+          <td><div style="height:6px;background:var(--bg-elevated);border-radius:3px"><div style="width:41%;height:100%;background:var(--cyan);border-radius:3px"></div></div></td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--purple)">Analysis Only</strong></td>
+          <td class="mono">87</td><td class="mono">₹0.96L</td><td class="mono" style="color:var(--orange)">₹1,100</td>
+          <td class="mono" style="color:var(--green)">48.3%</td><td class="mono">3.4%</td>
+          <td><div style="height:6px;background:var(--bg-elevated);border-radius:3px"><div style="width:7%;height:100%;background:var(--purple);border-radius:3px"></div></div></td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--text-muted)">International</strong></td>
+          <td class="mono">12</td><td class="mono" style="color:var(--red)">₹0.09L</td><td class="mono" style="color:var(--red)">₹724</td>
+          <td class="mono" style="color:var(--red)">0%</td><td class="mono">0.3%</td>
+          <td><div style="height:6px;background:var(--bg-elevated);border-radius:3px"><div style="width:1%;height:100%;background:var(--red);border-radius:3px"></div></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Revenue Split Visualization -->
+  <div class="grid-2 mb-20">
+    <div class="card highlight">
+      <div class="card-title"><span class="icon">🆚</span> Basic vs Premium Split</div>
+      <div style="display:flex;gap:16px;align-items:center">
+        <svg width="140" height="140" viewBox="0 0 140 140" id="donut-premium"></svg>
+        <div class="donut-legend">
+          <div class="donut-legend-item">
+            <div class="donut-legend-dot" style="background:var(--gold)"></div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--gold)">Premium (Correction)</div>
+              <div style="font-size:11px;color:var(--text-muted)">358 orders · ₹21.2L · 75.5%</div>
+            </div>
+          </div>
+          <div class="donut-legend-item">
+            <div class="donut-legend-dot" style="background:var(--blue)"></div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--blue)">Basic (Analysis)</div>
+              <div style="font-size:11px;color:var(--text-muted)">201 orders · ₹6.7L · 24.5%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="insight opp mt-12">Push premium rate from 62% → 80% = ₹3.6L additional revenue with zero extra traffic.</div>
+    </div>
+    <div class="card success">
+      <div class="card-title"><span class="icon">📞</span> Consultation Upsell Impact</div>
+      <div style="display:flex;gap:16px;align-items:center">
+        <svg width="140" height="140" viewBox="0 0 140 140" id="donut-consult"></svg>
+        <div class="donut-legend">
+          <div class="donut-legend-item">
+            <div class="donut-legend-dot" style="background:var(--green)"></div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--green)">With Consultation</div>
+              <div style="font-size:11px;color:var(--text-muted)">331 orders · ₹19.8L · Avg ₹6,025</div>
+            </div>
+          </div>
+          <div class="donut-legend-item">
+            <div class="donut-legend-dot" style="background:var(--orange)"></div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--orange)">Without Consultation</div>
+              <div style="font-size:11px;color:var(--text-muted)">228 orders · ₹8.1L · Avg ₹3,574</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="insight info mt-12">Consultation adds ₹2,451 to AOV (+68%). Only 51 actually booked. Massive untapped upsell.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 1: REVENUE INTEL ═══ -->
+<div class="tab-panel" id="tab-1">
+  <div class="section-title mb-16"><span class="emoji">💰</span><h2>Revenue Intelligence</h2><div class="line"></div></div>
+
+  <div class="grid-2 mb-20">
+    <div class="card">
+      <div class="card-title"><span class="icon">📡</span> Revenue by Acquisition Source</div>
+      <div id="source-bars"></div>
+      <div class="insight gold mt-12">Website organic drives 47% of revenue (₹13.2L). Facebook Paid is 2nd at ₹3.15L with the highest paid AOV.</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">💳</span> Revenue by Payment Page</div>
+      <div id="payment-bars"></div>
+      <div class="insight warn mt-12">International page: 74 orders, ₹11,716 total (₹158 avg). Pricing or payment flow is catastrophically broken.</div>
+    </div>
+  </div>
+
+  <div class="card mb-20">
+    <div class="card-title"><span class="icon">📊</span> Monthly Performance Table</div>
+    <table class="data-table">
+      <thead><tr><th>Month</th><th>Orders</th><th>Revenue</th><th>AOV</th><th>AOV Trend</th></tr></thead>
+      <tbody>
+        <tr><td>May 2025</td><td class="mono">8</td><td class="mono">₹84,700</td><td class="mono" style="color:var(--green)">₹10,588</td><td>🟢 Launch month, high-value early adopters</td></tr>
+        <tr><td>Jun 2025</td><td class="mono" style="color:var(--green)">135</td><td class="mono" style="color:var(--green)">₹6.24L</td><td class="mono">₹4,623</td><td>📈 Volume spike — campaign launch?</td></tr>
+        <tr><td>Jul 2025</td><td class="mono">43</td><td class="mono">₹2.28L</td><td class="mono" style="color:var(--green)">₹5,859</td><td>🟢 Quality recovery</td></tr>
+        <tr><td>Aug 2025</td><td class="mono">43</td><td class="mono">₹3.20L</td><td class="mono" style="color:var(--green)">₹7,624</td><td>🏆 <b>Highest AOV month</b></td></tr>
+        <tr><td>Sep 2025</td><td class="mono">28</td><td class="mono">₹1.99L</td><td class="mono" style="color:var(--green)">₹7,111</td><td>🟢 High value maintained</td></tr>
+        <tr><td>Oct 2025</td><td class="mono">27</td><td class="mono">₹1.55L</td><td class="mono">₹5,751</td><td>➡️ Stable</td></tr>
+        <tr><td>Nov 2025</td><td class="mono">26</td><td class="mono">₹1.88L</td><td class="mono" style="color:var(--green)">₹7,842</td><td>🟢 High AOV, low volume</td></tr>
+        <tr><td>Dec 2025</td><td class="mono">42</td><td class="mono">₹1.90L</td><td class="mono" style="color:var(--orange)">₹4,514</td><td>🟡 AOV dip</td></tr>
+        <tr><td>Jan 2026</td><td class="mono" style="color:var(--green)">114</td><td class="mono" style="color:var(--green)">₹4.49L</td><td class="mono" style="color:var(--red)">₹3,942</td><td>⚠️ Volume spike, AOV dropped — check traffic quality</td></tr>
+        <tr><td>Feb 2026</td><td class="mono">60</td><td class="mono">₹2.02L</td><td class="mono" style="color:var(--red)">₹3,367</td><td>🔴 AOV declining trend</td></tr>
+        <tr><td>Mar 2026</td><td class="mono">51</td><td class="mono">₹1.76L</td><td class="mono" style="color:var(--red)">₹3,453</td><td>🔴 AOV still low — investigate</td></tr>
+      </tbody>
+    </table>
+    <div class="insight warn mt-12">⚠️ <b>AOV is trending DOWN</b> from ₹7,624 (Aug) to ₹3,453 (Mar). You're getting more orders but lower-quality ones. The volume growth is masking a quality decline.</div>
+  </div>
+
+  <div class="card mb-20">
+    <div class="card-title"><span class="icon">🔑</span> Revenue Concentration Risk</div>
+    <div class="grid-3">
+      <div style="background:var(--bg-elevated);border-radius:var(--radius);padding:16px;text-align:center">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">TOP PRODUCT</div>
+        <div style="font-size:28px;font-weight:900;color:var(--gold)">49.8%</div>
+        <div style="font-size:11px;color:var(--text-secondary)">Analysis+Correction+Consult</div>
+      </div>
+      <div style="background:var(--bg-elevated);border-radius:var(--radius);padding:16px;text-align:center">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">TOP CHANNEL</div>
+        <div style="font-size:28px;font-weight:900;color:var(--gold)">46.8%</div>
+        <div style="font-size:11px;color:var(--text-secondary)">Website Organic</div>
+      </div>
+      <div style="background:var(--bg-elevated);border-radius:var(--radius);padding:16px;text-align:center">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">TOP GATEWAY</div>
+        <div style="font-size:28px;font-weight:900;color:var(--red)">99.3%</div>
+        <div style="font-size:11px;color:var(--text-secondary)">Razorpay (India only)</div>
+      </div>
+    </div>
+    <div class="insight warn mt-12">High concentration risk: 50% revenue from 1 product, 47% from 1 channel, 99% from 1 payment gateway. Diversify urgently.</div>
+  </div>
+</div>
+
+<!-- ═══ TAB 2: CUSTOMER INTEL ═══ -->
+<div class="tab-panel" id="tab-2">
+  <div class="section-title mb-16"><span class="emoji">👥</span><h2>Customer Intelligence</h2><div class="line"></div></div>
+
+  <div class="grid-2 mb-20">
+    <div class="card">
+      <div class="card-title"><span class="icon">🎂</span> Age Distribution</div>
+      <div id="age-bars"></div>
+      <div class="insight info mt-12">Core audience: 26-50 (78%). But &lt;18 (parents buying for kids) = 11% — untapped baby naming market at premium pricing.</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">💼</span> Profession Segments</div>
+      <div id="profession-bars"></div>
+      <div class="insight opp mt-12">Business owners (41) = largest segment. They'll pay for Business Name Analysis at 3-5× personal report price.</div>
+    </div>
+  </div>
+
+  <div class="grid-2 mb-20">
+    <div class="card">
+      <div class="card-title"><span class="icon">🧠</span> Why They Buy (Reason Analysis)</div>
+      <div id="reason-bars"></div>
+      <div class="insight gold mt-12">Career + Money = 50% of all purchase reasons. Lead every ad, landing page, and email with these two pain points.</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">💑</span> Relationship Quality Profile</div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:6px">With Father</div>
+        <div class="stacked-bar">
+          <div class="stacked-bar-seg" style="width:49.5%;background:var(--green);color:var(--bg-primary)">50%</div>
+          <div class="stacked-bar-seg" style="width:31.2%;background:var(--gold);color:var(--bg-primary)">31%</div>
+          <div class="stacked-bar-seg" style="width:19.3%;background:var(--red);color:white">19%</div>
+        </div>
+      </div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:6px">With Mother</div>
+        <div class="stacked-bar">
+          <div class="stacked-bar-seg" style="width:69.5%;background:var(--green);color:var(--bg-primary)">70%</div>
+          <div class="stacked-bar-seg" style="width:17.5%;background:var(--gold);color:var(--bg-primary)">17%</div>
+          <div class="stacked-bar-seg" style="width:13%;background:var(--red);color:white">13%</div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:6px">With Spouse</div>
+        <div class="stacked-bar">
+          <div class="stacked-bar-seg" style="width:50%;background:var(--green);color:var(--bg-primary)">50%</div>
+          <div class="stacked-bar-seg" style="width:23%;background:var(--gold);color:var(--bg-primary)">23%</div>
+          <div class="stacked-bar-seg" style="width:27%;background:var(--red);color:white">27%</div>
+        </div>
+      </div>
+      <div class="stacked-legend">
+        <span><span class="dot" style="background:var(--green)"></span> Good</span>
+        <span><span class="dot" style="background:var(--gold)"></span> Neutral</span>
+        <span><span class="dot" style="background:var(--red)"></span> Challenging</span>
+      </div>
+      <div class="insight warn mt-12">27% have challenging spouse relationships — highest friction. Create targeted ads: "Is your name compatibility affecting your marriage?"</div>
+    </div>
+  </div>
+
+  <!-- Gender Split -->
+  <div class="card mb-20">
+    <div class="card-title"><span class="icon">⚧</span> Gender Intelligence</div>
+    <div class="grid-2">
+      <div style="background:var(--blue-dim);border-radius:var(--radius);padding:20px;text-align:center">
+        <div style="font-size:42px;font-weight:900;color:var(--blue)">59%</div>
+        <div style="font-size:15px;color:var(--text-secondary)">Male · 342 orders</div>
+        <div style="font-size:12px;color:var(--text-muted)">₹17.7L revenue · Avg ₹5,230</div>
+      </div>
+      <div style="background:var(--purple-dim);border-radius:var(--radius);padding:20px;text-align:center">
+        <div style="font-size:42px;font-weight:900;color:var(--purple)">41%</div>
+        <div style="font-size:15px;color:var(--text-secondary)">Female · 235 orders</div>
+        <div style="font-size:12px;color:var(--text-muted)">₹10.4L revenue · Avg ₹4,521</div>
+      </div>
+    </div>
+    <div class="insight info mt-12">Males spend ₹709 more per order. Female segment is underserved — target mothers, brides, career women with dedicated campaigns.</div>
+  </div>
+</div>
+
+<!-- ═══ TAB 3: FUNNEL & LEAKS ═══ -->
+<div class="tab-panel" id="tab-3">
+  <div class="section-title mb-16"><span class="emoji">🔻</span><h2>Funnel Analysis & Revenue Leaks</h2><div class="line"></div></div>
+
+  <div class="grid-2-1 mb-20">
+    <div class="card danger">
+      <div class="card-title"><span class="icon">🔻</span> Order Completion Funnel</div>
+      <div class="funnel-step" style="background:var(--blue-dim);border-color:#3B82F644">
+        <span style="color:var(--blue);font-size:13px">Orders Initiated</span>
+        <span style="color:var(--blue);font-size:22px;font-weight:900;font-family:'JetBrains Mono'">577</span>
+        <span style="color:var(--text-muted);font-size:11px">100%</span>
+      </div>
+      <div class="funnel-drop" style="color:var(--text-muted)">▼ 7 payment failures</div>
+      <div class="funnel-step" style="background:var(--cyan-dim);border-color:#06B6D444">
+        <span style="color:var(--cyan);font-size:13px">Payment Attempted</span>
+        <span style="color:var(--cyan);font-size:22px;font-weight:900;font-family:'JetBrains Mono'">570</span>
+        <span style="color:var(--text-muted);font-size:11px">98.8%</span>
+      </div>
+      <div class="funnel-drop" style="color:var(--red)">▼ <b>332 STUCK IN DRAFT (57.5%!)</b> <span class="pulse">🚨</span></div>
+      <div class="funnel-step" style="background:var(--gold-glow);border-color:var(--gold-dim)">
+        <span style="color:var(--gold);font-size:13px">Submitted for Processing</span>
+        <span style="color:var(--gold);font-size:22px;font-weight:900;font-family:'JetBrains Mono'">238</span>
+        <span style="color:var(--text-muted);font-size:11px">41.2%</span>
+      </div>
+      <div class="funnel-drop" style="color:var(--text-muted)">▼ 3 in processing</div>
+      <div class="funnel-step" style="background:var(--green-dim);border-color:#10B98144">
+        <span style="color:var(--green);font-size:13px">Report Sent to Customer</span>
+        <span style="color:var(--green);font-size:22px;font-weight:900;font-family:'JetBrains Mono'">235</span>
+        <span style="color:var(--text-muted);font-size:11px">40.7%</span>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:var(--red-dim);background:linear-gradient(180deg,#1A0808,#0C1220)">
+      <div class="card-title" style="color:var(--red)"><span class="icon">💀</span> THE LEAK</div>
+      <div style="text-align:center;padding:16px 0">
+        <div style="font-size:56px;font-weight:900;color:var(--red);font-family:'JetBrains Mono';line-height:1" class="glow-red">₹16.7L</div>
+        <div style="font-size:14px;color:var(--red);margin-top:6px;font-weight:700">REVENUE LOCKED</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:8px">339 orders paid but never fulfilled</div>
+      </div>
+      <div style="background:var(--bg-elevated);border-radius:var(--radius-sm);padding:12px;margin:12px 0">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Recovery Potential</div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-size:12px;color:var(--text-secondary)">If 50% recovered:</span>
+          <span style="font-size:14px;font-weight:800;color:var(--green);font-family:'JetBrains Mono'">+₹8.35L</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px">
+          <span style="font-size:12px;color:var(--text-secondary)">If 80% recovered:</span>
+          <span style="font-size:14px;font-weight:800;color:var(--green);font-family:'JetBrains Mono'">+₹13.4L</span>
+        </div>
+      </div>
+      <div class="insight warn">This is NOT a marketing problem. People already paid. Fix fulfillment.</div>
+    </div>
+  </div>
+
+  <!-- Completion by product -->
+  <div class="grid-2 mb-20">
+    <div class="card">
+      <div class="card-title"><span class="icon">📊</span> Completion Rate by Product</div>
+      <div id="completion-bars"></div>
+      <div class="insight info mt-12">Basic Analysis completes fastest (48.3%). Correction reports bottleneck at human analyst capacity.</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🏦</span> Payment Gateway Split</div>
+      <div class="grid-2" style="margin-bottom:12px">
+        <div style="background:var(--green-dim);border-radius:var(--radius-sm);padding:14px;text-align:center">
+          <div style="font-size:13px;font-weight:700;color:var(--green)">Razorpay (India)</div>
+          <div style="font-size:24px;font-weight:900;color:var(--text-primary);margin:4px 0;font-family:'JetBrains Mono'">491</div>
+          <div style="font-size:11px;color:var(--text-muted)">₹27.97L · Avg ₹5,779</div>
+        </div>
+        <div style="background:var(--red-dim);border-radius:var(--radius-sm);padding:14px;text-align:center">
+          <div style="font-size:13px;font-weight:700;color:var(--red)">Stripe (Int'l)</div>
+          <div style="font-size:24px;font-weight:900;color:var(--text-primary);margin:4px 0;font-family:'JetBrains Mono'">86</div>
+          <div style="font-size:11px;color:var(--text-muted)">₹20,404 · Avg ₹237 😱</div>
+        </div>
+      </div>
+      <div class="insight warn">Stripe avg ₹237 vs Razorpay ₹5,779. That's a 24× gap. 86 international customers are being charged pennies. Fix this = ₹4.3L+ recovery.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 4: CHANNEL INTEL ═══ -->
+<div class="tab-panel" id="tab-4">
+  <div class="section-title mb-16"><span class="emoji">📡</span><h2>Channel Intelligence</h2><div class="line"></div></div>
+
+  <div class="card mb-20">
+    <div class="card-title"><span class="icon">🏆</span> Channel Performance Matrix</div>
+    <table class="data-table">
+      <thead><tr><th>Channel</th><th>Orders</th><th>Revenue</th><th>AOV</th><th>Quality Score</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:var(--green)">WhatsApp</strong></td><td class="mono">14</td><td class="mono">₹1.13L</td><td class="mono" style="color:var(--green)">₹8,036</td>
+          <td><div style="height:6px;width:100%;background:var(--green);border-radius:3px"></div></td><td style="color:var(--green);font-size:11px;font-weight:700">🚀 SCALE 10×</td></tr>
+        <tr><td><strong style="color:var(--gold)">Facebook Paid</strong></td><td class="mono">41</td><td class="mono">₹3.15L</td><td class="mono" style="color:var(--green)">₹7,680</td>
+          <td><div style="height:6px;width:96%;background:var(--gold);border-radius:3px"></div></td><td style="color:var(--gold);font-size:11px;font-weight:700">📈 Increase budget 3×</td></tr>
+        <tr><td><strong style="color:var(--blue)">Website Organic</strong></td><td class="mono">180</td><td class="mono">₹13.18L</td><td class="mono" style="color:var(--green)">₹7,322</td>
+          <td><div style="height:6px;width:91%;background:var(--blue);border-radius:3px"></div></td><td style="color:var(--blue);font-size:11px;font-weight:700">🛡️ Protect & grow SEO</td></tr>
+        <tr><td><strong>QuickReply.ai</strong></td><td class="mono">7</td><td class="mono">₹0.37L</td><td class="mono">₹5,300</td>
+          <td><div style="height:6px;width:66%;background:var(--cyan);border-radius:3px"></div></td><td style="font-size:11px;color:var(--text-muted)">Test scaling</td></tr>
+        <tr><td><strong>YouTube</strong></td><td class="mono">48</td><td class="mono">₹2.35L</td><td class="mono">₹4,896</td>
+          <td><div style="height:6px;width:61%;background:var(--purple);border-radius:3px"></div></td><td style="color:var(--purple);font-size:11px;font-weight:700">📹 3 videos/week</td></tr>
+        <tr><td><strong>Our Services</strong></td><td class="mono">32</td><td class="mono">₹1.08L</td><td class="mono" style="color:var(--orange)">₹3,363</td>
+          <td><div style="height:6px;width:42%;background:var(--orange);border-radius:3px"></div></td><td style="font-size:11px;color:var(--text-muted)">Below avg AOV</td></tr>
+        <tr><td><strong style="color:var(--red)">Facebook Organic</strong></td><td class="mono">69</td><td class="mono" style="color:var(--red)">₹10,931</td><td class="mono" style="color:var(--red)">₹158</td>
+          <td><div style="height:6px;width:2%;background:var(--red);border-radius:3px"></div></td><td style="color:var(--red);font-size:11px;font-weight:700">⚠️ Lead gen ONLY</td></tr>
+        <tr><td><strong style="color:var(--red)">Meta Ads</strong></td><td class="mono">9</td><td class="mono" style="color:var(--red)">₹6,741</td><td class="mono" style="color:var(--red)">₹749</td>
+          <td><div style="height:6px;width:9%;background:var(--red);border-radius:3px"></div></td><td style="color:var(--red);font-size:11px;font-weight:700">⚠️ Fix targeting</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid-3 mb-20">
+    <div class="card highlight">
+      <div class="card-title" style="color:var(--green)"><span class="icon">🌟</span> #1 Scale This</div>
+      <div style="text-align:center;padding:8px 0">
+        <div style="font-size:36px">📱</div>
+        <div style="font-size:18px;font-weight:800;margin:8px 0">WhatsApp</div>
+        <div style="font-size:32px;font-weight:900;color:var(--green);font-family:'JetBrains Mono'">₹8,036</div>
+        <div style="font-size:11px;color:var(--text-muted)">Highest AOV · Only 14 orders</div>
+      </div>
+      <div class="insight opp mt-12">Click-to-WhatsApp ads + bot automation = scale from 14 to 140+ orders at premium pricing.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--gold)"><span class="icon">📊</span> #2 Increase Budget</div>
+      <div style="text-align:center;padding:8px 0">
+        <div style="font-size:36px">📘</div>
+        <div style="font-size:18px;font-weight:800;margin:8px 0">Facebook Paid</div>
+        <div style="font-size:32px;font-weight:900;color:var(--gold);font-family:'JetBrains Mono'">₹7,680</div>
+        <div style="font-size:11px;color:var(--text-muted)">2nd highest AOV · 41 orders</div>
+      </div>
+      <div class="insight gold mt-12">Paid FB brings premium buyers. Organic FB (₹158 AOV) is noise. Reallocate all organic FB effort to paid.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--red)"><span class="icon">⚠️</span> #3 Fix or Kill</div>
+      <div style="text-align:center;padding:8px 0">
+        <div style="font-size:36px">🌐</div>
+        <div style="font-size:18px;font-weight:800;margin:8px 0">International</div>
+        <div style="font-size:32px;font-weight:900;color:var(--red);font-family:'JetBrains Mono'">₹237</div>
+        <div style="font-size:11px;color:var(--text-muted)">86 orders · Pricing broken</div>
+      </div>
+      <div class="insight warn mt-12">Fix Stripe pricing/flow. At correct pricing (₹5,000+), this segment alone = ₹4.3L+ annually.</div>
+    </div>
+  </div>
+
+  <div class="card mb-20">
+    <div class="card-title"><span class="icon">⏰</span> Timing Intelligence</div>
+    <div class="grid-2">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:10px">Peak Order Hours</div>
+        <div id="hour-chart" class="bar-chart" style="height:120px"></div>
+        <div class="insight info mt-12">Peak: 11AM-2PM and 8PM-11PM. Schedule all ads, emails, WhatsApp blasts for these windows.</div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:10px">Day of Week</div>
+        <div id="dow-chart" class="bar-chart" style="height:120px"></div>
+        <div class="insight gold mt-12">Monday = most orders (100). Launch weekly campaigns Sunday night to capture Monday intent.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 5: GROWTH SIMULATOR ═══ -->
+<div class="tab-panel" id="tab-5">
+  <div class="section-title mb-16"><span class="emoji">🧪</span><h2>Growth Scenario Simulator</h2><div class="line"></div></div>
+
+  <div class="grid-2 mb-20">
+    <div class="card highlight">
+      <div class="card-title"><span class="icon">🎛️</span> Adjust Growth Levers</div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>Monthly Calculator Users</span>
+          <span class="sim-val" id="sim-users-val" style="color:var(--blue)">10,000</span>
+        </div>
+        <input type="range" id="sim-users" min="1000" max="500000" step="1000" value="10000" oninput="updateSimulator()">
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)"><span>1K</span><span>500K</span></div>
+      </div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>Calculator → Purchase Conversion</span>
+          <span class="sim-val" id="sim-cvr-val" style="color:var(--green)">3.0%</span>
+        </div>
+        <input type="range" id="sim-cvr" min="0.5" max="15" step="0.1" value="3.0" oninput="updateSimulator()">
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)"><span>0.5%</span><span>15%</span></div>
+      </div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>Average Order Value (₹)</span>
+          <span class="sim-val" id="sim-aov-val" style="color:var(--gold)">₹5,000</span>
+        </div>
+        <input type="range" id="sim-aov" min="1000" max="15000" step="100" value="5000" oninput="updateSimulator()">
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)"><span>₹1K</span><span>₹15K</span></div>
+      </div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>Premium Upsell Rate (%)</span>
+          <span class="sim-val" id="sim-premium-val" style="color:var(--purple)">62%</span>
+        </div>
+        <input type="range" id="sim-premium" min="30" max="95" step="1" value="62" oninput="updateSimulator()">
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)"><span>30%</span><span>95%</span></div>
+      </div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>Fulfillment/Completion Rate (%)</span>
+          <span class="sim-val" id="sim-fulfill-val" style="color:var(--orange)">85%</span>
+        </div>
+        <input type="range" id="sim-fulfill" min="30" max="100" step="1" value="85" oninput="updateSimulator()">
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)"><span>30%</span><span>100%</span></div>
+      </div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>Monthly Ad Spend (₹)</span>
+          <span class="sim-val" id="sim-adspend-val" style="color:var(--cyan)">₹50,000</span>
+        </div>
+        <input type="range" id="sim-adspend" min="0" max="1000000" step="5000" value="50000" oninput="updateSimulator()">
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)"><span>₹0</span><span>₹10L</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sim-output mb-16">
+        <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Projected Monthly Revenue</div>
+        <div class="big glow-gold" style="color:var(--gold)" id="sim-revenue">₹12.8L</div>
+        <div class="sub" id="sim-annual">Annual: ₹1.53Cr</div>
+      </div>
+
+      <div class="sim-breakdown">
+        <div class="sim-breakdown-item">
+          <div class="val" style="color:var(--blue)" id="sim-orders">300</div>
+          <div class="lbl">Monthly Orders</div>
+        </div>
+        <div class="sim-breakdown-item">
+          <div class="val" style="color:var(--green)" id="sim-roas">25.5×</div>
+          <div class="lbl">ROAS</div>
+        </div>
+        <div class="sim-breakdown-item">
+          <div class="val" style="color:var(--purple)" id="sim-cac">₹167</div>
+          <div class="lbl">CAC (Paid Only)</div>
+        </div>
+        <div class="sim-breakdown-item">
+          <div class="val" style="color:var(--orange)" id="sim-fulfill-rev">₹10.8L</div>
+          <div class="lbl">Realized Revenue</div>
+        </div>
+      </div>
+
+      <div class="insight gold mt-16" id="sim-insight">Loading...</div>
+
+      <div style="margin-top:16px">
+        <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px">Quick Scenarios</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="scenario-card" onclick="loadScenario('current')">
+            <div class="sc-title" style="color:var(--text-muted)">📌 Current State</div>
+            <div class="sc-desc">Today's actual metrics</div>
+          </div>
+          <div class="scenario-card" onclick="loadScenario('optimized')">
+            <div class="sc-title" style="color:var(--gold)">⚡ Quick Wins</div>
+            <div class="sc-desc">Fix leaks + optimize conversion</div>
+          </div>
+          <div class="scenario-card" onclick="loadScenario('growth')">
+            <div class="sc-title" style="color:var(--green)">🚀 Growth Mode</div>
+            <div class="sc-desc">Aggressive scaling</div>
+          </div>
+          <div class="scenario-card" onclick="loadScenario('100x')">
+            <div class="sc-title" style="color:var(--purple)">💎 100× Target</div>
+            <div class="sc-desc">Full hypergrowth blueprint</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 6: REVENUE SIMULATOR ═══ -->
+<div class="tab-panel" id="tab-6">
+  <div class="section-title mb-16"><span class="emoji">💎</span><h2>Revenue Expansion Simulator</h2><div class="line"></div></div>
+
+  <div class="grid-2 mb-20">
+    <div class="card highlight">
+      <div class="card-title"><span class="icon">🏗️</span> Product Ladder Builder</div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>Basic Report Price (₹)</span>
+          <span class="sim-val" id="rev-basic-val" style="color:var(--blue)">₹1,100</span>
+        </div>
+        <input type="range" id="rev-basic" min="500" max="3000" step="100" value="1100" oninput="updateRevSim()">
+      </div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>Correction Report Price (₹)</span>
+          <span class="sim-val" id="rev-correction-val" style="color:var(--gold)">₹5,100</span>
+        </div>
+        <input type="range" id="rev-correction" min="2000" max="12000" step="100" value="5100" oninput="updateRevSim()">
+      </div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>Consultation Add-on Price (₹)</span>
+          <span class="sim-val" id="rev-consult-val" style="color:var(--green)">₹5,300</span>
+        </div>
+        <input type="range" id="rev-consult" min="1000" max="15000" step="100" value="5300" oninput="updateRevSim()">
+      </div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>Family Bundle Price (₹) <span style="font-size:10px;color:var(--text-dim)">[NEW]</span></span>
+          <span class="sim-val" id="rev-bundle-val" style="color:var(--purple)">₹15,000</span>
+        </div>
+        <input type="range" id="rev-bundle" min="8000" max="30000" step="500" value="15000" oninput="updateRevSim()">
+      </div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>Business Name Report Price (₹) <span style="font-size:10px;color:var(--text-dim)">[NEW]</span></span>
+          <span class="sim-val" id="rev-biz-val" style="color:var(--cyan)">₹10,000</span>
+        </div>
+        <input type="range" id="rev-biz" min="5000" max="30000" step="500" value="10000" oninput="updateRevSim()">
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>Monthly Orders</span>
+          <span class="sim-val" id="rev-orders-val" style="color:var(--text-primary)">60</span>
+        </div>
+        <input type="range" id="rev-orders" min="10" max="1000" step="5" value="60" oninput="updateRevSim()">
+      </div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>% choosing Correction (vs Basic)</span>
+          <span class="sim-val" id="rev-corr-pct-val" style="color:var(--gold)">62%</span>
+        </div>
+        <input type="range" id="rev-corr-pct" min="20" max="95" step="1" value="62" oninput="updateRevSim()">
+      </div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>% adding Consultation</span>
+          <span class="sim-val" id="rev-consult-pct-val" style="color:var(--green)">57%</span>
+        </div>
+        <input type="range" id="rev-consult-pct" min="10" max="90" step="1" value="57" oninput="updateRevSim()">
+      </div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>% buying Family Bundle</span>
+          <span class="sim-val" id="rev-bundle-pct-val" style="color:var(--purple)">5%</span>
+        </div>
+        <input type="range" id="rev-bundle-pct" min="0" max="30" step="1" value="5" oninput="updateRevSim()">
+      </div>
+
+      <div class="sim-group">
+        <div class="sim-label">
+          <span>% buying Business Report</span>
+          <span class="sim-val" id="rev-biz-pct-val" style="color:var(--cyan)">3%</span>
+        </div>
+        <input type="range" id="rev-biz-pct" min="0" max="20" step="1" value="3" oninput="updateRevSim()">
+      </div>
+    </div>
+
+    <div>
+      <div class="sim-output mb-16">
+        <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Blended Monthly Revenue</div>
+        <div class="big glow-gold" style="color:var(--gold)" id="rev-total">₹3.2L</div>
+        <div class="sub" id="rev-annual-total">Annual: ₹38.4L</div>
+      </div>
+
+      <div class="sim-breakdown">
+        <div class="sim-breakdown-item">
+          <div class="val" style="color:var(--gold)" id="rev-blended-aov">₹5,340</div>
+          <div class="lbl">Blended AOV</div>
+        </div>
+        <div class="sim-breakdown-item">
+          <div class="val" style="color:var(--green)" id="rev-vs-current">+14%</div>
+          <div class="lbl">vs Current AOV</div>
+        </div>
+        <div class="sim-breakdown-item">
+          <div class="val" style="color:var(--purple)" id="rev-bundle-rev">₹0.45L</div>
+          <div class="lbl">Bundle Revenue</div>
+        </div>
+        <div class="sim-breakdown-item">
+          <div class="val" style="color:var(--cyan)" id="rev-biz-rev">₹0.18L</div>
+          <div class="lbl">Business Report Rev</div>
+        </div>
+      </div>
+
+      <div class="card mt-16" style="background:var(--bg-elevated)">
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:10px">Revenue Breakdown by Product</div>
+        <div id="rev-breakdown-bars"></div>
+      </div>
+
+      <div class="insight gold mt-16" id="rev-insight">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 7: 90-DAY PLAYBOOK ═══ -->
+<div class="tab-panel" id="tab-7">
+  <div class="section-title mb-16"><span class="emoji">🚀</span><h2>90-Day Growth Execution Playbook</h2><div class="line"></div></div>
+
+  <div class="grid-3 mb-20">
+    <div class="card" style="border-top:3px solid var(--red)">
+      <div style="font-size:10px;color:var(--red);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:4px">Week 1-2</div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:12px">Stop the Bleeding</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8">
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Audit all 339 draft orders: categorize failed payments vs completed payments with no report</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Fix Stripe international payment flow — test end-to-end, fix pricing display</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Send recovery emails to all unfulfilled orders with direct payment/status links</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Set up order monitoring dashboard — alert if draft count exceeds 20% of weekly orders</div>
+        <div style="padding:6px 0">→ Implement auto-report generation for basic analysis reports (reduce human bottleneck)</div>
+      </div>
+      <div style="background:var(--red-dim);border-radius:var(--radius-sm);padding:10px;margin-top:12px;text-align:center">
+        <div style="font-size:10px;color:var(--text-muted)">Expected Impact</div>
+        <div style="font-size:20px;font-weight:900;color:var(--red);font-family:'JetBrains Mono'">+₹8-13L recovered</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--gold)">
+      <div style="font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:4px">Week 3-6</div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:12px">Optimize the Engine</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8">
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Launch WhatsApp sales funnel with Click-to-WhatsApp ads on Facebook/Instagram</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Increase Facebook Paid budget 3× (proven ₹7,680 AOV channel)</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Add comparison table on calculator result page: Basic vs Correction (anchor Premium)</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Integrate consultation booking directly into purchase flow (not post-purchase)</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Build 7-part post-purchase email sequence for repeat purchases</div>
+        <div style="padding:6px 0">→ Create "Name Score" concept for viral sharing from calculator</div>
+      </div>
+      <div style="background:var(--gold-glow);border-radius:var(--radius-sm);padding:10px;margin-top:12px;text-align:center">
+        <div style="font-size:10px;color:var(--text-muted)">Expected Impact</div>
+        <div style="font-size:20px;font-weight:900;color:var(--gold);font-family:'JetBrains Mono'">2-3× monthly revenue</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--green)">
+      <div style="font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:4px">Week 7-12</div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:12px">Scale Proven Channels</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8">
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Launch Baby Name Analysis product (target parents, ₹62 orders from &lt;18 segment)</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Launch Business Name Analysis at ₹10-15K (target 41 business owners in data)</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Scale YouTube to 3 videos/week — Celebrity Name Audits content series</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Launch Family Bundle offer (4 names at discount)</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Build referral program: "Refer 3 friends → ₹500 off next report"</div>
+        <div style="padding:6px 0">→ Start Hindi & Tamil calculator/report translations for 2× market reach</div>
+      </div>
+      <div style="background:var(--green-dim);border-radius:var(--radius-sm);padding:10px;margin-top:12px;text-align:center">
+        <div style="font-size:10px;color:var(--text-muted)">Expected Impact</div>
+        <div style="font-size:20px;font-weight:900;color:var(--green);font-family:'JetBrains Mono'">5-10× within 90 days</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Opportunities -->
+  <div class="card mb-20">
+    <div class="card-title"><span class="icon">🔮</span> Hidden Opportunities from Your Data</div>
+    <div class="grid-3">
+      <div class="insight opp">🍼 <b>Baby Name Market:</b> 62 orders from &lt;18 age group (parents). Create dedicated product at ₹7,999+ — these parents will pay premium for their child's future.</div>
+      <div class="insight opp">💼 <b>Business Owner Segment:</b> 41 business owners buying personal reports. Launch Business Name Analysis at ₹14,999 — they'll buy both personal + business.</div>
+      <div class="insight opp">💑 <b>Spouse Tension = Purchase Trigger:</b> 27% report challenging spouse relationships. Create targeted ads: "Is your name compatibility affecting your marriage?"</div>
+      <div class="insight gold">⏰ <b>Peak Hours:</b> 11AM-2PM and 8PM-11PM. Schedule ALL ads, emails, WhatsApp blasts for these windows to maximize conversion.</div>
+      <div class="insight gold">📅 <b>Monday Magic:</b> Monday has the most orders (100). Sunday night campaign → Monday purchases. "Start your week with the right name energy."</div>
+      <div class="insight info">🤖 <b>ChatGPT Traffic:</b> 2 orders from chatgpt.com at ₹3,100 avg. People asking AI about numerology and finding you. Create content optimized for AI citation.</div>
+      <div class="insight info">📉 <b>AOV Alert:</b> AOV dropped from ₹7,624 (Aug) to ₹3,453 (Mar). Recent growth is volume-driven not value-driven. Re-focus on quality traffic.</div>
+      <div class="insight opp">🏥 <b>Health-Driven Buyers:</b> 7% cite health concerns as reason. Create a "Health & Name Vibration" content angle — deeply emotional, high-conversion messaging.</div>
+      <div class="insight warn">🌍 <b>International Customers:</b> 86 Stripe users paying ₹237 avg. Fix pricing = instant ₹4.3L recovery. Then scale UAE, UK, US markets specifically.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div class="watermark">Astro Arun Pandit · Confidential</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// TAB NAVIGATION
+// ═══════════════════════════════════════════════
+function showTab(index) {
+  document.querySelectorAll('.tab-panel').forEach((p, i) => {
+    p.classList.toggle('active', i === index);
+  });
+  document.querySelectorAll('.nav-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === index);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// CHART HELPERS
+// ═══════════════════════════════════════════════
+function fmt(n) {
+  if (n >= 10000000) return '₹' + (n / 10000000).toFixed(1) + 'Cr';
+  if (n >= 100000) return '₹' + (n / 100000).toFixed(1) + 'L';
+  if (n >= 1000) return '₹' + (n / 1000).toFixed(1) + 'K';
+  return '₹' + n.toLocaleString('en-IN');
+}
+
+function fmtPlain(n) {
+  if (n >= 10000000) return (n / 10000000).toFixed(1) + 'Cr';
+  if (n >= 100000) return (n / 100000).toFixed(1) + 'L';
+  return n.toLocaleString('en-IN');
+}
+
+function buildBarChart(containerId, data, valueKey, labelKey, color, height, formatFn) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const max = Math.max(...data.map(d => d[valueKey]));
+  el.style.height = height + 'px';
+  el.innerHTML = data.map(d => {
+    const h = (d[valueKey] / max) * (height - 40);
+    const val = formatFn ? formatFn(d[valueKey]) : d[valueKey];
+    return `<div class="bar-col">
+      <div class="bar-val">${val}</div>
+      <div class="bar-fill" style="height:${h}px;background:linear-gradient(180deg,${color},${color}88)"></div>
+      <div class="bar-lbl">${d[labelKey]}</div>
+    </div>`;
+  }).join('');
+}
+
+function buildHBars(containerId, data, color) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const max = Math.max(...data.map(d => d.value));
+  el.innerHTML = data.map(d => {
+    const pct = (d.value / max * 100);
+    return `<div class="h-bar">
+      <div class="h-bar-header">
+        <span class="h-bar-label">${d.label}</span>
+        <span class="h-bar-value" style="color:${d.color || color}">${d.display || d.value.toLocaleString('en-IN')}</span>
+      </div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:${pct}%;background:${d.color || color}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function drawDonut(svgId, segments) {
+  const svg = document.getElementById(svgId);
+  if (!svg) return;
+  const total = segments.reduce((s, seg) => s + seg.value, 0);
+  const cx = 70, cy = 70, r = 65, ir = 43;
+  let cum = 0;
+  let paths = '';
+  segments.forEach(seg => {
+    const start = (cum / total) * 2 * Math.PI - Math.PI / 2;
+    cum += seg.value;
+    const end = (cum / total) * 2 * Math.PI - Math.PI / 2;
+    const large = seg.value / total > 0.5 ? 1 : 0;
+    const x1 = cx + r * Math.cos(start), y1 = cy + r * Math.sin(start);
+    const x2 = cx + r * Math.cos(end), y2 = cy + r * Math.sin(end);
+    const ix1 = cx + ir * Math.cos(start), iy1 = cy + ir * Math.sin(start);
+    const ix2 = cx + ir * Math.cos(end), iy2 = cy + ir * Math.sin(end);
+    paths += `<path d="M${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} L${ix2},${iy2} A${ir},${ir} 0 ${large} 0 ${ix1},${iy1} Z" fill="${seg.color}" opacity="0.85"/>`;
+  });
+  paths += `<circle cx="${cx}" cy="${cy}" r="${ir - 2}" fill="#06090F"/>`;
+  svg.innerHTML = paths;
+}
+
+// ═══════════════════════════════════════════════
+// GROWTH SIMULATOR
+// ═══════════════════════════════════════════════
+function updateSimulator() {
+  const users = +document.getElementById('sim-users').value;
+  const cvr = +document.getElementById('sim-cvr').value;
+  const aov = +document.getElementById('sim-aov').value;
+  const premium = +document.getElementById('sim-premium').value;
+  const fulfill = +document.getElementById('sim-fulfill').value;
+  const adSpend = +document.getElementById('sim-adspend').value;
+
+  document.getElementById('sim-users-val').textContent = users >= 100000 ? (users/100000).toFixed(0) + 'L' : users.toLocaleString('en-IN');
+  document.getElementById('sim-cvr-val').textContent = cvr.toFixed(1) + '%';
+  document.getElementById('sim-aov-val').textContent = fmt(aov);
+  document.getElementById('sim-premium-val').textContent = premium + '%';
+  document.getElementById('sim-fulfill-val').textContent = fulfill + '%';
+  document.getElementById('sim-adspend-val').textContent = fmt(adSpend);
+
+  const orders = Math.round(users * cvr / 100);
+  const blendedAOV = aov * (premium / 100 * 1.2 + (100 - premium) / 100 * 0.4);
+  const grossRev = orders * blendedAOV;
+  const realizedRev = grossRev * fulfill / 100;
+  const roas = adSpend > 0 ? (realizedRev / adSpend) : Infinity;
+  const cac = adSpend > 0 ? Math.round(adSpend / orders) : 0;
+  const annual = realizedRev * 12;
+  const currentMonthlyRev = 2817205 / 10;
+  const multiplier = realizedRev / currentMonthlyRev;
+
+  document.getElementById('sim-revenue').textContent = fmt(Math.round(grossRev));
+  document.getElementById('sim-annual').textContent = 'Annual: ' + fmt(Math.round(annual)) + ' (' + multiplier.toFixed(1) + '× current)';
+  document.getElementById('sim-orders').textContent = orders.toLocaleString('en-IN');
+  document.getElementById('sim-roas').textContent = roas === Infinity ? '∞' : roas.toFixed(1) + '×';
+  document.getElementById('sim-cac').textContent = cac > 0 ? fmt(cac) : '₹0';
+  document.getElementById('sim-fulfill-rev').textContent = fmt(Math.round(realizedRev));
+
+  let insight = '';
+  if (fulfill < 60) insight = '🚨 Fulfillment rate below 60% — you\'re burning money on acquisition. Fix operations before scaling ads.';
+  else if (roas < 3 && adSpend > 0) insight = '⚠️ ROAS below 3× — reduce ad spend or improve conversion before scaling further.';
+  else if (multiplier >= 100) insight = '💎 100× TARGET ACHIEVED! This scenario projects ' + multiplier.toFixed(0) + '× your current revenue.';
+  else if (multiplier >= 10) insight = '🚀 ' + multiplier.toFixed(0) + '× growth projected. Strong trajectory — focus on fulfillment and channel scaling.';
+  else if (multiplier >= 3) insight = '📈 ' + multiplier.toFixed(1) + '× growth. Good start — increase traffic and conversion for exponential gains.';
+  else insight = '📌 ' + multiplier.toFixed(1) + '× current. Adjust levers to find your growth path.';
+  document.getElementById('sim-insight').textContent = insight;
+}
+
+function loadScenario(type) {
+  const scenarios = {
+    current: { users: 5000, cvr: 1.2, aov: 4943, premium: 62, fulfill: 41, adSpend: 20000 },
+    optimized: { users: 15000, cvr: 4, aov: 5500, premium: 75, fulfill: 85, adSpend: 50000 },
+    growth: { users: 50000, cvr: 5, aov: 6000, premium: 80, fulfill: 90, adSpend: 200000 },
+    '100x': { users: 300000, cvr: 7, aov: 8000, premium: 85, fulfill: 95, adSpend: 500000 },
+  };
+  const s = scenarios[type];
+  document.getElementById('sim-users').value = s.users;
+  document.getElementById('sim-cvr').value = s.cvr;
+  document.getElementById('sim-aov').value = s.aov;
+  document.getElementById('sim-premium').value = s.premium;
+  document.getElementById('sim-fulfill').value = s.fulfill;
+  document.getElementById('sim-adspend').value = s.adSpend;
+  updateSimulator();
+}
+
+// ═══════════════════════════════════════════════
+// REVENUE SIMULATOR
+// ═══════════════════════════════════════════════
+function updateRevSim() {
+  const basicPrice = +document.getElementById('rev-basic').value;
+  const corrPrice = +document.getElementById('rev-correction').value;
+  const consultPrice = +document.getElementById('rev-consult').value;
+  const bundlePrice = +document.getElementById('rev-bundle').value;
+  const bizPrice = +document.getElementById('rev-biz').value;
+  const orders = +document.getElementById('rev-orders').value;
+  const corrPct = +document.getElementById('rev-corr-pct').value;
+  const consultPct = +document.getElementById('rev-consult-pct').value;
+  const bundlePct = +document.getElementById('rev-bundle-pct').value;
+  const bizPct = +document.getElementById('rev-biz-pct').value;
+
+  document.getElementById('rev-basic-val').textContent = fmt(basicPrice);
+  document.getElementById('rev-correction-val').textContent = fmt(corrPrice);
+  document.getElementById('rev-consult-val').textContent = fmt(consultPrice);
+  document.getElementById('rev-bundle-val').textContent = fmt(bundlePrice);
+  document.getElementById('rev-biz-val').textContent = fmt(bizPrice);
+  document.getElementById('rev-orders-val').textContent = orders;
+  document.getElementById('rev-corr-pct-val').textContent = corrPct + '%';
+  document.getElementById('rev-consult-pct-val').textContent = consultPct + '%';
+  document.getElementById('rev-bundle-pct-val').textContent = bundlePct + '%';
+  document.getElementById('rev-biz-pct-val').textContent = bizPct + '%';
+
+  const basicOrders = Math.round(orders * (100 - corrPct) / 100);
+  const corrOrders = Math.round(orders * corrPct / 100);
+  const consultOrders = Math.round(orders * consultPct / 100);
+  const bundleOrders = Math.round(orders * bundlePct / 100);
+  const bizOrders = Math.round(orders * bizPct / 100);
+
+  const basicRev = basicOrders * basicPrice;
+  const corrRev = corrOrders * corrPrice;
+  const consultRev = consultOrders * consultPrice;
+  const bundleRev = bundleOrders * bundlePrice;
+  const bizRev = bizOrders * bizPrice;
+  const totalRev = basicRev + corrRev + consultRev + bundleRev + bizRev;
+  const blendedAOV = Math.round(totalRev / orders);
+  const vsCurrentPct = ((blendedAOV - 4943) / 4943 * 100);
+
+  document.getElementById('rev-total').textContent = fmt(Math.round(totalRev));
+  document.getElementById('rev-annual-total').textContent = 'Annual: ' + fmt(Math.round(totalRev * 12));
+  document.getElementById('rev-blended-aov').textContent = fmt(blendedAOV);
+  document.getElementById('rev-vs-current').textContent = (vsCurrentPct >= 0 ? '+' : '') + vsCurrentPct.toFixed(0) + '%';
+  document.getElementById('rev-vs-current').style.color = vsCurrentPct >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('rev-bundle-rev').textContent = fmt(Math.round(bundleRev));
+  document.getElementById('rev-biz-rev').textContent = fmt(Math.round(bizRev));
+
+  const products = [
+    { label: 'Correction Reports', value: corrRev, color: 'var(--gold)', display: fmt(Math.round(corrRev)) },
+    { label: 'Consultation Add-on', value: consultRev, color: 'var(--green)', display: fmt(Math.round(consultRev)) },
+    { label: 'Basic Reports', value: basicRev, color: 'var(--blue)', display: fmt(Math.round(basicRev)) },
+    { label: 'Family Bundles', value: bundleRev, color: 'var(--purple)', display: fmt(Math.round(bundleRev)) },
+    { label: 'Business Reports', value: bizRev, color: 'var(--cyan)', display: fmt(Math.round(bizRev)) },
+  ];
+  buildHBars('rev-breakdown-bars', products, 'var(--gold)');
+
+  let insight = '';
+  if (bundlePct >= 10 && bizPct >= 5)
+    insight = '💎 Product ladder activated! Bundle + Business reports contribute ' + fmt(Math.round(bundleRev + bizRev)) + '/month — these are pure incremental revenue.';
+  else if (blendedAOV > 8000)
+    insight = '🏆 Blended AOV above ₹8K — you\'re in premium territory. Every new order is 62% more valuable than today.';
+  else if (corrPct >= 80)
+    insight = '📈 80%+ choosing correction — great upsell execution. Now layer bundles and business reports for next AOV jump.';
+  else
+    insight = '📊 Adjust product mix and pricing to see how different strategies impact total revenue and AOV.';
+  document.getElementById('rev-insight').textContent = insight;
+}
+
+// ═══════════════════════════════════════════════
+// INIT ALL CHARTS
+// ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  // Monthly Revenue
+  const monthly = [
+    {m:'May 25',r:84700},{m:'Jun 25',r:624109},{m:'Jul 25',r:228490},{m:'Aug 25',r:320200},
+    {m:'Sep 25',r:199118},{m:'Oct 25',r:155288},{m:'Nov 25',r:188200},{m:'Dec 25',r:189600},
+    {m:'Jan 26',r:449400},{m:'Feb 26',r:202000},{m:'Mar 26',r:176100}
+  ];
+  buildBarChart('monthly-revenue-chart', monthly, 'r', 'm', '#D4A03C', 200, fmt);
+
+  // Donuts
+  drawDonut('donut-premium', [{value:75.5,color:'#D4A03C'},{value:24.5,color:'#3B82F6'}]);
+  drawDonut('donut-consult', [{value:70.8,color:'#10B981'},{value:29.2,color:'#F59E0B'}]);
+
+  // Source bars
+  buildHBars('source-bars', [
+    {label:'Website Organic (180)',value:1318000,color:'#3B82F6',display:'₹13.2L'},
+    {label:'Facebook Paid (41)',value:314900,color:'#D4A03C',display:'₹3.15L'},
+    {label:'YouTube (48)',value:235000,color:'#8B5CF6',display:'₹2.35L'},
+    {label:'WhatsApp (14)',value:112501,color:'#10B981',display:'₹1.13L'},
+    {label:'Our Services (32)',value:107600,color:'#06B6D4',display:'₹1.08L'},
+    {label:'QuickReply.ai (7)',value:37100,color:'#94A3B8',display:'₹0.37L'},
+    {label:'Facebook Organic (69)',value:10931,color:'#EF4444',display:'₹10.9K'},
+    {label:'Meta Ads (9)',value:6741,color:'#EF4444',display:'₹6.7K'},
+  ], '#D4A03C');
+
+  // Payment bars
+  buildHBars('payment-bars', [
+    {label:'Correction Report Page (₹8,241 avg)',value:1747101,color:'#D4A03C',display:'₹17.5L'},
+    {label:'New Correction (₹3,418 avg)',value:680100,color:'#3B82F6',display:'₹6.8L'},
+    {label:'Horocosmo App (₹4,969 avg)',value:347800,color:'#06B6D4',display:'₹3.5L'},
+    {label:'International (₹158 avg!)',value:11716,color:'#EF4444',display:'₹11.7K'},
+    {label:'UAE (₹724 avg)',value:8688,color:'#F59E0B',display:'₹8.7K'},
+  ], '#D4A03C');
+
+  // Age bars
+  buildHBars('age-bars', [
+    {label:'<18 yrs (parents buying for kids)',value:62,color:'#06B6D4',display:'62 orders · Avg ₹5,006'},
+    {label:'18-25 yrs',value:39,color:'#3B82F6',display:'39 orders · Avg ₹5,554'},
+    {label:'26-30 yrs',value:101,color:'#10B981',display:'101 orders · Avg ₹4,997'},
+    {label:'31-35 yrs ⭐',value:124,color:'#D4A03C',display:'124 orders · Avg ₹5,233'},
+    {label:'36-40 yrs',value:117,color:'#F59E0B',display:'117 orders · Avg ₹4,417'},
+    {label:'41-50 yrs',value:95,color:'#8B5CF6',display:'95 orders · Avg ₹5,326'},
+    {label:'51-60 yrs',value:14,color:'#94A3B8',display:'14 orders · Avg ₹3,788'},
+    {label:'60+ yrs',value:4,color:'#64748B',display:'4 orders · Avg ₹5,150'},
+  ], '#D4A03C');
+
+  // Profession bars
+  buildHBars('profession-bars', [
+    {label:'Business Owners',value:41,color:'#D4A03C',display:'41'},
+    {label:'IT/Software',value:32,color:'#3B82F6',display:'32'},
+    {label:'Students',value:26,color:'#06B6D4',display:'26'},
+    {label:'Homemakers',value:18,color:'#8B5CF6',display:'18'},
+    {label:'Doctors/Healthcare',value:12,color:'#10B981',display:'12'},
+    {label:'Unemployed/Seeking',value:11,color:'#EF4444',display:'11'},
+    {label:'Sales/Marketing',value:8,color:'#F59E0B',display:'8'},
+    {label:'Lawyers/Legal',value:8,color:'#94A3B8',display:'8'},
+  ], '#D4A03C');
+
+  // Reason bars
+  buildHBars('reason-bars', [
+    {label:'💼 Career / Job Growth',value:28,color:'#3B82F6',display:'28%'},
+    {label:'💰 Money / Financial Issues',value:22,color:'#D4A03C',display:'22%'},
+    {label:'🌟 Overall Success & Growth',value:15,color:'#10B981',display:'15%'},
+    {label:'❤️ Relationships',value:10,color:'#EF4444',display:'10%'},
+    {label:'📈 Business Growth',value:8,color:'#8B5CF6',display:'8%'},
+    {label:'🏥 Health Concerns',value:7,color:'#06B6D4',display:'7%'},
+    {label:'👶 Baby / Child Name',value:6,color:'#F59E0B',display:'6%'},
+    {label:'🔍 Curiosity / Testing',value:4,color:'#94A3B8',display:'4%'},
+  ], '#D4A03C');
+
+  // Completion bars
+  buildHBars('completion-bars', [
+    {label:'Analysis Only',value:48.3,color:'#10B981',display:'48.3%'},
+    {label:'Analysis + Correction',value:45.4,color:'#3B82F6',display:'45.4%'},
+    {label:'Analysis + Correction + Consult',value:40.6,color:'#D4A03C',display:'40.6%'},
+    {label:'Analysis + Consultation',value:36.0,color:'#F59E0B',display:'36.0%'},
+    {label:'International',value:0,color:'#EF4444',display:'0% ⚠️'},
+  ], '#D4A03C');
+
+  // Hour chart
+  const hours = [
+    {h:'12a',v:25},{h:'1',v:17},{h:'2',v:6},{h:'3',v:10},{h:'4',v:12},{h:'5',v:12},
+    {h:'6',v:17},{h:'7',v:8},{h:'8',v:25},{h:'9',v:20},{h:'10',v:30},{h:'11a',v:43},
+    {h:'12p',v:34},{h:'1',v:32},{h:'2p',v:42},{h:'3',v:26},{h:'4',v:17},{h:'5',v:23},
+    {h:'6p',v:30},{h:'7',v:30},{h:'8p',v:37},{h:'9',v:23},{h:'10',v:19},{h:'11',v:39}
+  ];
+  buildBarChart('hour-chart', hours, 'v', 'h', '#3B82F6', 120, v => v);
+
+  // Day of week
+  const dow = [
+    {d:'Mon',v:100},{d:'Tue',v:81},{d:'Wed',v:95},{d:'Thu',v:84},
+    {d:'Fri',v:70},{d:'Sat',v:69},{d:'Sun',v:78}
+  ];
+  buildBarChart('dow-chart', dow, 'v', 'd', '#D4A03C', 120, v => v);
+
+  // Init simulators
+  updateSimulator();
+  updateRevSim();
+});
+</script>
+</body>
+</html>
