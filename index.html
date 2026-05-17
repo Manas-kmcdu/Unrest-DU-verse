@@ -138,10 +138,10 @@
   @keyframes badgePop { from{opacity:0;transform:scale(0.7) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
   @keyframes statFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 
-  .promo-strip { display: inline-flex; gap: 12px; align-items: center; background: var(--ink); border-radius: 100px; padding: 8px 20px; animation: fadeUp 0.6s 0.1s ease both; white-space: nowrap; box-shadow: 0 16px 40px rgba(14,13,11,0.25); margin-bottom: 1.5rem; }
-  .promo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); flex-shrink: 0; animation: pulse 2s infinite; }
-  .promo-text { font-size: 0.72rem; font-weight: 600; color: rgba(245,242,235,0.9); letter-spacing: 0.02em; }
-  .promo-text strong { color: var(--accent2); }
+  .promo-strip { display: inline-flex; gap: 12px; align-items: center; background: rgba(255,255,255,0.92); border: 1px solid rgba(14,13,11,0.10); border-radius: 100px; padding: 8px 20px; animation: fadeUp 0.6s 0.1s ease both; white-space: nowrap; box-shadow: 0 4px 20px rgba(14,13,11,0.08); margin-bottom: 1.5rem; backdrop-filter: blur(8px); }
+  .promo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; animation: pulse 2s infinite; }
+  .promo-text { font-size: 0.72rem; font-weight: 600; color: var(--ink); letter-spacing: 0.02em; transition: opacity 0.3s, transform 0.3s; }
+  .promo-text strong { color: var(--accent); }
 
   .hero-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; }
   .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.8); border: 0.5px solid rgba(255,255,255,0.95); border-radius: 100px; padding: 0.3rem 0.9rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; color: var(--accent); text-transform: uppercase; margin-bottom: 1.5rem; animation: fadeUp 0.6s ease both; backdrop-filter: blur(8px); }
@@ -624,7 +624,14 @@
   window.query = query; window.where = where; window.onSnapshot = onSnapshot;
   window.updateDoc = updateDoc; window.doc = doc; window.deleteDoc = deleteDoc;
 
-  // Load public approved echoes
+  // Live waitlist count — 247 base + real Firestore submissions
+  onSnapshot(collection(window.db, "waitlist"), (snapshot) => {
+    const live = 247 + snapshot.size;
+    document.getElementById('pulse-count').textContent = live;
+    document.getElementById('hero-live-count').textContent = live;
+    window.waitlistCount = live;
+  });
+
   const q = query(collection(window.db, "echoes"), where("status", "==", "approved"));
   onSnapshot(q, (snapshot) => {
     window.liveEchoes = [];
@@ -1109,22 +1116,36 @@ updatePulseBar();
 
 <script>
 // --- DYNAMIC PROMO STRIP ---
-document.addEventListener("DOMContentLoaded", () => {
-  const promoTexts = [
-    "⚽ <strong>Turf Sunday</strong> · 🏃 DU Bhaag Club · 🎪 Fest season",
-    "💼 <strong>Placement Prep</strong> · 📚 PYQs & Notes · 🍕 Satya Niketan hangouts",
-    "🎤 <strong>Society Auditions</strong> · 🎸 Battle of Bands · 📸 Photowalks",
-    "🏆 <strong>Case Comps</strong> · 💡 Startup pitches · 🤝 Co-founder matching",
-    "☕ <strong>15-rupee chai</strong> · 🚇 Metro updates · 🎭 Nukkad Natak",
-    "🏛️ <strong>North Campus vibe</strong> · 🦅 South Campus pride · ✨ College lore"
+// --- DYNAMIC PROMO STRIP — rotates every 3.5s, random start ---
+(function() {
+  const PROMOS = [
+    " <strong>Turf Sunday</strong> ·  DU Bhaag Club ·  Fest season",
+    " <strong>Placement Prep</strong> ·  PYQs & Notes ·  Satya Niketan hangouts",
+    " <strong>Society Auditions</strong> ·  Battle of Bands ·  Photowalks",
+    " <strong>Case Comps</strong> ·  Startup pitches ·  Co-founder matching",
+    " <strong>15-rupee chai</strong> ·  Metro updates ·  Nukkad Natak",
+    " <strong>North Campus vibe</strong> ·  South Campus pride ·  College lore",
+    " <strong>Founding member perks</strong> ·  Verified badge ·  Free merch",
+    " <strong>11 June 2026</strong> ·  Launch countdown live ·  Claim your spot"
   ];
-  
-  const randomText = promoTexts[Math.floor(Math.random() * promoTexts.length)];
-  const promoEl = document.querySelector('.promo-text');
-  if (promoEl) {
-    promoEl.innerHTML = randomText;
-  }
-});
+
+  const el = document.querySelector('.promo-text');
+  if (!el) return;
+
+  let i = Math.floor(Math.random() * PROMOS.length); // random on every page load
+  el.innerHTML = PROMOS[i];
+
+  setInterval(() => {
+    i = (i + 1) % PROMOS.length;
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(5px)';
+    setTimeout(() => {
+      el.innerHTML = PROMOS[i];
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 300);
+  }, 3500);
+})();
 
 (function() {
   window.openShareModal = function(college, isDemo = false, userName = "YOUR NAME") {
