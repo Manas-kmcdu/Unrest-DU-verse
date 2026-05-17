@@ -74,17 +74,6 @@
     mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 80%);
   }
 
-  .img-collage { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
-  .img-spot { position: absolute; border-radius: 20px; overflow: hidden; box-shadow: 0 16px 40px rgba(14,13,11,0.18); border: 2px solid rgba(255,255,255,0.8); opacity: 0; animation: imgReveal 0.8s ease forwards; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
-  .img-spot-1 { width: 140px; height: 180px; top: 10%; left: 2%; transform: rotate(-4deg); animation-delay: 0.6s; background: linear-gradient(135deg,#f5e8d0,#e8d0b0,#d4b080); }
-  .img-spot-2 { width: 160px; height: 120px; bottom: 20%; left: 1%; transform: rotate(3deg); animation-delay: 0.9s; background: linear-gradient(135deg,#dce8f0,#bdd4e8,#9ab8d4); }
-  .img-spot-3 { width: 130px; height: 170px; top: 8%; right: 2%; transform: rotate(5deg); animation-delay: 0.75s; background: linear-gradient(135deg,#f0e8d8,#e0d0b8,#ccba90); }
-  .img-spot-4 { width: 150px; height: 130px; bottom: 18%; right: 1%; transform: rotate(-3deg); animation-delay: 1s; background: linear-gradient(135deg,#e0f0e8,#c0dcc8,#9cc4a8); }
-  .img-spot-emoji { font-size: 2.2rem; }
-  .img-spot-cap { font-size: 0.6rem; font-weight: 600; color: var(--ink2); text-align: center; padding: 0 8px; line-height: 1.3; }
-  .img-spot-tag { position: absolute; bottom: 8px; right: 8px; background: rgba(255,255,255,0.8); border-radius: 6px; padding: 2px 6px; font-size: 0.52rem; font-weight: 700; color: var(--ink); letter-spacing: 0.03em; }
-  @keyframes imgReveal { from { opacity: 0; transform: scale(0.85) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-
   .float-cards { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
   .fc { position: absolute; background: rgba(255,255,255,0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 0.5px solid rgba(255,255,255,0.9); border-radius: 16px; padding: 10px 14px; box-shadow: 0 8px 32px rgba(14,13,11,0.10), 0 1px 0 rgba(255,255,255,0.8) inset; display: flex; align-items: center; gap: 10px; animation: cardFloat linear infinite; white-space: nowrap; }
   .fc-icon { font-size: 1.4rem; line-height: 1; flex-shrink: 0; }
@@ -115,12 +104,12 @@
   .promo-text { font-size: 0.72rem; font-weight: 600; color: rgba(245,242,235,0.9); letter-spacing: 0.02em; }
   .promo-text strong { color: var(--accent2); }
 
-  .hero-content { position: relative; z-index: 10; }
+  .hero-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; }
   .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.8); border: 0.5px solid rgba(255,255,255,0.95); border-radius: 100px; padding: 0.3rem 0.9rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; color: var(--accent); text-transform: uppercase; margin-bottom: 1.5rem; animation: fadeUp 0.6s ease both; backdrop-filter: blur(8px); }
   .hero-badge::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
 
-  .hero h1 { font-family: var(--serif); font-size: clamp(3rem, 8vw, 6.5rem); line-height: 1.0; letter-spacing: -0.03em; color: var(--ink); animation: fadeUp 0.6s 0.1s ease both; max-width: 900px; }
+  .hero h1 { font-family: var(--serif); font-size: clamp(3rem, 8vw, 6.5rem); line-height: 1.0; letter-spacing: -0.03em; color: var(--ink); animation: fadeUp 0.6s 0.1s ease both; max-width: 900px; margin-bottom: 0; }
   .hero h1 em { font-style: italic; color: var(--accent); }
   .hero h1 .under { position: relative; display: inline-block; }
   .hero h1 .under::after { content: ''; position: absolute; bottom: 4px; left: 0; right: 0; height: 3px; background: var(--accent2); border-radius: 2px; transform: scaleX(0); transform-origin: left; animation: underlineIn 0.6s 0.8s ease forwards; }
@@ -139,19 +128,13 @@
   .hero-form button:hover, .waitlist-form button:hover { background: var(--accent); transform: scale(1.02); }
   .hero-form button:active, .waitlist-form button:active { transform: scale(0.98); }
 
-  .hero-colleges { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; justify-content: center; margin-top: 2.5rem; animation: fadeUp 0.6s 0.5s ease both; }
-  .hero-colleges span { font-size: 0.72rem; font-weight: 500; color: var(--ink3); letter-spacing: 0.04em; text-transform: uppercase; }
-  .college-pill { background: rgba(255,255,255,0.75); border: 0.5px solid rgba(255,255,255,0.9); border-radius: 100px; padding: 0.25rem 0.75rem; font-size: 0.72rem; font-weight: 600; color: var(--ink2); backdrop-filter: blur(8px); transition: all 0.2s; cursor: default; }
-  .college-pill:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-
   @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-
   .success-msg { display: none; padding: 0.6rem 1.2rem; background: rgba(42,107,74,0.15); border: 0.5px solid rgba(42,107,74,0.3); border-radius: 100px; color: #2a6b4a; font-size: 0.82rem; font-weight: 500; margin: 0 auto; max-width: 360px; text-align: center; }
 
   /* COUNTDOWN */
   .countdown-section { background: var(--ink); padding: 5rem 2rem; text-align: center; position: relative; overflow: hidden; }
   .countdown-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 60% at 20% 50%, rgba(200,75,47,0.15) 0%, transparent 60%), radial-gradient(ellipse 60% 60% at 80% 50%, rgba(30,79,140,0.15) 0%, transparent 60%); }
-  .countdown-inner { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+  .countdown-inner { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; width: 100%; }
   .countdown-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent2); margin-bottom: 1rem; }
   .countdown-title { font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--paper); margin-bottom: 0.5rem; }
   .countdown-title em { font-style: italic; color: var(--accent2); }
@@ -168,19 +151,10 @@
   .launch-bar-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 1s ease; }
   .launch-bar-label { font-size: 0.7rem; color: rgba(245,242,235,0.3); margin-top: 0.75rem; }
 
-  /* TICKER & PULSE */
-  .ticker-section { padding: 2rem 0; overflow: hidden; background: var(--ink); }
-  .ticker-wrap { display: flex; }
-  .ticker-track { display: flex; gap: 1.5rem; align-items: center; animation: ticker 25s linear infinite; white-space: nowrap; padding-right: 1.5rem; }
-  .ticker-track2 { animation-delay: -12.5s; }
-  @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-  .ticker-item { font-family: var(--serif); font-size: 1.1rem; color: rgba(245,242,235,0.4); font-style: italic; flex-shrink: 0; }
-  .ticker-item.hi { color: rgba(245,242,235,0.9); }
-  .ticker-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(245,242,235,0.2); flex-shrink: 0; }
-  
+  /* PULSE */
   .pulse-section { padding: 3rem 2rem; background: var(--paper); border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); overflow: hidden; }
-  .pulse-inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
-  .pulse-left { flex: 1; min-width: 200px; }
+  .pulse-inner { max-width: 900px; width: 100%; margin: 0 auto; display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; justify-content: center; }
+  .pulse-left { flex: 1; min-width: 200px; text-align: left; }
   .pulse-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 0.25rem; }
   .pulse-num { font-family: var(--serif); font-size: clamp(3rem, 6vw, 4.5rem); color: var(--ink); line-height: 1; letter-spacing: -0.04em; }
   .pulse-num span { color: var(--accent); }
@@ -202,7 +176,7 @@
 
   /* ROLL CALL */
   .rollcall-section { padding: 5rem 2rem; background: var(--paper); position: relative; overflow: hidden; }
-  .rollcall-inner { max-width: 1100px; margin: 0 auto; }
+  .rollcall-inner { max-width: 1100px; width: 100%; margin: 0 auto; }
   .rollcall-head { text-align: center; margin-bottom: 3rem; }
   .rollcall-head p { font-size: 1rem; color: var(--ink2); max-width: 480px; margin: 0.75rem auto 0; line-height: 1.6; }
   .rollcall-counter { display: inline-flex; align-items: center; gap: 0.75rem; background: rgba(200,75,47,0.1); border: 0.5px solid rgba(200,75,47,0.2); border-radius: 100px; padding: 0.4rem 1rem; font-size: 0.8rem; font-weight: 600; color: var(--accent); margin-top: 1rem; }
@@ -221,14 +195,39 @@
   .tile-check { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--tile-color, var(--accent)); display: none; align-items: center; justify-content: center; font-size: 0.65rem; color: white; animation: checkPop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
   .college-tile.claimed .tile-check { display: flex; }
   @keyframes checkPop { from{transform:scale(0)} to{transform:scale(1)} }
-  .rollcall-cta { text-align: center; margin-top: 2rem; font-size: 0.82rem; color: var(--ink3); }
-  .rollcall-cta strong { color: var(--ink); }
+
+  /* FEATURES - ALIGNMENT FIXED */
+  .features { background: var(--cream); }
+  .features-inner { max-width: 1100px; width: 100%; margin: 0 auto; }
+  .features-head { text-align: center; margin-bottom: 3.5rem; }
+  .features-head p { font-size: 1.05rem; color: var(--ink2); max-width: 480px; margin: 0 auto; line-height: 1.6; }
+  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5px; background: var(--border); border: 0.5px solid var(--border); border-radius: 20px; overflow: hidden; }
+  
+  /* Flex modifications for equal height and bottom-aligned tags */
+  .feature-card { 
+    background: var(--cream); 
+    padding: 2.5rem 2rem; 
+    transition: background 0.2s; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-start; 
+  }
+  .feature-card:hover { background: var(--paper); }
+  .feat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 1.25rem; }
+  .feat-title { font-size: 1.1rem; font-weight: 600; color: var(--ink); margin-bottom: 0.5rem; }
+  .feat-desc { font-size: 0.88rem; color: var(--ink2); line-height: 1.6; margin-bottom: 1.5rem; }
+  .feat-tag { 
+    display: inline-block; 
+    margin-top: auto; /* Anchors the tag to the bottom */
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em; 
+    padding: 0.2rem 0.6rem; border-radius: 100px; text-transform: uppercase; 
+  }
 
   /* ECHO WALL */
   .echo-section { padding: 5rem 0 0; position: relative; overflow: hidden; min-height: 800px; background-color: #8c2a1c; }
   .echo-wall-bg { position: absolute; inset: 0; z-index: 0; background-color: #9b2c20; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40' viewBox='0 0 120 40'%3E%3Crect width='120' height='40' fill='%239b2c20'/%3E%3Cpath d='M0 19h120v2H0zM59 0v19h2V0zM119 21v19h2V21zM-1 21v19h2V21z' fill='%23c8bdae' fill-opacity='0.7'/%3E%3Cpath d='M0 21h120v1H0zM61 0v19h1V0zM121 21v19h1V21zM1 21v19h1V21z' fill='%23000000' fill-opacity='0.2'/%3E%3C/svg%3E"); opacity: 1; }
   .echo-section::after { content: ''; position: absolute; inset: 0; z-index: 1; background: radial-gradient(circle at 50% 30%, transparent 30%, rgba(0,0,0,0.8) 130%); pointer-events: none; }
-  .echo-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; padding: 0 2rem; }
+  .echo-inner { max-width: 1200px; width: 100%; margin: 0 auto; position: relative; z-index: 2; padding: 0 2rem; }
   .echo-head { padding-top: 5rem; margin-bottom: 2rem; text-align: center; }
   .echo-head .section-label { color: var(--paper); background: rgba(0,0,0,0.4); padding: 6px 16px; border-radius: 100px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1); }
   .echo-head .section-label::before { display: none; }
@@ -277,7 +276,7 @@
   .wl-btn:hover { background: rgba(0,0,0,0.08); transform: scale(1.05); }
 
   /* GENERAL */
-  section { padding: 5rem 2rem; }
+  section { padding: 5rem 2rem; width: 100%; box-sizing: border-box; }
   .section-label { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
   .section-label::before { content: ''; width: 20px; height: 1.5px; background: var(--accent); }
   h2 { font-family: var(--serif); font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.1; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 1rem; }
@@ -315,6 +314,7 @@
     nav { padding: 0 1.25rem; }
     .nav-links { display: none; }
     .cd-unit { padding: 1rem 1.2rem; min-width: 80px; }
+    .pulse-left { text-align: center; } /* Center text on mobile */
   }
 
   /* =========================================
@@ -345,6 +345,15 @@
     100% { transform: scale(1) translate(0, 0); opacity: 0.6; filter: blur(40px); }
   }
   .pulse-orb { animation: pulseOrb 6s ease-in-out infinite; }
+
+  /* DEMO MODAL INPUTS */
+  .demo-input {
+    width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); 
+    border-radius: 8px; padding: 12px; color: #fff; font-family: var(--sans); font-size: 0.9rem; 
+    outline: none; margin-bottom: 12px; box-sizing: border-box;
+  }
+  .demo-input::placeholder { color: rgba(255,255,255,0.4); }
+  .demo-input:focus { border-color: var(--accent2); background: rgba(255,255,255,0.15); }
 
 </style>
 </head>
@@ -430,7 +439,7 @@
     <div class="rollcall-head">
       <div class="section-label">College roll call</div>
       <h2>Is your college <em>in?</em></h2>
-      <p>Only verified students can view and share their college's pass. Join the waitlist above to unlock yours.</p>
+      <p>Click your college tile to mark your attendance. Verify your email to officially unlock your pass.</p>
       <div class="rollcall-counter">
         <span>🏫</span>
         <span id="colleges-claimed">0</span> colleges represented
@@ -459,6 +468,7 @@
     </div>
   </div>
 </section>
+
 <section class="echo-section" id="echo" style="display: none;">
   <div class="echo-wall-bg"></div>
   <div class="echo-inner">
@@ -607,6 +617,7 @@ let hasUnlockedWall = false;
 window.liveEchoes = [];
 window.isAdmin = false;
 window.userVerifiedCollege = null; // Tracks their exclusive access
+window.userFullName = "YOUR NAME"; 
 
 COLLEGES.forEach(c => { collegeCounts[c.id] = c.seed; });
 
@@ -699,13 +710,14 @@ function joinWaitlist(source) {
   
   let matchedCollege = COLLEGES.find(c => c.domains && c.domains.includes(abbr)) || COLLEGES.find(c => c.id === 'Other');
   window.userVerifiedCollege = matchedCollege; // Lock them to this college
+  window.userFullName = "A STUDENT"; // Default if joined via bottom hero without modal inputs
 
   try {
     window.addDoc(window.collection(window.db, "waitlist"), { email: email, timestamp: new Date().toISOString() });
   } catch(e) { console.log(e); }
 
-  document.getElementById(source === 'hero' ? 'hero-form' : 'waitlist-form').style.display = 'none';
-  document.getElementById(source === 'hero' ? 'hero-success' : 'waitlist-success').style.display = 'block';
+  document.querySelectorAll('.hero-form, .waitlist-form').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.success-msg').forEach(el => el.style.display = 'block');
 
   // Automatically trigger their specific college claim
   const tileEl = document.getElementById('tile-' + matchedCollege.id);
@@ -714,7 +726,7 @@ function joinWaitlist(source) {
   // Smooth scroll to the grid and wait slightly before opening the modal
   document.getElementById('rollcall').scrollIntoView({ behavior: 'smooth' });
   setTimeout(() => {
-    openShareModal(matchedCollege);
+    openShareModal(matchedCollege, false, window.userFullName);
   }, 800);
 
   if (!hasUnlockedWall) {
@@ -813,20 +825,17 @@ function renderCollegeGrid() {
 }
 
 function claimCollege(id, tile, c, isAutoClaim = false) {
-  // If user tries to click a tile manually before verifying
   if (!window.userVerifiedCollege && !isAutoClaim) {
-    alert("Verify your college email first to unlock your college's pass.");
-    document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth' });
+    // Show demo card if not verified yet
+    openShareModal(c, true, "YOUR NAME");
     return;
   }
 
-  // If user is verified but clicks a different college
   if (window.userVerifiedCollege && window.userVerifiedCollege.id !== id && !isAutoClaim) {
     alert(`You are verified as a student of ${window.userVerifiedCollege.name}. You can only view your own college's pass.`);
     return;
   }
 
-  // Update counts visually (only happens once per college clicked/auto-claimed)
   if (!claimedColleges.has(id)) {
     claimedColleges.add(id); collegeCounts[id]++;
     if (tile) {
@@ -838,9 +847,8 @@ function claimCollege(id, tile, c, isAutoClaim = false) {
     document.getElementById('pulse-count').textContent = waitlistCount;
   }
   
-  // If they manually click their *own* verified tile again, let them see the modal
   if (!isAutoClaim && window.userVerifiedCollege && window.userVerifiedCollege.id === id) {
-    openShareModal(c);
+    openShareModal(c, false, window.userFullName);
   }
 }
 renderCollegeGrid();
@@ -870,7 +878,7 @@ updatePulseBar();
   <div style="display:flex;gap:3rem;align-items:center;flex-wrap:wrap;justify-content:center;max-width:900px;width:100%;">
 
     <div style="flex-shrink:0;">
-      <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+      <div id="sc-pass-label" style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
         color:rgba(255,255,255,0.5);margin-bottom:0.8rem;text-align:center;">Your Verified Pass</div>
 
       <div id="share-card" style="
@@ -900,17 +908,22 @@ updatePulseBar();
             </div>
           </div>
 
-          <div style="text-align:center; display:flex; flex-direction:column; align-items:center; margin-top: -20px;">
+          <div style="text-align:center; display:flex; flex-direction:column; align-items:center;">
             
-            <div id="sc-college" class="shimmer-text" style="font-size:3.2rem;line-height:1.05;
+            <div id="sc-user-name" style="font-size:0.8rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.9);font-family:'DM Sans',sans-serif;margin-bottom:8px;">
+              YOUR NAME
+            </div>
+
+            <div class="shimmer-text" style="font-size:2.8rem;line-height:1.05;
               letter-spacing:-0.03em; margin-bottom:12px; margin-left:-10px; margin-right:-10px;">
-              Hindu College
+              <span style="font-style:italic; font-size: 2.2rem; color:rgba(255,255,255,0.8);">joined</span><br>
+              <span id="sc-college">Hindu College</span>
             </div>
 
             <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;
               text-transform:uppercase;color:rgba(255,255,255,0.9);
               font-family:'DM Sans',sans-serif;margin-bottom:6px;">
-              Network ~ Create ~ Grow
+              Network • Create • Grow
             </div>
 
             <div style="font-size:0.75rem;font-weight:500;
@@ -941,10 +954,31 @@ updatePulseBar();
       </div>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:14px;min-width:260px;max-width:320px;flex:1;">
+    <div id="modal-demo-state" style="display:flex;flex-direction:column;min-width:260px;max-width:320px;flex:1;">
+      <div style="font-family:'Instrument Serif',serif;font-size:2.2rem;color:#fff;line-height:1.1;margin-bottom:10px;">
+        Unlock your pass
+      </div>
+      <p style="font-size:0.85rem;color:rgba(255,255,255,0.6);font-family:'DM Sans',sans-serif;line-height:1.55;margin-bottom:20px;">
+        Verify your DU email to claim your personalized card and officially mark your attendance.
+      </p>
       
+      <div style="display:flex; gap:10px;">
+        <input type="text" id="demo-fname" class="demo-input" placeholder="First Name" />
+        <input type="text" id="demo-lname" class="demo-input" placeholder="Last Initial" maxlength="1" style="width:100px;" />
+      </div>
+      <input type="email" id="demo-email" class="demo-input" placeholder="your@college.du.ac.in" />
+      
+      <button onclick="verifyFromModal()"
+        style="background:var(--accent);color:#fff;border:none;border-radius:12px;
+          padding:16px 20px;font-family:'DM Sans',sans-serif;font-size:1rem; font-weight:700;cursor:pointer;
+          box-shadow:0 8px 20px rgba(200,75,47,0.3);width:100%;transition:transform 0.2s; margin-top: 10px;">
+        Verify & Get Card
+      </button>
+    </div>
+
+    <div id="modal-share-state" style="display:none;flex-direction:column;gap:14px;min-width:260px;max-width:320px;flex:1;">
      <div>
-        <div style="font-family:'Instrument Serif',serif;font-size:1.8rem;color:#fff;
+        <div style="font-family:'Instrument Serif',serif;font-size:2.2rem;color:#fff;
           line-height:1.1;margin-bottom:6px;">
           Spread the<br><em style="color:#e8a020;">unrest</em>
         </div>
@@ -982,14 +1016,26 @@ updatePulseBar();
 
 <script>
 (function() {
-  window.openShareModal = function(college) {
+  window.openShareModal = function(college, isDemo = false, userName = "YOUR NAME") {
     const modal = document.getElementById('share-modal');
     const card  = document.getElementById('share-card');
     
-    // Apply dynamic 2D colors and accurate desc text
+    // Setup card aesthetics
     card.style.background = `linear-gradient(145deg, ${college.color} 20%, #111 120%)`;
+    document.getElementById('sc-user-name').textContent = userName;
     document.getElementById('sc-college').textContent = college.name;
     document.getElementById('sc-desc').textContent = college.desc;
+
+    // Toggle states
+    if (isDemo) {
+      document.getElementById('modal-demo-state').style.display = 'flex';
+      document.getElementById('modal-share-state').style.display = 'none';
+      document.getElementById('sc-pass-label').textContent = "Demo Pass";
+    } else {
+      document.getElementById('modal-demo-state').style.display = 'none';
+      document.getElementById('modal-share-state').style.display = 'flex';
+      document.getElementById('sc-pass-label').textContent = "Your Verified Pass";
+    }
 
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -998,6 +1044,64 @@ updatePulseBar();
   window.closeShareModal = function() {
     document.getElementById('share-modal').style.display = 'none';
     document.body.style.overflow = '';
+  };
+
+  window.verifyFromModal = function() {
+    const fname = document.getElementById('demo-fname').value.trim();
+    const lname = document.getElementById('demo-lname').value.trim();
+    const emailEl = document.getElementById('demo-email');
+    const email = emailEl.value.trim().toLowerCase();
+
+    if (!fname || !email || !email.includes('@')) {
+      alert("Please fill your first name and a valid email.");
+      return;
+    }
+
+    if (!email.endsWith('.du.ac.in') && !window.isAdmin) {
+      alert("Access Denied: Unrest is exclusively for verified Delhi University students.");
+      return;
+    }
+
+    // Format Name: "Rahul K."
+    const formattedName = lname ? `${fname} ${lname}.` : fname;
+    window.userFullName = formattedName;
+
+    // Route to actual college
+    const domainPart = email.split('@')[1]; 
+    const abbr = domainPart.split('.')[0]; 
+    let matchedCollege = COLLEGES.find(c => c.domains && c.domains.includes(abbr)) || COLLEGES.find(c => c.id === 'Other');
+    window.userVerifiedCollege = matchedCollege;
+
+    try {
+      window.addDoc(window.collection(window.db, "waitlist"), { email: email, name: formattedName, timestamp: new Date().toISOString() });
+    } catch(e) { console.log(e); }
+
+    // Hide background forms globally
+    document.querySelectorAll('.hero-form, .waitlist-form').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.success-msg').forEach(el => el.style.display = 'block');
+
+    // Trigger visual claim
+    waitlistCount++;
+    document.getElementById('pulse-count').textContent = waitlistCount;
+    document.getElementById('hero-live-count').textContent = waitlistCount;
+    spawnConfetti(matchedCollege.color);
+    
+    const tileEl = document.getElementById('tile-' + matchedCollege.id);
+    if (!claimedColleges.has(matchedCollege.id)) {
+      claimedColleges.add(matchedCollege.id); collegeCounts[matchedCollege.id]++;
+      if (tileEl) {
+        tileEl.classList.add('claimed');
+        tileEl.querySelector('.tile-count').innerHTML = `<div class="tile-count-dot"></div>${collegeCounts[matchedCollege.id]} here`;
+      }
+    }
+
+    if (!hasUnlockedWall) {
+      hasUnlockedWall = true;
+      document.getElementById('echo').style.display = 'block';
+    }
+
+    // Instantly swap the modal view to verified state
+    openShareModal(matchedCollege, false, formattedName);
   };
 
   window.shareWhatsApp = function() {
