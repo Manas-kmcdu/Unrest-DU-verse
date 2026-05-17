@@ -139,8 +139,6 @@
   .hero-form button:hover, .waitlist-form button:hover { background: var(--accent); transform: scale(1.02); }
   .hero-form button:active, .waitlist-form button:active { transform: scale(0.98); }
 
-  .hero-note { font-size: 0.75rem; color: var(--ink3); animation: fadeUp 0.6s 0.4s ease both; }
-
   .hero-colleges { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; justify-content: center; margin-top: 2.5rem; animation: fadeUp 0.6s 0.5s ease both; }
   .hero-colleges span { font-size: 0.72rem; font-weight: 500; color: var(--ink3); letter-spacing: 0.04em; text-transform: uppercase; }
   .college-pill { background: rgba(255,255,255,0.75); border: 0.5px solid rgba(255,255,255,0.9); border-radius: 100px; padding: 0.25rem 0.75rem; font-size: 0.72rem; font-weight: 600; color: var(--ink2); backdrop-filter: blur(8px); transition: all 0.2s; cursor: default; }
@@ -179,6 +177,7 @@
   .ticker-item { font-family: var(--serif); font-size: 1.1rem; color: rgba(245,242,235,0.4); font-style: italic; flex-shrink: 0; }
   .ticker-item.hi { color: rgba(245,242,235,0.9); }
   .ticker-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(245,242,235,0.2); flex-shrink: 0; }
+  
   .pulse-section { padding: 3rem 2rem; background: var(--paper); border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); overflow: hidden; }
   .pulse-inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
   .pulse-left { flex: 1; min-width: 200px; }
@@ -248,6 +247,19 @@
   .echo-submit:hover { background: var(--accent); transform: scale(1.02); }
   .echo-pending-msg { display: none; align-items: center; justify-content: center; gap: 8px; margin-top: 1rem; padding: 0.8rem; background: rgba(232,160,32,0.15); border: 1px solid rgba(232,160,32,0.3); border-radius: 10px; font-size: 0.85rem; font-weight: 500; color: #a67216; }
   
+  /* ADMIN MOD QUEUE STYLES */
+  .mod-queue-wrap { background: #fff; border: 2px solid var(--accent); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; display: none; box-shadow: 0 20px 50px rgba(0,0,0,0.4); position: relative; z-index: 10; }
+  .mod-item { display: flex; align-items: center; gap: 12px; background: var(--paper); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 8px; }
+  .mod-info { flex: 1; }
+  .mod-info-college { font-size: 0.7rem; font-weight: 700; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .mod-info-text { font-size: 0.9rem; color: var(--ink); font-weight: 500; }
+  .mod-actions { display: flex; gap: 8px; }
+  .mod-actions button { padding: 6px 12px; border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: var(--sans); }
+  .btn-approve { background: #dcfce7; color: #166534; }
+  .btn-approve:hover { background: #bbf7d0; }
+  .btn-reject { background: #fee2e2; color: #991b1b; }
+  .btn-reject:hover { background: #fecaca; }
+
   .echo-wall { column-count: 4; column-gap: 1rem; padding-top: 1rem; padding-bottom: 5rem; }
   @media (max-width: 1024px) { .echo-wall { column-count: 3; } }
   @media (max-width: 768px) { .echo-wall { column-count: 2; } }
@@ -284,6 +296,17 @@
   footer .foot-logo { font-family: var(--serif); font-size: 1.2rem; color: var(--paper); }
   footer .foot-logo span { color: var(--accent); font-style: italic; }
   footer p { font-size: 0.78rem; color: rgba(245,242,235,0.3); }
+  footer nav { position: static; border: none; background: none; height: auto; padding: 0; }
+  footer nav a { font-size: 0.78rem; color: rgba(245,242,235,0.4); text-decoration: none; cursor: pointer; }
+  footer nav a:hover { color: var(--paper); }
+
+  /* ADMIN MODAL */
+  .admin-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+  .admin-box { background: var(--paper); padding: 2rem; border-radius: 16px; width: 100%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); position: relative; }
+  .admin-box h3 { margin-bottom: 1rem; font-family: var(--serif); color: var(--ink); font-size: 1.8rem; }
+  .admin-input { width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border); border-radius: 8px; font-family: var(--sans); }
+  .admin-btn { width: 100%; padding: 0.8rem; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+  .admin-close { position: absolute; top: 1rem; right: 1rem; color: var(--ink); font-size: 1.2rem; cursor: pointer; }
 
   @media (max-width: 900px) {
     .college-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
@@ -322,14 +345,6 @@
     100% { transform: scale(1) translate(0, 0); opacity: 0.6; filter: blur(40px); }
   }
   .pulse-orb { animation: pulseOrb 6s ease-in-out infinite; }
-
-  @keyframes float2D {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-8px) rotate(1deg); }
-  }
-  .float-2d { animation: float2D 4s ease-in-out infinite; }
-  .float-2d-delay { animation: float2D 4.5s ease-in-out infinite; animation-delay: 1s; }
-  .float-2d-fast { animation: float2D 3.5s ease-in-out infinite; animation-delay: 0.5s; }
 
 </style>
 </head>
@@ -408,7 +423,7 @@
     <div class="rollcall-head">
       <div class="section-label">College roll call</div>
       <h2>Is your college <em>in?</em></h2>
-      <p>Click your college tile to mark your attendance. Show the Unrest team which colleges want it most.</p>
+      <p>Only verified students can view and share their college's pass. Join the waitlist above to unlock yours.</p>
       <div class="rollcall-counter">
         <span>🏫</span>
         <span id="colleges-claimed">0</span> colleges represented
@@ -442,6 +457,18 @@
           <input class="echo-input echo-input-large" id="echo-text" type="text" placeholder="Start your journey with your first echo!" maxlength="120">
           <button class="echo-submit" onclick="submitEcho()">Post echo →</button>
         </div>
+        <div class="echo-pending-msg" id="echo-pending-msg">
+          ⏳ Your echo has been sent to moderators for review. It will appear on the wall soon!
+        </div>
+
+        <div id="admin-panel" class="mod-queue-wrap">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-family: var(--serif); color: var(--accent); margin:0;">Admin Mod Queue</h3>
+            <span style="font-size: 0.8rem; background: var(--accent); color: white; padding: 2px 8px; border-radius: 100px;" id="mod-count">0 Pending</span>
+          </div>
+          <div id="mod-items-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+
       </div>
       <div class="echo-wall" id="echo-wall"></div>
     </div>
@@ -451,14 +478,29 @@
 <footer>
   <div class="foot-logo">Un<span>rest</span></div>
   <p>© 2026 Unrest · Built by a DU student, for DU students</p>
+  <nav style="display:flex;gap:1.5rem">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a onclick="document.getElementById('admin-modal').style.display='flex'">Admin Login</a>
+  </nav>
 </footer>
+
+<div class="admin-modal" id="admin-modal">
+  <div class="admin-box">
+    <div class="admin-close" onclick="document.getElementById('admin-modal').style.display='none'">✕</div>
+    <h3>Admin Login</h3>
+    <input type="email" id="admin-email" class="admin-input" placeholder="Admin Email">
+    <input type="password" id="admin-pass" class="admin-input" placeholder="Password">
+    <button class="admin-btn" onclick="adminLogin()">Login to Moderate</button>
+  </div>
+</div>
 
 <div class="confetti-container" id="confetti-container"></div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, query, where, onSnapshot, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc, query, where, onSnapshot, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDBJ0hHjVyEnwg7mV7ECeG163K7fs1fsiE",
@@ -473,10 +515,12 @@
   const app = initializeApp(firebaseConfig);
   window.db = getFirestore(app);
   window.auth = getAuth(app);
+  window.signInWithEmailAndPassword = signInWithEmailAndPassword;
   window.collection = collection; window.addDoc = addDoc; 
   window.query = query; window.where = where; window.onSnapshot = onSnapshot;
-  window.updateDoc = updateDoc; window.doc = doc;
+  window.updateDoc = updateDoc; window.doc = doc; window.deleteDoc = deleteDoc;
 
+  // Load public approved echoes
   const q = query(collection(window.db, "echoes"), where("status", "==", "approved"));
   onSnapshot(q, (snapshot) => {
     window.liveEchoes = [];
@@ -489,44 +533,44 @@
 </script>
 
 <script>
-// --- FULL DU COLLEGE DATABASE (With accurate Colors & Emojis) ---
+// --- FULL DU COLLEGE DATABASE WITH DOMAIN MATCHING ---
 const COLLEGES = [
   // North Campus
-  { id:'stephens', name:"St. Stephen's College", emoji:'⛪', color:'#5d4037', seed:38 },
-  { id:'hindu', name:'Hindu College', emoji:'🎓', color:'#1e4f8c', seed:43 },
-  { id:'ramjas', name:'Ramjas College', emoji:'📚', color:'#2e7d32', seed:22 },
-  { id:'ipcw', name:'IP College for Women', emoji:'🕊️', color:'#00838f', seed:17 },
-  { id:'srcc', name:'SRCC', emoji:'🏛️', color:'#c84b2f', seed:58 },
-  { id:'miranda', name:'Miranda House', emoji:'🌸', color:'#9c27b0', seed:47 },
-  { id:'hansraj', name:'Hansraj College', emoji:'🌟', color:'#0097a7', seed:29 },
-  { id:'sgtb', name:'SGTB Khalsa College', emoji:'⚔️', color:'#f57c00', seed:24 },
-  { id:'kirorimal', name:'Kirori Mal College', emoji:'🏗️', color:'#e65100', seed:26 },
-  { id:'drc', name:'Daulat Ram College', emoji:'📖', color:'#d81b60', seed:21 },
+  { id:'stephens', name:"St. Stephen's College", desc:"Established in 1881. Joined Unrest in 2026.", emoji:'⛪', color:'#5d4037', seed:38, domains:['ststephens', 'stephens'] },
+  { id:'hindu', name:'Hindu College', desc:"Established in 1899. Joined Unrest in 2026.", emoji:'🎓', color:'#1e4f8c', seed:43, domains:['hindu'] },
+  { id:'ramjas', name:'Ramjas College', desc:"Established in 1917. Joined Unrest in 2026.", emoji:'📚', color:'#2e7d32', seed:22, domains:['ramjas'] },
+  { id:'ipcw', name:'IP College for Women', desc:"Established in 1924. Joined Unrest in 2026.", emoji:'🕊️', color:'#00838f', seed:17, domains:['ipcollege', 'ipcw'] },
+  { id:'srcc', name:'SRCC', desc:"Established in 1926. Joined Unrest in 2026.", emoji:'🏛️', color:'#c84b2f', seed:58, domains:['srcc'] },
+  { id:'miranda', name:'Miranda House', desc:"Established in 1948. Joined Unrest in 2026.", emoji:'🌸', color:'#9c27b0', seed:47, domains:['mirandahouse', 'miranda'] },
+  { id:'hansraj', name:'Hansraj College', desc:"Established in 1948. Joined Unrest in 2026.", emoji:'🌟', color:'#0097a7', seed:29, domains:['hansraj'] },
+  { id:'sgtb', name:'SGTB Khalsa College', desc:"Established in 1951. Joined Unrest in 2026.", emoji:'⚔️', color:'#f57c00', seed:24, domains:['sgtbkhalsa', 'sgtb'] },
+  { id:'kirorimal', name:'Kirori Mal College', desc:"Established in 1954. Joined Unrest in 2026.", emoji:'🏗️', color:'#e65100', seed:26, domains:['kmc', 'kirorimal'] },
+  { id:'drc', name:'Daulat Ram College', desc:"Established in 1960. Joined Unrest in 2026.", emoji:'📖', color:'#d81b60', seed:21, domains:['dr', 'drc', 'daulatram'] },
   // South Campus
-  { id:'lsr', name:'Lady Shri Ram College', emoji:'🎀', color:'#7b1fa2', seed:35 },
-  { id:'venky', name:'Sri Venkateswara College', emoji:'🦅', color:'#6d4c41', seed:32 },
-  { id:'kamala', name:'Kamala Nehru College', emoji:'🌿', color:'#8e24aa', seed:15 },
-  { id:'motilal', name:'Motilal Nehru College', emoji:'🎯', color:'#1565c0', seed:14 },
-  { id:'gargi', name:'Gargi College', emoji:'🌺', color:'#c2185b', seed:19 },
-  { id:'maitreyi', name:'Maitreyi College', emoji:'✨', color:'#0277bd', seed:13 },
-  { id:'sbsc', name:'Shaheed Bhagat Singh', emoji:'🦁', color:'#d32f2f', seed:28 },
-  { id:'jmc', name:'Jesus and Mary College', emoji:'⛪', color:'#4a148c', seed:24 },
-  { id:'cvs', name:'College of Vocational Studies', emoji:'💼', color:'#00695c', seed:18 },
-  { id:'aurobindo', name:'Sri Aurobindo College', emoji:'🌅', color:'#ef6c00', seed:12 },
-  { id:'dcac', name:'DCAC', emoji:'🎨', color:'#283593', seed:20 },
+  { id:'lsr', name:'Lady Shri Ram College', desc:"Established in 1956. Joined Unrest in 2026.", emoji:'🎀', color:'#7b1fa2', seed:35, domains:['lsr'] },
+  { id:'venky', name:'Sri Venkateswara College', desc:"Established in 1961. Joined Unrest in 2026.", emoji:'🦅', color:'#6d4c41', seed:32, domains:['svc', 'venky'] },
+  { id:'kamala', name:'Kamala Nehru College', desc:"Established in 1964. Joined Unrest in 2026.", emoji:'🌿', color:'#8e24aa', seed:15, domains:['knc', 'kamalanehru'] },
+  { id:'motilal', name:'Motilal Nehru College', desc:"Established in 1964. Joined Unrest in 2026.", emoji:'🎯', color:'#1565c0', seed:14, domains:['mlnc', 'motilal'] },
+  { id:'gargi', name:'Gargi College', desc:"Established in 1967. Joined Unrest in 2026.", emoji:'🌺', color:'#c2185b', seed:19, domains:['gargi'] },
+  { id:'maitreyi', name:'Maitreyi College', desc:"Established in 1967. Joined Unrest in 2026.", emoji:'✨', color:'#0277bd', seed:13, domains:['maitreyi'] },
+  { id:'sbsc', name:'Shaheed Bhagat Singh', desc:"Established in 1967. Joined Unrest in 2026.", emoji:'🦁', color:'#d32f2f', seed:28, domains:['sbsc'] },
+  { id:'jmc', name:'Jesus and Mary College', desc:"Established in 1968. Joined Unrest in 2026.", emoji:'⛪', color:'#4a148c', seed:24, domains:['jmc'] },
+  { id:'cvs', name:'College of Vocational Studies', desc:"Established in 1972. Joined Unrest in 2026.", emoji:'💼', color:'#00695c', seed:18, domains:['cvs'] },
+  { id:'aurobindo', name:'Sri Aurobindo College', desc:"Established in 1972. Joined Unrest in 2026.", emoji:'🌅', color:'#ef6c00', seed:12, domains:['aurobindo'] },
+  { id:'dcac', name:'DCAC', desc:"Established in 1987. Joined Unrest in 2026.", emoji:'🎨', color:'#283593', seed:20, domains:['dcac'] },
   // Off-Campus / Others
-  { id:'zakir', name:'Zakir Husain Delhi College', emoji:'🕌', color:'#00695c', seed:9 },
-  { id:'deshbandhu', name:'Deshbandhu College', emoji:'🌱', color:'#558b2f', seed:8 },
-  { id:'dyalsingh', name:'Dyal Singh College', emoji:'🏫', color:'#455a64', seed:14 },
-  { id:'shivaji', name:'Shivaji College', emoji:'🛡️', color:'#fbc02d', seed:11 },
-  { id:'satyawati', name:'Satyawati College', emoji:'🌳', color:'#2e7d32', seed:7 },
-  { id:'sggscc', name:'SGGSCC', emoji:'🚗', color:'#1565c0', seed:23 },
-  { id:'sscbs', name:'SSCBS', emoji:'👔', color:'#37474f', seed:25 },
-  { id:'dduc', name:'Deen Dayal Upadhyaya', emoji:'📘', color:'#0277bd', seed:16 },
-  { id:'keshav', name:'Keshav Mahavidyalaya', emoji:'💎', color:'#ad1457', seed:10 },
-  { id:'agrasen', name:'Maharaja Agrasen College', emoji:'👑', color:'#c62828', seed:8 },
-  { id:'ramanujan', name:'Ramanujan College', emoji:'📐', color:'#00838f', seed:15 },
-  { id:'Other', name:'Other DU College', emoji:'🏫', color:'#455a64', seed:0 }
+  { id:'zakir', name:'Zakir Husain Delhi College', desc:"Established in 1792. Joined Unrest in 2026.", emoji:'🕌', color:'#00695c', seed:9, domains:['zakirhusain', 'zhdc'] },
+  { id:'deshbandhu', name:'Deshbandhu College', desc:"Established in 1952. Joined Unrest in 2026.", emoji:'🌱', color:'#558b2f', seed:8, domains:['deshbandhu'] },
+  { id:'dyalsingh', name:'Dyal Singh College', desc:"Established in 1959. Joined Unrest in 2026.", emoji:'🏫', color:'#455a64', seed:14, domains:['dyalsingh', 'dsc'] },
+  { id:'shivaji', name:'Shivaji College', desc:"Established in 1961. Joined Unrest in 2026.", emoji:'🛡️', color:'#fbc02d', seed:11, domains:['shivaji'] },
+  { id:'satyawati', name:'Satyawati College', desc:"Established in 1972. Joined Unrest in 2026.", emoji:'🌳', color:'#2e7d32', seed:7, domains:['satyawati'] },
+  { id:'sggscc', name:'SGGSCC', desc:"Established in 1984. Joined Unrest in 2026.", emoji:'🚗', color:'#1565c0', seed:23, domains:['sggscc'] },
+  { id:'sscbs', name:'SSCBS', desc:"Established in 1987. Joined Unrest in 2026.", emoji:'👔', color:'#37474f', seed:25, domains:['sscbs', 'cbs'] },
+  { id:'dduc', name:'Deen Dayal Upadhyaya', desc:"Established in 1990. Joined Unrest in 2026.", emoji:'📘', color:'#0277bd', seed:16, domains:['dduc'] },
+  { id:'keshav', name:'Keshav Mahavidyalaya', desc:"Established in 1994. Joined Unrest in 2026.", emoji:'💎', color:'#ad1457', seed:10, domains:['kmv', 'keshav'] },
+  { id:'agrasen', name:'Maharaja Agrasen College', desc:"Established in 1994. Joined Unrest in 2026.", emoji:'👑', color:'#c62828', seed:8, domains:['mac'] },
+  { id:'ramanujan', name:'Ramanujan College', desc:"Established in 2010. Joined Unrest in 2026.", emoji:'📐', color:'#00838f', seed:15, domains:['ramanujan'] },
+  { id:'Other', name:'Other DU College', desc:"Delhi University. Joined Unrest in 2026.", emoji:'🏫', color:'#455a64', seed:0, domains:[] }
 ];
 
 const COLLEGE_COLORS = {};
@@ -537,9 +581,11 @@ let claimedColleges = new Set();
 let waitlistCount = 247;
 let hasUnlockedWall = false;
 window.liveEchoes = [];
+window.isAdmin = false;
+window.userVerifiedCollege = null; // Tracks their exclusive access
+
 COLLEGES.forEach(c => { collegeCounts[c.id] = c.seed; });
 
-// Populate Dropdown
 window.onload = () => {
   const sel = document.getElementById('echo-college');
   if(sel) {
@@ -555,10 +601,80 @@ function scrollToEchoWall() {
   else { echoSec.scrollIntoView({ behavior: 'smooth' }); }
 }
 
+// --- ADMIN LOGIN & MODERATION ---
+async function adminLogin() {
+  const email = document.getElementById('admin-email').value;
+  const pass = document.getElementById('admin-pass').value;
+  
+  try {
+    await window.signInWithEmailAndPassword(window.auth, email, pass);
+    document.getElementById('admin-modal').style.display = 'none';
+    window.isAdmin = true;
+    
+    document.getElementById('echo').style.display = 'block';
+    document.getElementById('admin-panel').style.display = 'block';
+    alert("Admin logged in successfully.");
+    
+    const qPending = window.query(window.collection(window.db, "echoes"), window.where("status", "==", "pending"));
+    window.onSnapshot(qPending, (snapshot) => {
+      let pendingHtml = "";
+      let count = 0;
+      snapshot.forEach((doc) => {
+        count++;
+        const p = doc.data();
+        pendingHtml += `
+          <div class="mod-item">
+            <div class="mod-info">
+              <div class="mod-info-college">${formatUsername(p.name)} - ${p.year} - ${p.college}</div>
+              <div class="mod-info-text">"${p.text}"</div>
+            </div>
+            <div class="mod-actions">
+              <button class="btn-approve" onclick="approveEcho('${doc.id}')">Approve</button>
+              <button class="btn-reject" onclick="rejectEcho('${doc.id}')">Reject</button>
+            </div>
+          </div>
+        `;
+      });
+      document.getElementById('mod-count').textContent = `${count} Pending`;
+      document.getElementById('mod-items-container').innerHTML = pendingHtml || '<div style="font-size:0.8rem;color:#888;">Queue is empty.</div>';
+    });
+
+  } catch (error) {
+    alert("Login failed: " + error.message);
+  }
+}
+
+window.approveEcho = async function(id) {
+  try { await window.updateDoc(window.doc(window.db, "echoes", id), { status: 'approved' }); } 
+  catch(e) { console.error(e); alert("Failed to approve."); }
+}
+
+window.rejectEcho = async function(id) {
+  try { await window.deleteDoc(window.doc(window.db, "echoes", id)); } 
+  catch(e) { console.error(e); alert("Failed to reject."); }
+}
+
 function joinWaitlist(source) {
   const emailEl = document.getElementById(source === 'hero' ? 'hero-email' : 'waitlist-email');
-  const email = emailEl.value.trim();
-  if (!email || !email.includes('@')) { emailEl.style.outline = '2px solid #c84b2f'; setTimeout(() => emailEl.style.outline = '', 2000); return; }
+  const email = emailEl.value.trim().toLowerCase();
+  
+  if (!email || !email.includes('@')) { 
+    emailEl.style.outline = '2px solid #c84b2f'; 
+    setTimeout(() => emailEl.style.outline = '', 2000); 
+    return; 
+  }
+
+  if (!email.endsWith('.du.ac.in') && !window.isAdmin) {
+      alert("Access Denied: Unrest is exclusively for verified Delhi University students. Please enter your official @college.du.ac.in email address.");
+      return;
+  }
+
+  // Auto-Routing Logic based on Email Abbreviation
+  const domainPart = email.split('@')[1]; 
+  const abbr = domainPart.split('.')[0]; 
+  
+  let matchedCollege = COLLEGES.find(c => c.domains && c.domains.includes(abbr)) || COLLEGES.find(c => c.id === 'Other');
+  window.userVerifiedCollege = matchedCollege; // Lock them to this college
 
   try {
     window.addDoc(window.collection(window.db, "waitlist"), { email: email, timestamp: new Date().toISOString() });
@@ -567,16 +683,19 @@ function joinWaitlist(source) {
   document.getElementById(source === 'hero' ? 'hero-form' : 'waitlist-form').style.display = 'none';
   document.getElementById(source === 'hero' ? 'hero-success' : 'waitlist-success').style.display = 'block';
 
-  waitlistCount++;
-  document.getElementById('pulse-count').textContent = waitlistCount;
-  document.getElementById('hero-live-count').textContent = waitlistCount;
-  spawnConfetti('#2a6b4a');
+  // Automatically trigger their specific college claim
+  const tileEl = document.getElementById('tile-' + matchedCollege.id);
+  claimCollege(matchedCollege.id, tileEl, matchedCollege, true);
+
+  // Smooth scroll to the grid and wait slightly before opening the modal
+  document.getElementById('rollcall').scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => {
+    openShareModal(matchedCollege);
+  }, 800);
 
   if (!hasUnlockedWall) {
     hasUnlockedWall = true;
-    const echoSec = document.getElementById('echo');
-    echoSec.style.display = 'block';
-    setTimeout(() => echoSec.scrollIntoView({ behavior: 'smooth' }), 500);
+    document.getElementById('echo').style.display = 'block';
   }
 }
 
@@ -587,13 +706,21 @@ async function submitEcho() {
   const text = document.getElementById('echo-text').value.trim();
   if (!year || !college) { alert('Pick your year and college!'); return; }
   if (text.length < 5) { alert('Write a longer echo!'); return; }
+  
   try {
     await window.addDoc(window.collection(window.db, "echoes"), {
-      name: name, year: year, college: college, text: text, w: 1, l: 0, status: 'pending', timestamp: new Date().toISOString()
+      name: name, year: year, college: college, text: text, w: 1, l: 0, 
+      status: window.isAdmin ? 'approved' : 'pending',
+      timestamp: new Date().toISOString()
     });
+    
     document.getElementById('echo-text').value = '';
-    alert("Echo sent for approval!");
-  } catch (err) { alert("Submission failed. Ensure you are signed in."); }
+    if (!window.isAdmin) {
+      const msg = document.getElementById('echo-pending-msg');
+      msg.style.display = 'flex';
+      setTimeout(() => msg.style.display = 'none', 4000);
+    }
+  } catch (err) { alert("Submission failed. Please try again."); }
 }
 
 window.renderEchoWall = function() {
@@ -652,20 +779,45 @@ function renderCollegeGrid() {
   COLLEGES.forEach(c => {
     const claimed = claimedColleges.has(c.id);
     const tile = document.createElement('div');
+    tile.id = 'tile-' + c.id;
     tile.className = 'college-tile' + (claimed ? ' claimed' : '');
     tile.style.setProperty('--tile-color', c.color);
     tile.innerHTML = `<span class="tile-emoji">${c.emoji}</span><div class="tile-name">${c.name}</div><div class="tile-count"><div class="tile-count-dot"></div>${collegeCounts[c.id]} here</div><div class="tile-check">✓</div>`;
-    tile.addEventListener('click', () => claimCollege(c.id, tile, c));
+    tile.addEventListener('click', () => claimCollege(c.id, tile, c, false));
     grid.appendChild(tile);
   });
 }
 
-function claimCollege(id, tile, c) {
-  if (claimedColleges.has(id)) return;
-  claimedColleges.add(id); collegeCounts[id]++;
-  tile.classList.add('claimed');
-  tile.querySelector('.tile-count').innerHTML = `<div class="tile-count-dot"></div>${collegeCounts[id]} here`;
-  spawnConfetti(c.color); waitlistCount++; document.getElementById('pulse-count').textContent = waitlistCount;
+function claimCollege(id, tile, c, isAutoClaim = false) {
+  // If user tries to click a tile manually before verifying
+  if (!window.userVerifiedCollege && !isAutoClaim) {
+    alert("Verify your college email first to unlock your college's pass.");
+    document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth' });
+    return;
+  }
+
+  // If user is verified but clicks a different college
+  if (window.userVerifiedCollege && window.userVerifiedCollege.id !== id && !isAutoClaim) {
+    alert(`You are verified as ${window.userVerifiedCollege.name}. You can only view your own college's pass.`);
+    return;
+  }
+
+  // Update counts visually (only happens once per college clicked/auto-claimed)
+  if (!claimedColleges.has(id)) {
+    claimedColleges.add(id); collegeCounts[id]++;
+    if (tile) {
+      tile.classList.add('claimed');
+      tile.querySelector('.tile-count').innerHTML = `<div class="tile-count-dot"></div>${collegeCounts[id]} here`;
+    }
+    spawnConfetti(c.color); 
+    waitlistCount++; 
+    document.getElementById('pulse-count').textContent = waitlistCount;
+  }
+  
+  // If they manually click their *own* verified tile again, let them see the modal
+  if (!isAutoClaim && window.userVerifiedCollege && window.userVerifiedCollege.id === id) {
+    openShareModal(c);
+  }
 }
 renderCollegeGrid();
 
@@ -695,7 +847,7 @@ updatePulseBar();
 
     <div style="flex-shrink:0;">
       <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
-        color:rgba(255,255,255,0.5);margin-bottom:0.8rem;text-align:center;">Preview</div>
+        color:rgba(255,255,255,0.5);margin-bottom:0.8rem;text-align:center;">Your Verified Pass</div>
 
       <div id="share-card" style="
         width:280px;height:500px;border-radius:28px;overflow:hidden;
@@ -710,7 +862,7 @@ updatePulseBar();
           border-radius:50%;background:rgba(0,0,0,0.25);z-index:1;animation-delay: 2s;"></div>
 
         <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;
-          justify-content:space-between;padding:28px 24px;">
+          justify-content:space-between;padding:32px 24px;">
 
           <div style="display:flex;align-items:center;justify-content:space-between;">
             <div style="font-size:1.4rem;color:#fff;letter-spacing:-0.03em;text-shadow:0 2px 4px rgba(0,0,0,0.2);">
@@ -724,21 +876,29 @@ updatePulseBar();
             </div>
           </div>
 
-          <div style="text-align:center; display:flex; flex-direction:column; align-items:center;">
+          <div style="text-align:center; display:flex; flex-direction:column; align-items:center; margin-top: -20px;">
             
-            <div style="position:relative; width: 140px; height: 100px; margin-bottom: 20px;">
-                <div class="float-2d" id="sc-emoji" style="font-size:3.5rem; position:absolute; top:20px; left:40px; z-index:2; filter:drop-shadow(0 10px 15px rgba(0,0,0,0.3));">🎓</div>
-                <div class="float-2d-delay" style="font-size:1.8rem; position:absolute; top:10px; right:10px; z-index:1; filter:drop-shadow(0 5px 10px rgba(0,0,0,0.2));">📚</div>
-                <div class="float-2d-fast" style="font-size:1.5rem; position:absolute; bottom:10px; left:10px; z-index:3; filter:drop-shadow(0 5px 10px rgba(0,0,0,0.2));">✨</div>
+            <div id="sc-college" class="shimmer-text" style="font-size:3.2rem;line-height:1.05;
+              letter-spacing:-0.03em; margin-bottom:12px; margin-left:-10px; margin-right:-10px;">
+              Hindu College
             </div>
 
-            <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.2em;
-              text-transform:uppercase;color:rgba(255,255,255,0.8);
-              font-family:'DM Sans',sans-serif;margin-bottom:6px;">I Claimed</div>
+            <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;
+              text-transform:uppercase;color:rgba(255,255,255,0.9);
+              font-family:'DM Sans',sans-serif;margin-bottom:6px;">
+              Network ~ Create ~ Grow
+            </div>
+
+            <div style="font-size:0.75rem;font-weight:500;
+              color:rgba(255,255,255,0.7); font-style:italic;
+              font-family:'Instrument Serif',serif; margin-bottom:24px;">
+              One Stop for all things DU
+            </div>
             
-            <div id="sc-college" class="shimmer-text" style="font-size:2.6rem;line-height:1.05;
-              letter-spacing:-0.03em; margin: 0 -10px;">
-              Hindu College
+            <div id="sc-desc" style="font-size:0.8rem;font-weight:500;color:rgba(255,255,255,0.85);
+              font-family:'DM Sans',sans-serif;line-height:1.5; max-width: 220px;
+              border-top: 1px solid rgba(255,255,255,0.2); padding-top: 16px;">
+              Established in 1899. Joined Unrest in 2026.
             </div>
           </div>
 
@@ -746,10 +906,9 @@ updatePulseBar();
             backdrop-filter:blur(12px); border: 1px solid rgba(255,255,255,0.1);">
             <div style="font-size:0.55rem;font-weight:700;letter-spacing:0.1em;
               text-transform:uppercase;color:rgba(255,255,255,0.5);font-family:'DM Sans',sans-serif;
-              margin-bottom:6px;text-align:center;">Is your college in?</div>
+              margin-bottom:6px;text-align:center;">Launch Date</div>
             <div style="font-size:0.75rem;color:#fff;font-family:'DM Sans',sans-serif;
               font-weight:500;line-height:1.4;text-align:center;">
-              DU's own network launches<br>
               <strong>11 June 2026</strong>
             </div>
           </div>
@@ -796,19 +955,14 @@ updatePulseBar();
 
 <script>
 (function() {
-  let _currentCollege = null;
-  const _origClaim = window.claimCollege;
-  window.claimCollege = function(id, tile, college) {
-    if (typeof _origClaim === 'function') _origClaim(id, tile, college);
-    _currentCollege = college;
-    
+  window.openShareModal = function(college) {
     const modal = document.getElementById('share-modal');
     const card  = document.getElementById('share-card');
     
-    // Apply dynamic 2D colors and icons
+    // Apply dynamic 2D colors and accurate desc text
     card.style.background = `linear-gradient(145deg, ${college.color} 20%, #111 120%)`;
-    document.getElementById('sc-emoji').textContent   = college.emoji;
     document.getElementById('sc-college').textContent = college.name;
+    document.getElementById('sc-desc').textContent = college.desc;
 
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -820,9 +974,9 @@ updatePulseBar();
   };
 
   window.shareWhatsApp = function() {
-    const name = _currentCollege ? _currentCollege.name : 'My college';
+    const name = window.userVerifiedCollege ? window.userVerifiedCollege.name : 'My college';
     const url  = window.location.href.split('#')[0];
-    const msg  = `*Unrest* — Delhi University's own campus network is launching *11 June 2026*!\n\nI just claimed *${name}'s* spot. Is your college in?\n\nJoin the waitlist: ${url}`;
+    const msg  = `*Unrest* — Delhi University's own campus network is launching *11 June 2026*!\n\nI just claimed my verified pass for *${name}*. Is your college in?\n\nJoin the waitlist: ${url}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
@@ -833,7 +987,7 @@ updatePulseBar();
       const card = document.getElementById('share-card');
       const canvas = await html2canvas(card, { scale: 3, useCORS: true, backgroundColor: null });
       const link = document.createElement('a');
-      link.download = `unrest-${(_currentCollege ? _currentCollege.name : 'unrest').toLowerCase().replace(/\s+/g,'-')}.png`;
+      link.download = `unrest-${(window.userVerifiedCollege ? window.userVerifiedCollege.name : 'unrest').toLowerCase().replace(/\s+/g,'-')}.png`;
       link.href = canvas.toDataURL('image/png'); link.click();
     } catch(err) { alert('Could not generate card.'); }
     btn.textContent = 'Download story card'; btn.disabled = false;
