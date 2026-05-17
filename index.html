@@ -3,7 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Unrest - Delhi University's Campus Network</title>
+<meta name="title" content="Unrest - Delhi University's Campus Network">
+<meta name="description" content="Unrest is Delhi University's verified campus network — social feed, fests, sports, jobs & marketplace. Free for DU students.">
+<meta name="keywords" content="Delhi University student app, DU campus network, Delhi University social network, DU college community app, DU fests">
+<link rel="canonical" href="https://unrest.in/">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://unrest.in/">
+<meta property="og:title" content="Unrest – Delhi University's Campus Network">
+<meta property="og:description" content="Verified social network for DU students. Fests, sports, internships & more. Join the waitlist.">
+<meta property="og:image" content="https://unrest.in/og-cover.png">
+
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://unrest.in/">
+<meta property="twitter:title" content="Unrest – Delhi University's Campus Network">
+<meta property="twitter:description" content="Verified social network for DU students. Fests, sports, internships & more. Join the waitlist.">
+<meta property="twitter:image" content="https://unrest.in/og-cover.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "name": "Unrest",
+      "url": "https://unrest.in/",
+      "logo": "https://unrest.in/logo.png",
+      "description": "Delhi University's verified campus network and college community app."
+    },
+    {
+      "@type": "WebSite",
+      "name": "Unrest",
+      "url": "https://unrest.in/",
+      "description": "Delhi University student app for social networking, campus fests, and sports."
+    }
+  ]
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -99,11 +138,6 @@
   @keyframes badgePop { from{opacity:0;transform:scale(0.7) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
   @keyframes statFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 
-  .promo-strip { position: absolute; bottom: 22%; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; gap: 12px; align-items: center; background: var(--ink); border-radius: 100px; padding: 8px 20px; pointer-events: none; animation: fadeUp 0.6s 0.9s ease both; white-space: nowrap; box-shadow: 0 16px 40px rgba(14,13,11,0.25); }
-  .promo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); flex-shrink: 0; animation: pulse 2s infinite; }
-  .promo-text { font-size: 0.72rem; font-weight: 600; color: rgba(245,242,235,0.9); letter-spacing: 0.02em; }
-  .promo-text strong { color: var(--accent2); }
-
   .hero-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; }
   .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.8); border: 0.5px solid rgba(255,255,255,0.95); border-radius: 100px; padding: 0.3rem 0.9rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; color: var(--accent); text-transform: uppercase; margin-bottom: 1.5rem; animation: fadeUp 0.6s ease both; backdrop-filter: blur(8px); }
   .hero-badge::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
@@ -129,7 +163,7 @@
   .hero-form button:active, .waitlist-form button:active { transform: scale(0.98); }
 
   @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-  .success-msg { display: none; padding: 0.6rem 1.2rem; background: rgba(42,107,74,0.15); border: 0.5px solid rgba(42,107,74,0.3); border-radius: 100px; color: #2a6b4a; font-size: 0.82rem; font-weight: 500; margin: 0 auto; max-width: 360px; text-align: center; }
+  .success-msg { display: none; padding: 0.6rem 1.2rem; background: rgba(42,107,74,0.15); border: 0.5px solid rgba(42,107,74,0.3); border-radius: 100px; color: #2a6b4a; font-size: 0.82rem; font-weight: 500; margin: 0 auto 1rem; max-width: 360px; text-align: center; }
 
   /* COUNTDOWN */
   .countdown-section { background: var(--ink); padding: 5rem 2rem; text-align: center; position: relative; overflow: hidden; }
@@ -203,7 +237,6 @@
   .features-head p { font-size: 1.05rem; color: var(--ink2); max-width: 480px; margin: 0 auto; line-height: 1.6; }
   .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5px; background: var(--border); border: 0.5px solid var(--border); border-radius: 20px; overflow: hidden; }
   
-  /* Flex modifications for equal height and bottom-aligned tags */
   .feature-card { 
     background: var(--cream); 
     padding: 2.5rem 2rem; 
@@ -218,7 +251,7 @@
   .feat-desc { font-size: 0.88rem; color: var(--ink2); line-height: 1.6; margin-bottom: 1.5rem; }
   .feat-tag { 
     display: inline-block; 
-    margin-top: auto; /* Anchors the tag to the bottom */
+    margin-top: auto; 
     font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em; 
     padding: 0.2rem 0.6rem; border-radius: 100px; text-transform: uppercase; 
   }
@@ -377,12 +410,12 @@
   <div class="glow-c"></div>
 
  <div class="float-cards">
-    <div class="fc fc-1"><div class="fc-icon">🎪</div><div class="fc-text"><div class="fc-title">Fest Season is here 🔥</div><div class="fc-sub">Zeitgeist · Mecca · Antaragni · and 20+ more</div></div></div>
-    <div class="fc fc-2"><div class="fc-icon">💼</div><div class="fc-text"><div class="fc-title">Placement Season '26</div><div class="fc-sub">Mock interviews, CV reviews &amp; referrals on Unrest</div></div></div>
-    <div class="fc fc-3"><div class="fc-icon">🏔️</div><div class="fc-text"><div class="fc-title">Winter Trip - Manali</div><div class="fc-sub">Dec 22–27 · 38 students joining · ₹4,200/head</div></div></div>
-    <div class="fc fc-4"><div class="fc-icon">⚽</div><div class="fc-text"><div class="fc-title">Turf Sunday @ JNU Ground</div><div class="fc-sub">5-a-side · 7am · 12 spots left · Join now</div></div></div>
-    <div class="fc fc-5"><div class="fc-icon">📝</div><div class="fc-text"><div class="fc-title">End-Sem Prep Mode</div><div class="fc-sub">Notes, PYQs &amp; study groups - all on Unrest</div></div></div>
-    <div class="fc fc-6"><div class="fc-icon">🏃</div><div class="fc-text"><div class="fc-title">DU Bhaag Club · 6am Run</div><div class="fc-sub">Lodhi Garden · Saturday · 34 runners joining</div></div></div>
+    <div class="fc fc-1"><div class="fc-icon" role="img" aria-label="Fest">🎪</div><div class="fc-text"><div class="fc-title">Fest Season is here 🔥</div><div class="fc-sub">Zeitgeist · Mecca · Antaragni · and 20+ more</div></div></div>
+    <div class="fc fc-2"><div class="fc-icon" role="img" aria-label="Jobs">💼</div><div class="fc-text"><div class="fc-title">Placement Season '26</div><div class="fc-sub">Mock interviews, CV reviews &amp; referrals on Unrest</div></div></div>
+    <div class="fc fc-3"><div class="fc-icon" role="img" aria-label="Trip">🏔️</div><div class="fc-text"><div class="fc-title">Winter Trip - Manali</div><div class="fc-sub">Dec 22–27 · 38 students joining · ₹4,200/head</div></div></div>
+    <div class="fc fc-4"><div class="fc-icon" role="img" aria-label="Sports">⚽</div><div class="fc-text"><div class="fc-title">Turf Sunday @ JNU Ground</div><div class="fc-sub">5-a-side · 7am · 12 spots left · Join now</div></div></div>
+    <div class="fc fc-5"><div class="fc-icon" role="img" aria-label="Study">📝</div><div class="fc-text"><div class="fc-title">End-Sem Prep Mode</div><div class="fc-sub">Notes, PYQs &amp; study groups - all on Unrest</div></div></div>
+    <div class="fc fc-6"><div class="fc-icon" role="img" aria-label="Running">🏃</div><div class="fc-text"><div class="fc-title">DU Bhaag Club · 6am Run</div><div class="fc-sub">Lodhi Garden · Saturday · 34 runners joining</div></div></div>
   </div>
 
   <div class="stat-badge stat-1"><div class="sb-num">90+</div><div class="sb-label">DU Colleges</div></div>
@@ -441,7 +474,7 @@
       <h2>Is your college <em>in?</em></h2>
       <p>Click your college tile to mark your attendance. Verify your email to officially unlock your pass.</p>
       <div class="rollcall-counter">
-        <span>🏫</span>
+        <span role="img" aria-label="School">🏫</span>
         <span id="colleges-claimed">0</span> colleges represented
         <span>·</span>
         <span id="total-marked">0</span> students marked present
@@ -459,12 +492,12 @@
       <p>From your morning lecture to the fest after-party - one app covers it all.</p>
     </div>
     <div class="feature-grid">
-      <div class="feature-card"><div class="feat-icon" style="background:#fef0ec">🎓</div><div class="feat-title">Verified student identity</div><div class="feat-desc">Sign up with your DU college email. Get a verified college badge. Only real DU students, no outsiders.</div><span class="feat-tag" style="background:#fef0ec;color:#c84b2f">Core</span></div>
-      <div class="feature-card"><div class="feat-icon" style="background:#eef4fd">📱</div><div class="feat-title">College-gated feed</div><div class="feat-desc">See posts from your college, your department, and all-DU. Filter by topic, or college.</div><span class="feat-tag" style="background:#eef4fd;color:#1e4f8c">Social</span></div>
-      <div class="feature-card"><div class="feat-icon" style="background:#f0f9f4">⚽</div><div class="feat-title">Sports & activities hub</div><div class="feat-desc">Find turf games, running clubs, sports leagues, and pickup matches near campus. Never miss a game.</div><span class="feat-tag" style="background:#f0f9f4;color:#2a6b4a">Sports</span></div>
-      <div class="feature-card"><div class="feat-icon" style="background:#fdf8ec">📅</div><div class="feat-title">Events & fests hub</div><div class="feat-desc">Never miss a fest, concert, or trip again. DU's event calendar, all in one place.</div><span class="feat-tag" style="background:#fdf8ec;color:#8a5c0a">Coming soon</span></div>
-      <div class="feature-card"><div class="feat-icon" style="background:#fef0ec">💼</div><div class="feat-title">Internships & jobs</div><div class="feat-desc">Seniors help juniors. Guidance for DU-specific opportunities. LinkedIn but actually for students.</div><span class="feat-tag" style="background:#fef0ec;color:#c84b2f">Coming soon</span></div>
-      <div class="feature-card"><div class="feat-icon" style="background:#eef4fd">🔒</div><div class="feat-title">Safe & private</div><div class="feat-desc">No random strangers. Report & block built in. Community moderators at every college. Your data stays yours.</div><span class="feat-tag" style="background:#eef4fd;color:#1e4f8c">Core</span></div>
+      <div class="feature-card"><div class="feat-icon" style="background:#fef0ec" role="img" aria-label="Identity">🎓</div><div class="feat-title">Verified student identity</div><div class="feat-desc">Sign up with your DU college email. Get a verified college badge. Only real DU students, no outsiders.</div><span class="feat-tag" style="background:#fef0ec;color:#c84b2f">Core</span></div>
+      <div class="feature-card"><div class="feat-icon" style="background:#eef4fd" role="img" aria-label="Social">📱</div><div class="feat-title">College-gated feed</div><div class="feat-desc">See posts from your college, your department, and all-DU. Filter by topic, or college.</div><span class="feat-tag" style="background:#eef4fd;color:#1e4f8c">Social</span></div>
+      <div class="feature-card"><div class="feat-icon" style="background:#f0f9f4" role="img" aria-label="Sports">⚽</div><div class="feat-title">Sports & activities hub</div><div class="feat-desc">Find turf games, running clubs, sports leagues, and pickup matches near campus. Never miss a game.</div><span class="feat-tag" style="background:#f0f9f4;color:#2a6b4a">Sports</span></div>
+      <div class="feature-card"><div class="feat-icon" style="background:#fdf8ec" role="img" aria-label="Events">📅</div><div class="feat-title">Events & fests hub</div><div class="feat-desc">Never miss a fest, concert, or trip again. DU's event calendar, all in one place.</div><span class="feat-tag" style="background:#fdf8ec;color:#8a5c0a">Coming soon</span></div>
+      <div class="feature-card"><div class="feat-icon" style="background:#fef0ec" role="img" aria-label="Jobs">💼</div><div class="feat-title">Internships & jobs</div><div class="feat-desc">Seniors help juniors. Guidance for DU-specific opportunities. LinkedIn but actually for students.</div><span class="feat-tag" style="background:#fef0ec;color:#c84b2f">Coming soon</span></div>
+      <div class="feature-card"><div class="feat-icon" style="background:#eef4fd" role="img" aria-label="Privacy">🔒</div><div class="feat-title">Safe & private</div><div class="feat-desc">No random strangers. Report & block built in. Community moderators at every college. Your data stays yours.</div><span class="feat-tag" style="background:#eef4fd;color:#1e4f8c">Core</span></div>
     </div>
   </div>
 </section>
@@ -614,7 +647,7 @@ let collegeCounts = {};
 let claimedColleges = new Set();
 let waitlistCount = 247;
 let hasUnlockedWall = false;
-let hasJoinedWaitlist = false; // Prevents double counting if user does hero form + modal
+let hasJoinedWaitlist = false; 
 
 window.liveEchoes = [];
 window.isAdmin = false;
@@ -710,24 +743,13 @@ function joinWaitlist(source) {
   const abbr = domainPart.split('.')[0]; 
   let matchedCollege = COLLEGES.find(c => c.domains && c.domains.includes(abbr)) || COLLEGES.find(c => c.id === 'Other');
 
-  try {
-    window.addDoc(window.collection(window.db, "waitlist"), { email: email, timestamp: new Date().toISOString() });
-  } catch(e) {}
-
+  // Open demo modal to capture Name
   document.querySelectorAll('.hero-form, .waitlist-form').forEach(el => el.style.display = 'none');
   document.querySelectorAll('.success-msg').forEach(el => el.style.display = 'block');
 
-  if (!hasJoinedWaitlist) {
-    waitlistCount++;
-    hasJoinedWaitlist = true;
-    document.getElementById('pulse-count').textContent = waitlistCount;
-    document.getElementById('hero-live-count').textContent = waitlistCount;
-  }
-
-  // Smooth scroll and open Demo Modal to capture Name
   document.getElementById('rollcall').scrollIntoView({ behavior: 'smooth' });
   setTimeout(() => {
-    document.getElementById('demo-email').value = email;
+    document.getElementById('demo-email').value = email; 
     openShareModal(matchedCollege, true, "YOUR NAME");
   }, 800);
 }
@@ -815,7 +837,7 @@ function renderCollegeGrid() {
     tile.id = 'tile-' + c.id;
     tile.className = 'college-tile' + (claimed ? ' claimed' : '');
     tile.style.setProperty('--tile-color', c.color);
-    tile.innerHTML = `<span class="tile-emoji">${c.emoji}</span><div class="tile-name">${c.name}</div><div class="tile-count"><div class="tile-count-dot"></div>${collegeCounts[c.id]} here</div><div class="tile-check">✓</div>`;
+    tile.innerHTML = `<span class="tile-emoji" role="img" aria-label="College Emoji">${c.emoji}</span><div class="tile-name">${c.name}</div><div class="tile-full">${c.desc}</div><div class="tile-count"><div class="tile-count-dot"></div>${collegeCounts[c.id]} here</div><div class="tile-check">✓</div>`;
     tile.addEventListener('click', () => claimCollege(c.id, tile, c, false));
     grid.appendChild(tile);
   });
@@ -854,6 +876,33 @@ function claimCollege(id, tile, c, isAutoClaim = false) {
 }
 renderCollegeGrid();
 
+// Local Storage Restore
+function restoreLocalState() {
+  const saved = localStorage.getItem('unrest_user');
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      window.userFullName = data.name;
+      window.userVerifiedCollege = COLLEGES.find(c => c.id === data.collegeId) || COLLEGES.find(c => c.id === 'Other');
+      hasJoinedWaitlist = true;
+      hasUnlockedWall = true;
+
+      document.querySelectorAll('.hero-form, .waitlist-form').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.success-msg').forEach(el => el.style.display = 'block');
+      document.getElementById('echo').style.display = 'block';
+
+      claimedColleges.add(data.collegeId);
+      const tileEl = document.getElementById('tile-' + data.collegeId);
+      if(tileEl) {
+         tileEl.classList.add('claimed');
+         collegeCounts[data.collegeId]++;
+         tileEl.querySelector('.tile-count').innerHTML = `<div class="tile-count-dot"></div>${collegeCounts[data.collegeId]} here`;
+      }
+    } catch(e) {}
+  }
+}
+restoreLocalState();
+
 // Fake Pulse Engine
 const FAKE_NAMES = [['RK','Riya K.'],['AS','Aryan S.'],['PM','Priya M.'],['ND','Nikhil D.']];
 function renderPulseFeed() { document.getElementById('pulse-feed').innerHTML = FAKE_NAMES.map((n,i) => `<div class="pulse-item"><div class="pulse-avatar" style="background:#333">${n[0]}</div><div><span class="pulse-name">${n[1]}</span> just joined</div></div>`).join(''); }
@@ -865,7 +914,7 @@ function updatePulseBar() {
 updatePulseBar();
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
 <div id="share-modal" style="display:none;position:fixed;inset:0;z-index:2000;
   background:rgba(10,9,8,0.92);backdrop-filter:blur(24px);
@@ -921,12 +970,6 @@ updatePulseBar();
               <span id="sc-college">Hindu College</span>
             </div>
 
-            <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;
-              text-transform:uppercase;color:rgba(255,255,255,0.9);
-              font-family:'DM Sans',sans-serif;margin-bottom:6px;">
-              Unrest
-            </div>
-            
             <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;
               text-transform:uppercase;color:rgba(255,255,255,0.9);
               font-family:'DM Sans',sans-serif;margin-bottom:6px;">
@@ -990,7 +1033,7 @@ updatePulseBar();
           Spread the<br><em style="color:#e8a020;">unrest</em>
         </div>
         <p style="font-size:0.82rem;color:rgba(255,255,255,0.5);line-height:1.55;margin:0;">
-          Share your claim card. The campus with the strongest network leads the map.
+          Share your claim card. Every college that sees this can get more signups.
         </p>
       </div>
 
@@ -1027,13 +1070,11 @@ updatePulseBar();
     const modal = document.getElementById('share-modal');
     const card  = document.getElementById('share-card');
     
-    // Setup card aesthetics
     card.style.background = `linear-gradient(145deg, ${college.color} 20%, #111 120%)`;
     document.getElementById('sc-user-name').textContent = userName;
     document.getElementById('sc-college').textContent = college.name;
     document.getElementById('sc-desc').textContent = college.desc;
 
-    // Toggle states
     if (isDemo) {
       document.getElementById('modal-demo-state').style.display = 'flex';
       document.getElementById('modal-share-state').style.display = 'none';
@@ -1069,11 +1110,9 @@ updatePulseBar();
       return;
     }
 
-    // Format Name: "Rahul K."
     const formattedName = lname ? `${fname} ${lname}.` : fname;
     window.userFullName = formattedName;
 
-    // Route to actual college
     const domainPart = email.split('@')[1]; 
     const abbr = domainPart.split('.')[0]; 
     let matchedCollege = COLLEGES.find(c => c.domains && c.domains.includes(abbr)) || COLLEGES.find(c => c.id === 'Other');
@@ -1083,11 +1122,15 @@ updatePulseBar();
       window.addDoc(window.collection(window.db, "waitlist"), { email: email, name: formattedName, timestamp: new Date().toISOString() });
     } catch(e) { console.log(e); }
 
-    // Hide background forms globally
+    localStorage.setItem('unrest_user', JSON.stringify({
+      name: formattedName,
+      email: email,
+      collegeId: matchedCollege.id
+    }));
+
     document.querySelectorAll('.hero-form, .waitlist-form').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.success-msg').forEach(el => el.style.display = 'block');
 
-    // Trigger visual claim
     if (!hasJoinedWaitlist) {
       waitlistCount++;
       hasJoinedWaitlist = true;
@@ -1111,14 +1154,13 @@ updatePulseBar();
       document.getElementById('echo').style.display = 'block';
     }
 
-    // Instantly swap the modal view to verified state
     openShareModal(matchedCollege, false, formattedName);
   };
 
   window.shareWhatsApp = function() {
     const name = window.userVerifiedCollege ? window.userVerifiedCollege.name : 'My college';
     const url  = window.location.href.split('#')[0];
-    const msg  = `*Unrest* - Delhi University's own campus network is launching *11 June 2026*!\n\nI just claimed my verified pass for *${name}*. Is your college in?\n\nJoin the waitlist: ${url}`;
+    const msg  = `*Unrest* — Delhi University's own campus network is launching *11 June 2026*!\n\nI just claimed my verified pass for *${name}*. Is your college in?\n\nJoin the waitlist: ${url}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
