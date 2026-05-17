@@ -20,7 +20,7 @@
 <meta property="twitter:url" content="https://unrest.in/">
 <meta property="twitter:title" content="Unrest - Delhi University's Campus Network">
 <meta property="twitter:description" content="Verified social network for DU students. Fests, sports, internships & more. Join the waitlist.">
-<meta property="og:image" content="https://unrest-du-verse.vercel.app/og-cover.png">
+<meta property="twitter:image" content="https://unrest-du-verse.vercel.app/og-cover.png">
 
 <script type="application/ld+json">
 {
@@ -119,12 +119,12 @@
   .fc-text { display: flex; flex-direction: column; }
   .fc-title { font-size: 0.72rem; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
   .fc-sub { font-size: 0.62rem; color: var(--ink3); margin-top: 1px; }
-  .fc-1 { top: 14%; left: 4%; animation-duration: 7s; animation-delay: 0s; }
-  .fc-2 { top: 22%; right: 5%; animation-duration: 9s; animation-delay: -3s; }
-  .fc-3 { bottom: 28%; left: 3%; animation-duration: 8s; animation-delay: -5s; }
-  .fc-4 { bottom: 18%; right: 6%; animation-duration: 10s; animation-delay: -1.5s; }
-  .fc-5 { top: 55%; left: 7%; animation-duration: 11s; animation-delay: -4s; }
-  .fc-6 { top: 50%; right: 4%; animation-duration: 8.5s; animation-delay: -7s; }
+  .fc-1 { top: 12%; left: 3%; animation-duration: 7s; animation-delay: 0s; }
+  .fc-2 { top: 16%; right: 3%; animation-duration: 9s; animation-delay: -3s; }
+  .fc-3 { top: 42%; left: 1%; animation-duration: 8s; animation-delay: -5s; }
+  .fc-4 { top: 38%; right: 1%; animation-duration: 10s; animation-delay: -1.5s; }
+  .fc-5 { bottom: 16%; left: 4%; animation-duration: 11s; animation-delay: -4s; }
+  .fc-6 { bottom: 20%; right: 3%; animation-duration: 8.5s; animation-delay: -7s; }
   @keyframes cardFloat { 0%,100% { transform: translateY(0px) rotate(-1deg); } 33% { transform: translateY(-12px) rotate(0.5deg); } 66% { transform: translateY(-6px) rotate(-0.5deg); } }
 
   .stat-badge { position: absolute; z-index: 3; background: var(--accent); border-radius: 12px; padding: 10px 16px; pointer-events: none; box-shadow: 0 8px 24px rgba(200,75,47,0.35); }
@@ -137,6 +137,11 @@
   .stat-3 { top: 60%; right: 16%; animation: badgePop 0.5s 1.8s cubic-bezier(0.34,1.56,0.64,1) both, statFloat 8s 2s ease-in-out infinite; }
   @keyframes badgePop { from{opacity:0;transform:scale(0.7) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
   @keyframes statFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+  .promo-strip { display: inline-flex; gap: 12px; align-items: center; background: var(--ink); border-radius: 100px; padding: 8px 20px; animation: fadeUp 0.6s 0.1s ease both; white-space: nowrap; box-shadow: 0 16px 40px rgba(14,13,11,0.25); margin-bottom: 1.5rem; }
+  .promo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); flex-shrink: 0; animation: pulse 2s infinite; }
+  .promo-text { font-size: 0.72rem; font-weight: 600; color: rgba(245,242,235,0.9); letter-spacing: 0.02em; }
+  .promo-text strong { color: var(--accent2); }
 
   .hero-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; }
   .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.8); border: 0.5px solid rgba(255,255,255,0.95); border-radius: 100px; padding: 0.3rem 0.9rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; color: var(--accent); text-transform: uppercase; margin-bottom: 1.5rem; animation: fadeUp 0.6s ease both; backdrop-filter: blur(8px); }
@@ -151,8 +156,8 @@
 
   .hero-sub { font-size: clamp(1rem, 2vw, 1.15rem); color: var(--ink2); font-weight: 400; max-width: 520px; line-height: 1.65; margin: 1.5rem auto; animation: fadeUp 0.6s 0.2s ease both; }
 
-  .hero-form, .waitlist-form { display: flex; gap: 0.5rem; background: rgba(255,255,255,0.85); border: 0.5px solid rgba(255,255,255,0.95); border-radius: 100px; padding: 0.35rem; width: 100%; max-width: 440px; margin: 0 auto 1rem; animation: fadeUp 0.6s 0.3s ease both; box-shadow: 0 2px 24px rgba(14,13,11,0.10); backdrop-filter: blur(10px); }
-  .waitlist-form { background: rgba(245,242,235,0.08); border-color: rgba(245,242,235,0.15); animation: none; box-shadow: none; }
+  .hero-form { display: flex; gap: 0.5rem; background: rgba(255,255,255,0.85); border: 0.5px solid rgba(255,255,255,0.95); border-radius: 100px; padding: 0.35rem; width: 100%; max-width: 440px; margin: 0 auto 1rem; animation: fadeUp 0.6s 0.3s ease both; box-shadow: 0 2px 24px rgba(14,13,11,0.10); backdrop-filter: blur(10px); }
+  .waitlist-form { display: flex; gap: 0.5rem; background: rgba(245,242,235,0.08); border: 0.5px solid rgba(245,242,235,0.15); border-radius: 100px; padding: 0.35rem; width: 100%; max-width: 440px; margin: 0 auto 1rem; }
   .hero-form input, .waitlist-form input { flex: 1; background: none; border: none; outline: none; padding: 0.5rem 0.75rem; font-family: var(--sans); font-size: 0.9rem; color: var(--ink); }
   .waitlist-form input { color: var(--paper); }
   .waitlist-form input::placeholder { color: rgba(245,242,235,0.3); }
@@ -185,7 +190,16 @@
   .launch-bar-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 1s ease; }
   .launch-bar-label { font-size: 0.7rem; color: rgba(245,242,235,0.3); margin-top: 0.75rem; }
 
-  /* PULSE */
+  /* TICKER & PULSE */
+  .ticker-section { padding: 2rem 0; overflow: hidden; background: var(--ink); border-top: 1px solid rgba(245,242,235,0.05); border-bottom: 1px solid rgba(245,242,235,0.05); }
+  .ticker-wrap { display: flex; }
+  .ticker-track { display: flex; gap: 1.5rem; align-items: center; animation: ticker 25s linear infinite; white-space: nowrap; padding-right: 1.5rem; }
+  .ticker-track2 { animation-delay: -12.5s; }
+  @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .ticker-item { font-family: var(--serif); font-size: 1.1rem; color: rgba(245,242,235,0.4); font-style: italic; flex-shrink: 0; }
+  .ticker-item.hi { color: rgba(245,242,235,0.9); }
+  .ticker-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(245,242,235,0.2); flex-shrink: 0; }
+  
   .pulse-section { padding: 3rem 2rem; background: var(--paper); border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); overflow: hidden; }
   .pulse-inner { max-width: 900px; width: 100%; margin: 0 auto; display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; justify-content: center; }
   .pulse-left { flex: 1; min-width: 200px; text-align: left; }
@@ -348,6 +362,17 @@
     .nav-links { display: none; }
     .cd-unit { padding: 1rem 1.2rem; min-width: 80px; }
     .pulse-left { text-align: center; } 
+    
+    /* MOBILE OPTIMIZATIONS FOR HERO */
+    .hero { padding: 6rem 1.5rem 3rem; }
+    .hero h1 { font-size: 2.8rem; margin-top: 0.5rem; line-height: 1.05; }
+    .hero-sub { font-size: 0.95rem; line-height: 1.5; margin: 1rem auto 2rem; padding: 0 10px; }
+    .promo-strip { max-width: 100%; overflow-x: auto; padding: 6px 14px; font-size: 0.65rem; }
+    .hero-form { flex-direction: column; background: transparent; box-shadow: none; padding: 0; gap: 10px; width: 100%; }
+    .hero-form input { border-radius: 100px; background: rgba(255,255,255,0.9); padding: 14px 20px; text-align: center; width: 100%; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .hero-form button { width: 100%; padding: 14px 20px; border-radius: 100px; }
+    .float-cards { display: none; }
+    .stat-badge { display: none; }
   }
 
   /* =========================================
@@ -423,6 +448,7 @@
   <div class="stat-badge green stat-3"><div class="sb-num" id="hero-live-count">247</div><div class="sb-label">On the waitlist</div></div>
   
   <div class="hero-content">
+    <div class="promo-strip"><div class="promo-dot"></div><div class="promo-text">⚽ <strong>Turf Sunday</strong> · 🏃 DU Bhaag Club · 🎪 Fest season</div></div>
     <div class="hero-badge">Now accepting early access</div>
     <h1>Delhi University's<br><em>campus network</em><br>finally <span class="under">exists</span></h1>
     <p class="hero-sub">A verified social network, marketplace, and community hub - built exclusively for DU students.</p>
@@ -448,6 +474,17 @@
     <div style="margin-top:2.5rem">
       <div class="launch-bar"><div class="launch-bar-fill" id="launch-fill" style="width:0%"></div></div>
       <div class="launch-bar-label" id="launch-pct">Calculating progress...</div>
+    </div>
+  </div>
+</div>
+
+<div class="ticker-section">
+  <div class="ticker-wrap">
+    <div class="ticker-track">
+      <span class="ticker-item hi">SRCC</span><span class="ticker-dot"></span><span class="ticker-item">Miranda House</span><span class="ticker-dot"></span><span class="ticker-item hi">Hindu College</span><span class="ticker-dot"></span><span class="ticker-item">St. Stephen's</span><span class="ticker-dot"></span><span class="ticker-item hi">Lady Sri Ram</span><span class="ticker-dot"></span><span class="ticker-item">Dyal Singh</span><span class="ticker-dot"></span><span class="ticker-item">Hansraj</span><span class="ticker-dot"></span><span class="ticker-item hi">Kirori Mal</span><span class="ticker-dot"></span><span class="ticker-item">Ramjas</span><span class="ticker-dot"></span><span class="ticker-item hi">Gargi</span><span class="ticker-dot"></span><span class="ticker-item">IP College</span><span class="ticker-dot"></span><span class="ticker-item">Venky</span><span class="ticker-dot"></span><span class="ticker-item hi">SRCC</span><span class="ticker-dot"></span><span class="ticker-item">Miranda House</span><span class="ticker-dot"></span><span class="ticker-item hi">Hindu College</span><span class="ticker-dot"></span><span class="ticker-item">St. Stephen's</span><span class="ticker-dot"></span><span class="ticker-item hi">Lady Sri Ram</span><span class="ticker-dot"></span><span class="ticker-item">Dyal Singh</span><span class="ticker-dot"></span><span class="ticker-item">Hansraj</span><span class="ticker-dot"></span><span class="ticker-item hi">Kirori Mal</span>
+    </div>
+    <div class="ticker-track ticker-track2" aria-hidden="true">
+      <span class="ticker-item hi">SRCC</span><span class="ticker-dot"></span><span class="ticker-item">Miranda House</span><span class="ticker-dot"></span><span class="ticker-item hi">Hindu College</span><span class="ticker-dot"></span><span class="ticker-item">St. Stephen's</span><span class="ticker-dot"></span><span class="ticker-item hi">Lady Sri Ram</span><span class="ticker-dot"></span><span class="ticker-item">Dyal Singh</span><span class="ticker-dot"></span><span class="ticker-item">Hansraj</span><span class="ticker-dot"></span><span class="ticker-item hi">Kirori Mal</span><span class="ticker-dot"></span><span class="ticker-item">Ramjas</span><span class="ticker-dot"></span><span class="ticker-item hi">Gargi</span><span class="ticker-dot"></span><span class="ticker-item">IP College</span><span class="ticker-dot"></span><span class="ticker-item">Venky</span><span class="ticker-dot"></span><span class="ticker-item hi">SRCC</span><span class="ticker-dot"></span><span class="ticker-item">Miranda House</span><span class="ticker-dot"></span><span class="ticker-item hi">Hindu College</span><span class="ticker-dot"></span><span class="ticker-item">St. Stephen's</span><span class="ticker-dot"></span><span class="ticker-item hi">Lady Sri Ram</span><span class="ticker-dot"></span><span class="ticker-item">Dyal Singh</span><span class="ticker-dot"></span><span class="ticker-item">Hansraj</span><span class="ticker-dot"></span><span class="ticker-item hi">Kirori Mal</span>
     </div>
   </div>
 </div>
@@ -970,7 +1007,13 @@ updatePulseBar();
               <span id="sc-college">Hindu College</span>
             </div>
 
-            <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;
+             <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;
+              text-transform:uppercase;color:rgba(255,255,255,0.9);
+              font-family:'DM Sans',sans-serif;margin-bottom:6px;">
+              Unrest
+            </div>
+            
+            <div style="font-size:0.45rem;font-weight:700;letter-spacing:0.15em;
               text-transform:uppercase;color:rgba(255,255,255,0.9);
               font-family:'DM Sans',sans-serif;margin-bottom:6px;">
               Network • Create • Grow
@@ -1033,7 +1076,7 @@ updatePulseBar();
           Spread the<br><em style="color:#e8a020;">unrest</em>
         </div>
         <p style="font-size:0.82rem;color:rgba(255,255,255,0.5);line-height:1.55;margin:0;">
-          Share your claim card. Every college that sees this can get more signups.
+          Share your claim card. The campus with the strongest network leads the map.
         </p>
       </div>
 
@@ -1065,6 +1108,24 @@ updatePulseBar();
 </div>
 
 <script>
+// --- DYNAMIC PROMO STRIP ---
+document.addEventListener("DOMContentLoaded", () => {
+  const promoTexts = [
+    "⚽ <strong>Turf Sunday</strong> · 🏃 DU Bhaag Club · 🎪 Fest season",
+    "💼 <strong>Placement Prep</strong> · 📚 PYQs & Notes · 🍕 Satya Niketan hangouts",
+    "🎤 <strong>Society Auditions</strong> · 🎸 Battle of Bands · 📸 Photowalks",
+    "🏆 <strong>Case Comps</strong> · 💡 Startup pitches · 🤝 Co-founder matching",
+    "☕ <strong>15-rupee chai</strong> · 🚇 Metro updates · 🎭 Nukkad Natak",
+    "🏛️ <strong>North Campus vibe</strong> · 🦅 South Campus pride · ✨ College lore"
+  ];
+  
+  const randomText = promoTexts[Math.floor(Math.random() * promoTexts.length)];
+  const promoEl = document.querySelector('.promo-text');
+  if (promoEl) {
+    promoEl.innerHTML = randomText;
+  }
+});
+
 (function() {
   window.openShareModal = function(college, isDemo = false, userName = "YOUR NAME") {
     const modal = document.getElementById('share-modal');
