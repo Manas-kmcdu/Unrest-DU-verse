@@ -314,7 +314,7 @@
     nav { padding: 0 1.25rem; }
     .nav-links { display: none; }
     .cd-unit { padding: 1rem 1.2rem; min-width: 80px; }
-    .pulse-left { text-align: center; } /* Center text on mobile */
+    .pulse-left { text-align: center; } 
   }
 
   /* =========================================
@@ -397,7 +397,7 @@
       <input type="email" placeholder="Enter your DU email" id="hero-email">
       <button onclick="joinWaitlist('hero')">Get early access</button>
     </div>
-    <div class="success-msg" id="hero-success">🎉 You're on the list! We'll be in touch.</div>
+    <div class="success-msg" id="hero-success">🎉 You're on the list! Check below to unlock your pass.</div>
   </div>
 </section>
 
@@ -474,7 +474,7 @@
   <div class="echo-inner">
     <div class="echo-head">
       <div class="section-label">Roll Call</div>
-      <h2>Echo your <em>thoughts</em></h2>
+      <h2>Echo your <em>voice</em></h2>
     </div>
     <div id="echo-unlocked">
       <div class="echo-form-wrap">
@@ -614,9 +614,11 @@ let collegeCounts = {};
 let claimedColleges = new Set();
 let waitlistCount = 247;
 let hasUnlockedWall = false;
+let hasJoinedWaitlist = false; // Prevents double counting if user does hero form + modal
+
 window.liveEchoes = [];
 window.isAdmin = false;
-window.userVerifiedCollege = null; // Tracks their exclusive access
+window.userVerifiedCollege = null; 
 window.userFullName = "YOUR NAME"; 
 
 COLLEGES.forEach(c => { collegeCounts[c.id] = c.seed; });
@@ -704,35 +706,30 @@ function joinWaitlist(source) {
       return;
   }
 
-  // Auto-Routing Logic based on Email Abbreviation
   const domainPart = email.split('@')[1]; 
   const abbr = domainPart.split('.')[0]; 
-  
   let matchedCollege = COLLEGES.find(c => c.domains && c.domains.includes(abbr)) || COLLEGES.find(c => c.id === 'Other');
-  window.userVerifiedCollege = matchedCollege; // Lock them to this college
-  window.userFullName = "A STUDENT"; // Default if joined via bottom hero without modal inputs
 
   try {
     window.addDoc(window.collection(window.db, "waitlist"), { email: email, timestamp: new Date().toISOString() });
-  } catch(e) { console.log(e); }
+  } catch(e) {}
 
   document.querySelectorAll('.hero-form, .waitlist-form').forEach(el => el.style.display = 'none');
   document.querySelectorAll('.success-msg').forEach(el => el.style.display = 'block');
 
-  // Automatically trigger their specific college claim
-  const tileEl = document.getElementById('tile-' + matchedCollege.id);
-  claimCollege(matchedCollege.id, tileEl, matchedCollege, true);
+  if (!hasJoinedWaitlist) {
+    waitlistCount++;
+    hasJoinedWaitlist = true;
+    document.getElementById('pulse-count').textContent = waitlistCount;
+    document.getElementById('hero-live-count').textContent = waitlistCount;
+  }
 
-  // Smooth scroll to the grid and wait slightly before opening the modal
+  // Smooth scroll and open Demo Modal to capture Name
   document.getElementById('rollcall').scrollIntoView({ behavior: 'smooth' });
   setTimeout(() => {
-    openShareModal(matchedCollege, false, window.userFullName);
+    document.getElementById('demo-email').value = email;
+    openShareModal(matchedCollege, true, "YOUR NAME");
   }, 800);
-
-  if (!hasUnlockedWall) {
-    hasUnlockedWall = true;
-    document.getElementById('echo').style.display = 'block';
-  }
 }
 
 async function submitEcho() {
@@ -826,7 +823,6 @@ function renderCollegeGrid() {
 
 function claimCollege(id, tile, c, isAutoClaim = false) {
   if (!window.userVerifiedCollege && !isAutoClaim) {
-    // Show demo card if not verified yet
     openShareModal(c, true, "YOUR NAME");
     return;
   }
@@ -843,8 +839,13 @@ function claimCollege(id, tile, c, isAutoClaim = false) {
       tile.querySelector('.tile-count').innerHTML = `<div class="tile-count-dot"></div>${collegeCounts[id]} here`;
     }
     spawnConfetti(c.color); 
-    waitlistCount++; 
-    document.getElementById('pulse-count').textContent = waitlistCount;
+    
+    if (!hasJoinedWaitlist) {
+      waitlistCount++; 
+      hasJoinedWaitlist = true;
+      document.getElementById('pulse-count').textContent = waitlistCount;
+      document.getElementById('hero-live-count').textContent = waitlistCount;
+    }
   }
   
   if (!isAutoClaim && window.userVerifiedCollege && window.userVerifiedCollege.id === id) {
@@ -920,10 +921,10 @@ updatePulseBar();
               <span id="sc-college">Hindu College</span>
             </div>
 
-             <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;
+            <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;
               text-transform:uppercase;color:rgba(255,255,255,0.9);
               font-family:'DM Sans',sans-serif;margin-bottom:6px;">
-             Unrest
+              Unrest
             </div>
             
             <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.15em;
@@ -1087,9 +1088,13 @@ updatePulseBar();
     document.querySelectorAll('.success-msg').forEach(el => el.style.display = 'block');
 
     // Trigger visual claim
-    waitlistCount++;
-    document.getElementById('pulse-count').textContent = waitlistCount;
-    document.getElementById('hero-live-count').textContent = waitlistCount;
+    if (!hasJoinedWaitlist) {
+      waitlistCount++;
+      hasJoinedWaitlist = true;
+      document.getElementById('pulse-count').textContent = waitlistCount;
+      document.getElementById('hero-live-count').textContent = waitlistCount;
+    }
+
     spawnConfetti(matchedCollege.color);
     
     const tileEl = document.getElementById('tile-' + matchedCollege.id);
