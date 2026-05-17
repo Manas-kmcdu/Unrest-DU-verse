@@ -247,6 +247,79 @@
   .college-tile.claimed .tile-check { display: flex; }
   @keyframes checkPop { from{transform:scale(0)} to{transform:scale(1)} }
 
+ /* CONFETTI */
+  .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+  .confetti-piece { position: absolute; width: 8px; height: 8px; border-radius: 2px; animation: confettiFall linear forwards; }
+  @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+  /* PHONE PREVIEW — dual */
+  .preview { padding: 4rem 2rem 5rem; display: flex; justify-content: center; overflow: hidden; gap: 0; }
+  .phone-frame { width: 280px; flex-shrink: 0; background: var(--ink); border-radius: 36px; padding: 12px; box-shadow: 0 32px 64px rgba(14,13,11,0.2); transform: rotate(-2deg); transition: transform 0.4s; }
+  .phone-frame:hover { transform: rotate(0deg) scale(1.02); }
+  .phone-screen { background: var(--paper); border-radius: 26px; overflow: hidden; height: 520px; display: flex; flex-direction: column; }
+  .phone-status { height: 32px; flex-shrink: 0; background: var(--paper); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-size: 0.65rem; font-weight: 600; color: var(--ink); }
+  .phone-nav { height: 48px; flex-shrink: 0; background: var(--paper); border-bottom: 0.5px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+  .phone-nav-logo { font-family: var(--serif); font-size: 1.1rem; }
+  .phone-nav-logo span { color: var(--accent); font-style: italic; }
+  .phone-tabs { display: flex; flex-shrink: 0; border-bottom: 0.5px solid var(--border); }
+  .phone-tab { flex: 1; padding: 8px 0; text-align: center; font-size: 0.62rem; font-weight: 600; color: var(--ink3); border-bottom: 2px solid transparent; }
+  .phone-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  
+  .feed { flex: 1; padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+  .feed::-webkit-scrollbar { display: none; }
+  
+  .post { background: #fff; border-radius: 12px; border: 0.5px solid var(--border); overflow: hidden; flex-shrink: 0; }
+  .post-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .post-meta { flex: 1; }
+  .post-name { font-size: 0.65rem; font-weight: 600; color: var(--ink); }
+  .post-college { font-size: 0.58rem; color: var(--ink3); }
+  .post-badge { font-size: 0.52rem; font-weight: 700; padding: 2px 6px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .post-img { width: 100%; height: 110px; background: var(--cream); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: var(--ink3); font-weight: 500; }
+  .post-body { padding: 8px 10px; font-size: 0.63rem; color: var(--ink2); line-height: 1.4; }
+  .post-actions { display: flex; gap: 12px; padding: 6px 10px 8px; border-top: 0.5px solid var(--border); }
+  .post-act { font-size: 0.58rem; color: var(--ink3); font-weight: 500; }
+  .store-scroll { display: flex; gap: 8px; padding: 10px 12px; overflow-x: auto; }
+  .store-scroll::-webkit-scrollbar { display: none; }
+  .product-card { flex-shrink: 0; width: 110px; background: #fff; border-radius: 10px; border: 0.5px solid var(--border); overflow: hidden; }
+  .product-img { height: 80px; background: var(--cream); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+  .product-info { padding: 6px 8px; }
+  .product-name { font-size: 0.6rem; font-weight: 600; color: var(--ink); }
+  .product-price { font-size: 0.65rem; font-weight: 700; color: var(--accent); margin-top: 2px; }
+  .product-college { font-size: 0.52rem; color: var(--ink3); }
+
+  /* SPORTS PHONE — white theme, matches phone1 */
+  .phone-frame2 { width: 260px; flex-shrink: 0; background: var(--ink); border-radius: 36px; padding: 12px; box-shadow: 0 24px 48px rgba(14,13,11,0.18); transform: rotate(2deg) translateY(30px); transition: transform 0.4s; margin-left: -30px; }
+  .phone-frame2:hover { transform: rotate(0deg) translateY(0) scale(1.02); }
+  .phone-screen2 { background: var(--paper); border-radius: 26px; overflow: hidden; height: 520px; display: flex; flex-direction: column; }
+  .sports-nav { height: 44px; flex-shrink: 0; background: var(--paper); border-bottom: 0.5px solid var(--border); display: flex; align-items: center; padding: 0 14px; gap: 8px; }
+  .sports-logo { font-family: var(--serif); font-size: 1.1rem; color: var(--ink); }
+  .sports-logo span { color: var(--accent); font-style: italic; }
+  .sports-pill { margin-left: auto; background: rgba(42,107,74,0.1); border: 1px solid rgba(42,107,74,0.2); border-radius: 100px; padding: 2px 8px; font-size: 0.52rem; font-weight: 700; color: var(--green); letter-spacing: 0.04em; text-transform: uppercase; display: flex; align-items: center; gap: 4px; }
+  .sports-pill::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: pulse 1.5s infinite; }
+  .sports-tabs { display: flex; flex-shrink: 0; border-bottom: 0.5px solid var(--border); }
+  .sports-tab { flex: 1; padding: 8px 0; text-align: center; font-size: 0.58rem; font-weight: 600; color: var(--ink3); border-bottom: 2px solid transparent; }
+  .sports-tab.active { color: var(--green); border-bottom-color: var(--green); }
+  .sports-feed { flex: 1; padding: 10px 10px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+  .sports-feed::-webkit-scrollbar { display: none; }
+  .sport-card { background: #fff; border-radius: 10px; padding: 10px; border: 0.5px solid var(--border); position: relative; overflow: hidden; flex-shrink: 0; }
+  .sport-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--sc); }
+  .sc-top { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+  .sc-icon { font-size: 1rem; }
+  .sc-title { font-size: 0.63rem; font-weight: 700; color: var(--ink); flex: 1; line-height: 1.2; }
+  .sc-badge { font-size: 0.5rem; font-weight: 700; padding: 2px 6px; border-radius: 100px; background: var(--sc); color: #fff; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; opacity: 0.9; }
+  .sc-body { font-size: 0.58rem; color: var(--ink3); line-height: 1.4; margin-bottom: 6px; }
+  .sc-footer { display: flex; align-items: center; justify-content: space-between; border-top: 0.5px solid var(--border); padding-top: 5px; }
+  .sc-meta { font-size: 0.54rem; color: var(--ink3); }
+  .sc-join { background: var(--sc); border-radius: 6px; padding: 3px 8px; font-size: 0.54rem; font-weight: 700; color: #fff; opacity: 0.9; }
+  .sport-card.orange { --sc: #c84b2f; }
+  .sport-card.green  { --sc: #2a6b4a; }
+  .sport-card.blue   { --sc: #1e4f8c; }
+  .sport-card.yellow { --sc: #e8a020; }
+  .sport-header { padding: 2px 10px 4px; display: flex; align-items: center; gap: 6px; }
+  .sport-header-title { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); }
+
+
   /* FEATURES - ALIGNMENT FIXED */
   .features { background: var(--cream); }
   .features-inner { max-width: 1100px; width: 100%; margin: 0 auto; }
