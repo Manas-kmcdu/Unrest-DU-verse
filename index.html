@@ -714,7 +714,7 @@ window.onload = () => {
 function formatUsername(name) { return name ? '@' + name.trim().toLowerCase().replace(/\s+/g, '') : '@anonymous'; }
 function scrollToEchoWall() {
   const echoSec = document.getElementById('echo');
-  if (echoSec.style.display === 'none') { alert('Join the waitlist to unlock the Echo Wall!'); document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth' }); } 
+  if (echoSec.style.display === 'none') { alert('Join the waitlist and get your pass to unlock the Echo Wall!'); document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth' }); } 
   else { echoSec.scrollIntoView({ behavior: 'smooth' }); }
 }
 
