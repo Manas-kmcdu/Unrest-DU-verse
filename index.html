@@ -3,1477 +3,849 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Astro Arun Pandit — Growth Intelligence Command Center</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Unrest - Delhi University's Campus Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg-primary: #06090F;
-  --bg-card: #0C1220;
-  --bg-card-hover: #101829;
-  --bg-elevated: #141E30;
-  --border: #1C2A42;
-  --border-accent: #2A3F5F;
-  --gold: #D4A03C;
-  --gold-dim: #C8963E44;
-  --gold-glow: #D4A03C22;
-  --blue: #3B82F6;
-  --blue-dim: #3B82F633;
-  --green: #10B981;
-  --green-dim: #10B98133;
-  --red: #EF4444;
-  --red-dim: #EF444433;
-  --orange: #F59E0B;
-  --orange-dim: #F59E0B33;
-  --purple: #8B5CF6;
-  --purple-dim: #8B5CF633;
-  --cyan: #06B6D4;
-  --cyan-dim: #06B6D433;
-  --text-primary: #F1F5F9;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-  --text-dim: #475569;
-  --radius: 14px;
-  --radius-sm: 8px;
-  --radius-xs: 6px;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Outfit', sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.6;
-  overflow-x: hidden;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-primary); }
-::-webkit-scrollbar-thumb { background: var(--border-accent); border-radius: 3px; }
-
-/* ═══ HEADER ═══ */
-.header {
-  position: sticky; top: 0; z-index: 100;
-  background: linear-gradient(180deg, #06090Fee 0%, #06090Fdd 100%);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 28px;
-}
-.header-inner {
-  max-width: 1440px; margin: 0 auto;
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 12px;
-}
-.brand { display: flex; align-items: center; gap: 14px; }
-.brand-icon {
-  width: 40px; height: 40px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--gold) 0%, #B8860B 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; font-weight: 900; color: var(--bg-primary);
-}
-.brand-text h1 { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
-.brand-text span { font-size: 11px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; }
-
-.header-kpis {
-  display: flex; gap: 20px; align-items: center;
-}
-.header-kpi { text-align: right; }
-.header-kpi .val { font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
-.header-kpi .lbl { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
-
-/* ═══ NAVIGATION ═══ */
-.nav {
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
-  padding: 0 28px;
-  overflow-x: auto;
-  display: flex;
-}
-.nav-inner {
-  max-width: 1440px; margin: 0 auto; width: 100%;
-  display: flex; gap: 0;
-}
-.nav-btn {
-  background: none; border: none; color: var(--text-muted);
-  padding: 14px 20px; font-family: 'Outfit', sans-serif;
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  border-bottom: 2px solid transparent;
-  white-space: nowrap; transition: all 0.2s;
-  position: relative;
-}
-.nav-btn:hover { color: var(--text-secondary); }
-.nav-btn.active {
-  color: var(--gold); border-bottom-color: var(--gold);
-}
-.nav-btn .badge {
-  display: inline-block; background: var(--red); color: white;
-  font-size: 9px; padding: 1px 5px; border-radius: 8px;
-  margin-left: 6px; font-weight: 700; vertical-align: middle;
-}
-
-/* ═══ MAIN CONTENT ═══ */
-.main { max-width: 1440px; margin: 0 auto; padding: 24px 28px; }
-.tab-panel { display: none; animation: fadeUp 0.4s ease; }
-.tab-panel.active { display: block; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ═══ GRIDS ═══ */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-.grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
-.grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }
-
-@media (max-width: 900px) {
-  .grid-2, .grid-3, .grid-4, .grid-5, .grid-2-1, .grid-1-2 {
-    grid-template-columns: 1fr;
+  :root {
+    --ink: #0e0d0b;
+    --ink2: #3d3b35;
+    --ink3: #7a776e;
+    --paper: #f5f2eb;
+    --cream: #ede9df;
+    --accent: #c84b2f; 
+    --accent2: #e8a020;
+    --green: #2a6b4a; 
+    --blue: #1e4f8c;
+    --border: rgba(14,13,11,0.12);
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
   }
-  .header-kpis { display: none; }
-}
 
-/* ═══ CARDS ═══ */
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  transition: border-color 0.2s;
-}
-.card:hover { border-color: var(--border-accent); }
-.card.highlight { border-color: var(--gold-dim); background: linear-gradient(135deg, var(--bg-card) 0%, #1A1510 100%); }
-.card.danger { border-color: var(--red-dim); background: linear-gradient(135deg, var(--bg-card) 0%, #1A0C0C 100%); }
-.card.success { border-color: var(--green-dim); background: linear-gradient(135deg, var(--bg-card) 0%, #0C1A10 100%); }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--sans); background: var(--paper); color: var(--ink); overflow-x: hidden; }
 
-.card-title {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 13px; font-weight: 700; color: var(--text-secondary);
-  text-transform: uppercase; letter-spacing: 1px;
-  margin-bottom: 16px; padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
-}
-.card-title .icon { font-size: 16px; }
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem; height: 60px;
+    background: rgba(245,242,235,0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .nav-logo { font-family: var(--serif); font-size: 1.4rem; color: var(--ink); text-decoration: none; letter-spacing: -0.02em; }
+  .nav-logo span { color: var(--accent); font-style: italic; }
+  .nav-links { display: flex; align-items: center; gap: 2rem; }
+  .nav-links a { font-size: 0.85rem; font-weight: 500; color: var(--ink2); text-decoration: none; transition: color 0.2s; cursor: pointer; }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-cta { background: var(--ink); color: var(--paper) !important; padding: 0.5rem 1.2rem; border-radius: 100px; font-size: 0.82rem !important; font-weight: 600 !important; transition: background 0.2s !important; }
+  .nav-cta:hover { background: var(--accent) !important; color: var(--paper) !important; }
 
-/* ═══ KPI CARDS ═══ */
-.kpi {
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 18px 20px;
-  position: relative; overflow: hidden;
-}
-.kpi::after {
-  content: ''; position: absolute; top: 0; right: 0;
-  width: 80px; height: 80px; border-radius: 0 0 0 80px;
-  opacity: 0.04;
-}
-.kpi .label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
-.kpi .value { font-size: 26px; font-weight: 900; font-family: 'JetBrains Mono', monospace; line-height: 1.1; }
-.kpi .sub { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
-.kpi .delta { font-size: 11px; font-weight: 700; margin-top: 4px; }
-.kpi .delta.up { color: var(--green); }
-.kpi .delta.down { color: var(--red); }
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    padding: 7rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 90% 70% at 15% 20%, rgba(232,160,32,0.22) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 60% at 85% 10%, rgba(200,75,47,0.18) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 80% at 80% 85%, rgba(30,79,140,0.16) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 50% at 10% 90%, rgba(42,107,74,0.14) 0%, transparent 45%),
+      radial-gradient(ellipse 100% 100% at 50% 50%, rgba(245,242,235,1) 40%, rgba(237,233,223,1) 100%);
+  }
+  .hero-grain {
+    position: absolute; inset: 0; z-index: 1; opacity: 0.038;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+  .hero-lines {
+    position: absolute; inset: 0; z-index: 1;
+    background-image: linear-gradient(rgba(200,75,47,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(200,75,47,0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 80%);
+  }
 
-/* ═══ SECTION TITLE ═══ */
-.section-title {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 16px;
-}
-.section-title h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; }
-.section-title .line { flex: 1; height: 1px; background: var(--border); }
-.section-title .emoji { font-size: 22px; }
+  .img-collage { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+  .img-spot { position: absolute; border-radius: 20px; overflow: hidden; box-shadow: 0 16px 40px rgba(14,13,11,0.18); border: 2px solid rgba(255,255,255,0.8); opacity: 0; animation: imgReveal 0.8s ease forwards; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+  .img-spot-1 { width: 140px; height: 180px; top: 10%; left: 2%; transform: rotate(-4deg); animation-delay: 0.6s; background: linear-gradient(135deg,#f5e8d0,#e8d0b0,#d4b080); }
+  .img-spot-2 { width: 160px; height: 120px; bottom: 20%; left: 1%; transform: rotate(3deg); animation-delay: 0.9s; background: linear-gradient(135deg,#dce8f0,#bdd4e8,#9ab8d4); }
+  .img-spot-3 { width: 130px; height: 170px; top: 8%; right: 2%; transform: rotate(5deg); animation-delay: 0.75s; background: linear-gradient(135deg,#f0e8d8,#e0d0b8,#ccba90); }
+  .img-spot-4 { width: 150px; height: 130px; bottom: 18%; right: 1%; transform: rotate(-3deg); animation-delay: 1s; background: linear-gradient(135deg,#e0f0e8,#c0dcc8,#9cc4a8); }
+  .img-spot-emoji { font-size: 2.2rem; }
+  .img-spot-cap { font-size: 0.6rem; font-weight: 600; color: var(--ink2); text-align: center; padding: 0 8px; line-height: 1.3; }
+  .img-spot-tag { position: absolute; bottom: 8px; right: 8px; background: rgba(255,255,255,0.8); border-radius: 6px; padding: 2px 6px; font-size: 0.52rem; font-weight: 700; color: var(--ink); letter-spacing: 0.03em; }
+  @keyframes imgReveal { from { opacity: 0; transform: scale(0.85) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-.mb-16 { margin-bottom: 16px; }
-.mb-20 { margin-bottom: 20px; }
-.mb-24 { margin-bottom: 24px; }
-.mt-12 { margin-top: 12px; }
-.mt-16 { margin-top: 16px; }
+  .float-cards { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+  .fc { position: absolute; background: rgba(255,255,255,0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 0.5px solid rgba(255,255,255,0.9); border-radius: 16px; padding: 10px 14px; box-shadow: 0 8px 32px rgba(14,13,11,0.10), 0 1px 0 rgba(255,255,255,0.8) inset; display: flex; align-items: center; gap: 10px; animation: cardFloat linear infinite; white-space: nowrap; }
+  .fc-icon { font-size: 1.4rem; line-height: 1; flex-shrink: 0; }
+  .fc-text { display: flex; flex-direction: column; }
+  .fc-title { font-size: 0.72rem; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .fc-sub { font-size: 0.62rem; color: var(--ink3); margin-top: 1px; }
+  .fc-1 { top: 14%; left: 4%; animation-duration: 7s; animation-delay: 0s; }
+  .fc-2 { top: 22%; right: 5%; animation-duration: 9s; animation-delay: -3s; }
+  .fc-3 { bottom: 28%; left: 3%; animation-duration: 8s; animation-delay: -5s; }
+  .fc-4 { bottom: 18%; right: 6%; animation-duration: 10s; animation-delay: -1.5s; }
+  .fc-5 { top: 55%; left: 7%; animation-duration: 11s; animation-delay: -4s; }
+  .fc-6 { top: 50%; right: 4%; animation-duration: 8.5s; animation-delay: -7s; }
+  @keyframes cardFloat { 0%,100% { transform: translateY(0px) rotate(-1deg); } 33% { transform: translateY(-12px) rotate(0.5deg); } 66% { transform: translateY(-6px) rotate(-0.5deg); } }
 
-/* ═══ BARS ═══ */
-.bar-chart { display: flex; align-items: flex-end; gap: 4px; }
-.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-.bar-col .bar-val { font-size: 9px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
-.bar-col .bar-fill { width: 100%; max-width: 52px; border-radius: 6px 6px 2px 2px; min-height: 2px; transition: height 0.6s ease; }
-.bar-col .bar-lbl { font-size: 9px; color: var(--text-muted); text-align: center; line-height: 1.15; }
+  .stat-badge { position: absolute; z-index: 3; background: var(--accent); border-radius: 12px; padding: 10px 16px; pointer-events: none; box-shadow: 0 8px 24px rgba(200,75,47,0.35); }
+  .stat-badge.blue { background: var(--blue); box-shadow: 0 8px 24px rgba(30,79,140,0.35); }
+  .stat-badge.green { background: var(--green); box-shadow: 0 8px 24px rgba(42,107,74,0.35); }
+  .sb-num { font-family: var(--serif); font-size: 1.3rem; color: #fff; line-height: 1; }
+  .sb-label { font-size: 0.58rem; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+  .stat-1 { top: 18%; right: 18%; animation: badgePop 0.5s 1.2s cubic-bezier(0.34,1.56,0.64,1) both, statFloat 9s 2s ease-in-out infinite; }
+  .stat-2 { bottom: 32%; left: 12%; animation: badgePop 0.5s 1.5s cubic-bezier(0.34,1.56,0.64,1) both, statFloat 11s 2.5s ease-in-out infinite; }
+  .stat-3 { top: 60%; right: 16%; animation: badgePop 0.5s 1.8s cubic-bezier(0.34,1.56,0.64,1) both, statFloat 8s 2s ease-in-out infinite; }
+  @keyframes badgePop { from{opacity:0;transform:scale(0.7) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  @keyframes statFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 
-.h-bar { margin-bottom: 12px; }
-.h-bar .h-bar-header { display: flex; justify-content: space-between; margin-bottom: 3px; }
-.h-bar .h-bar-label { font-size: 12px; color: var(--text-secondary); }
-.h-bar .h-bar-value { font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-.h-bar .h-bar-track { height: 8px; background: var(--bg-elevated); border-radius: 4px; overflow: hidden; }
-.h-bar .h-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+  .promo-strip { position: absolute; bottom: 22%; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; gap: 12px; align-items: center; background: var(--ink); border-radius: 100px; padding: 8px 20px; pointer-events: none; animation: fadeUp 0.6s 0.9s ease both; white-space: nowrap; box-shadow: 0 16px 40px rgba(14,13,11,0.25); }
+  .promo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); flex-shrink: 0; animation: pulse 2s infinite; }
+  .promo-text { font-size: 0.72rem; font-weight: 600; color: rgba(245,242,235,0.9); letter-spacing: 0.02em; }
+  .promo-text strong { color: var(--accent2); }
 
-/* ═══ INSIGHTS ═══ */
-.insight {
-  border-radius: var(--radius-sm); padding: 10px 14px;
-  margin-bottom: 8px; font-size: 12.5px; line-height: 1.6;
-  border: 1px solid;
-}
-.insight.opp { background: var(--green-dim); border-color: #10B98144; color: var(--green); }
-.insight.warn { background: var(--red-dim); border-color: #EF444444; color: var(--red); }
-.insight.info { background: var(--blue-dim); border-color: #3B82F644; color: var(--blue); }
-.insight.gold { background: var(--gold-glow); border-color: var(--gold-dim); color: var(--gold); }
+  .hero-content { position: relative; z-index: 10; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.8); border: 0.5px solid rgba(255,255,255,0.95); border-radius: 100px; padding: 0.3rem 0.9rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; color: var(--accent); text-transform: uppercase; margin-bottom: 1.5rem; animation: fadeUp 0.6s ease both; backdrop-filter: blur(8px); }
+  .hero-badge::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
 
-/* ═══ TABLE ═══ */
-.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.data-table th {
-  text-align: left; padding: 10px 12px; font-size: 10px;
-  text-transform: uppercase; letter-spacing: 1px;
-  color: var(--text-muted); border-bottom: 1px solid var(--border);
-  font-weight: 700;
-}
-.data-table td {
-  padding: 10px 12px; border-bottom: 1px solid #0C1220;
-  color: var(--text-secondary);
-}
-.data-table tr:hover td { background: var(--bg-elevated); }
-.data-table .mono { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+  .hero h1 { font-family: var(--serif); font-size: clamp(3rem, 8vw, 6.5rem); line-height: 1.0; letter-spacing: -0.03em; color: var(--ink); animation: fadeUp 0.6s 0.1s ease both; max-width: 900px; }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+  .hero h1 .under { position: relative; display: inline-block; }
+  .hero h1 .under::after { content: ''; position: absolute; bottom: 4px; left: 0; right: 0; height: 3px; background: var(--accent2); border-radius: 2px; transform: scaleX(0); transform-origin: left; animation: underlineIn 0.6s 0.8s ease forwards; }
+  @keyframes underlineIn { to { transform: scaleX(1); } }
 
-/* ═══ DONUT ═══ */
-.donut-container { display: flex; align-items: center; gap: 20px; }
-.donut-legend { display: flex; flex-direction: column; gap: 8px; }
-.donut-legend-item { display: flex; align-items: center; gap: 8px; }
-.donut-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .hero-sub { font-size: clamp(1rem, 2vw, 1.15rem); color: var(--ink2); font-weight: 400; max-width: 520px; line-height: 1.65; margin: 1.5rem auto; animation: fadeUp 0.6s 0.2s ease both; }
 
-/* ═══ FUNNEL ═══ */
-.funnel-step {
-  border-radius: var(--radius-sm); padding: 14px 18px;
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 4px; border: 1px solid;
-}
-.funnel-drop { text-align: center; font-size: 11px; padding: 3px 0; font-weight: 600; }
+  .hero-form, .waitlist-form { display: flex; gap: 0.5rem; background: rgba(255,255,255,0.85); border: 0.5px solid rgba(255,255,255,0.95); border-radius: 100px; padding: 0.35rem; width: 100%; max-width: 440px; margin: 0 auto 1rem; animation: fadeUp 0.6s 0.3s ease both; box-shadow: 0 2px 24px rgba(14,13,11,0.10); backdrop-filter: blur(10px); }
+  .waitlist-form { background: rgba(245,242,235,0.08); border-color: rgba(245,242,235,0.15); animation: none; box-shadow: none; }
+  .hero-form input, .waitlist-form input { flex: 1; background: none; border: none; outline: none; padding: 0.5rem 0.75rem; font-family: var(--sans); font-size: 0.9rem; color: var(--ink); }
+  .waitlist-form input { color: var(--paper); }
+  .waitlist-form input::placeholder { color: rgba(245,242,235,0.3); }
+  .hero-form input::placeholder { color: var(--ink3); }
+  .hero-form button, .waitlist-form button { background: var(--ink); color: var(--paper); border: none; border-radius: 100px; padding: 0.6rem 1.4rem; font-family: var(--sans); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s; white-space: nowrap; }
+  .waitlist-form button { background: var(--accent); color: #fff; }
+  .hero-form button:hover, .waitlist-form button:hover { background: var(--accent); transform: scale(1.02); }
+  .hero-form button:active, .waitlist-form button:active { transform: scale(0.98); }
 
-/* ═══ SIMULATOR ═══ */
-.sim-group { margin-bottom: 20px; }
-.sim-label {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 6px;
-}
-.sim-label span { font-size: 12px; color: var(--text-secondary); }
-.sim-label .sim-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; }
-input[type="range"] {
-  -webkit-appearance: none; width: 100%; height: 6px;
-  background: var(--bg-elevated); border-radius: 3px;
-  outline: none;
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 18px; height: 18px;
-  background: var(--gold); border-radius: 50%; cursor: pointer;
-  border: 2px solid var(--bg-primary);
-  box-shadow: 0 0 10px #D4A03C55;
-}
-input[type="range"]::-moz-range-thumb {
-  width: 18px; height: 18px;
-  background: var(--gold); border-radius: 50%; cursor: pointer;
-  border: 2px solid var(--bg-primary);
-}
+  .hero-note { font-size: 0.75rem; color: var(--ink3); animation: fadeUp 0.6s 0.4s ease both; }
 
-.sim-output {
-  background: linear-gradient(135deg, #0C1220 0%, #1A1510 100%);
-  border: 2px solid var(--gold-dim);
-  border-radius: var(--radius);
-  padding: 24px; text-align: center;
-}
-.sim-output .big { font-size: 42px; font-weight: 900; font-family: 'JetBrains Mono', monospace; }
-.sim-output .sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .hero-colleges { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; justify-content: center; margin-top: 2.5rem; animation: fadeUp 0.6s 0.5s ease both; }
+  .hero-colleges span { font-size: 0.72rem; font-weight: 500; color: var(--ink3); letter-spacing: 0.04em; text-transform: uppercase; }
+  .college-pill { background: rgba(255,255,255,0.75); border: 0.5px solid rgba(255,255,255,0.9); border-radius: 100px; padding: 0.25rem 0.75rem; font-size: 0.72rem; font-weight: 600; color: var(--ink2); backdrop-filter: blur(8px); transition: all 0.2s; cursor: default; }
+  .college-pill:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
-.sim-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
-.sim-breakdown-item {
-  background: var(--bg-elevated); border-radius: var(--radius-sm);
-  padding: 12px; text-align: center;
-}
-.sim-breakdown-item .val { font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
-.sim-breakdown-item .lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
 
-/* ═══ STACKED BAR ═══ */
-.stacked-bar { display: flex; height: 28px; border-radius: 6px; overflow: hidden; margin-bottom: 4px; }
-.stacked-bar-seg { display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
-.stacked-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
-.stacked-legend span { font-size: 10px; display: flex; align-items: center; gap: 4px; }
-.stacked-legend .dot { width: 8px; height: 8px; border-radius: 2px; }
+  .success-msg { display: none; padding: 0.6rem 1.2rem; background: rgba(42,107,74,0.15); border: 0.5px solid rgba(42,107,74,0.3); border-radius: 100px; color: #2a6b4a; font-size: 0.82rem; font-weight: 500; margin: 0 auto; max-width: 360px; text-align: center; }
 
-/* ═══ GLOWING ACCENTS ═══ */
-.glow-gold { text-shadow: 0 0 20px #D4A03C44; }
-.glow-green { text-shadow: 0 0 20px #10B98144; }
-.glow-red { text-shadow: 0 0 20px #EF444444; }
+  /* COUNTDOWN */
+  .countdown-section { background: var(--ink); padding: 5rem 2rem; text-align: center; position: relative; overflow: hidden; }
+  .countdown-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 60% at 20% 50%, rgba(200,75,47,0.15) 0%, transparent 60%), radial-gradient(ellipse 60% 60% at 80% 50%, rgba(30,79,140,0.15) 0%, transparent 60%); }
+  .countdown-inner { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+  .countdown-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent2); margin-bottom: 1rem; }
+  .countdown-title { font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--paper); margin-bottom: 0.5rem; }
+  .countdown-title em { font-style: italic; color: var(--accent2); }
+  .countdown-sub { font-size: 0.9rem; color: rgba(245,242,235,0.4); margin-bottom: 3rem; }
+  .countdown-grid { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+  .cd-unit { display: flex; flex-direction: column; align-items: center; background: rgba(245,242,235,0.06); border: 0.5px solid rgba(245,242,235,0.1); border-radius: 20px; padding: 1.5rem 2rem; min-width: 110px; position: relative; overflow: hidden; }
+  .cd-unit::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(245,242,235,0.05) 0%, transparent 60%); }
+  .cd-num { font-family: var(--serif); font-size: clamp(3rem, 6vw, 5rem); color: var(--paper); line-height: 1; letter-spacing: -0.04em; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); position: relative; }
+  .cd-num.flip { animation: numFlip 0.4s ease; }
+  @keyframes numFlip { 0% { transform: translateY(-8px) scale(0.9); opacity: 0.5; } 60% { transform: translateY(4px) scale(1.05); } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+  .cd-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,242,235,0.35); margin-top: 0.5rem; }
+  .cd-accent { position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); animation: pulse 2s infinite; }
+  .launch-bar { margin-top: 2.5rem; background: rgba(245,242,235,0.06); border: 0.5px solid rgba(245,242,235,0.1); border-radius: 100px; height: 6px; max-width: 400px; margin-left: auto; margin-right: auto; overflow: hidden; }
+  .launch-bar-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 1s ease; }
+  .launch-bar-label { font-size: 0.7rem; color: rgba(245,242,235,0.3); margin-top: 0.75rem; }
 
-/* ═══ SCENARIO CARDS ═══ */
-.scenario-card {
-  background: var(--bg-elevated); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 16px;
-  cursor: pointer; transition: all 0.2s;
-}
-.scenario-card:hover { border-color: var(--gold-dim); transform: translateY(-2px); }
-.scenario-card.selected { border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); }
-.scenario-card .sc-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-.scenario-card .sc-desc { font-size: 11px; color: var(--text-muted); }
+  /* TICKER & PULSE */
+  .ticker-section { padding: 2rem 0; overflow: hidden; background: var(--ink); }
+  .ticker-wrap { display: flex; }
+  .ticker-track { display: flex; gap: 1.5rem; align-items: center; animation: ticker 25s linear infinite; white-space: nowrap; padding-right: 1.5rem; }
+  .ticker-track2 { animation-delay: -12.5s; }
+  @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .ticker-item { font-family: var(--serif); font-size: 1.1rem; color: rgba(245,242,235,0.4); font-style: italic; flex-shrink: 0; }
+  .ticker-item.hi { color: rgba(245,242,235,0.9); }
+  .ticker-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(245,242,235,0.2); flex-shrink: 0; }
+  .pulse-section { padding: 3rem 2rem; background: var(--paper); border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); overflow: hidden; }
+  .pulse-inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+  .pulse-left { flex: 1; min-width: 200px; }
+  .pulse-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 0.25rem; }
+  .pulse-num { font-family: var(--serif); font-size: clamp(3rem, 6vw, 4.5rem); color: var(--ink); line-height: 1; letter-spacing: -0.04em; }
+  .pulse-num span { color: var(--accent); }
+  .pulse-sub { font-size: 0.8rem; color: var(--ink3); margin-top: 0.25rem; }
+  .pulse-feed { flex: 2; min-width: 280px; display: flex; flex-direction: column; gap: 8px; max-height: 160px; overflow: hidden; position: relative; }
+  .pulse-feed::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: linear-gradient(transparent, var(--paper)); pointer-events: none; }
+  .pulse-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(255,255,255,0.7); border: 0.5px solid rgba(255,255,255,0.95); border-radius: 10px; font-size: 0.78rem; color: var(--ink2); animation: slideInRight 0.5s cubic-bezier(0.34,1.3,0.64,1) both; }
+  @keyframes slideInRight { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+  .pulse-avatar { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .pulse-name { font-weight: 600; color: var(--ink); }
+  .pulse-time { font-size: 0.65rem; color: var(--ink3); margin-left: auto; flex-shrink: 0; }
+  .pulse-bar-wrap { flex: 0 0 160px; }
+  .pulse-college-bars { display: flex; flex-direction: column; gap: 6px; }
+  .pcb-row { display: flex; align-items: center; gap: 8px; }
+  .pcb-name { font-size: 0.65rem; font-weight: 600; color: var(--ink2); width: 70px; flex-shrink: 0; }
+  .pcb-track { flex: 1; height: 5px; background: var(--cream); border-radius: 100px; overflow: hidden; }
+  .pcb-fill { height: 100%; border-radius: 100px; background: var(--accent); transition: width 1s ease; }
+  .pcb-count { font-size: 0.6rem; color: var(--ink3); width: 20px; text-align: right; flex-shrink: 0; }
 
-/* Toggle */
-.toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.toggle {
-  width: 40px; height: 22px; border-radius: 11px;
-  background: var(--bg-elevated); border: 1px solid var(--border);
-  cursor: pointer; position: relative; transition: all 0.2s;
-}
-.toggle.on { background: var(--gold-dim); border-color: var(--gold); }
-.toggle::after {
-  content: ''; position: absolute; top: 2px; left: 2px;
-  width: 16px; height: 16px; border-radius: 50%;
-  background: var(--text-muted); transition: all 0.2s;
-}
-.toggle.on::after { left: 20px; background: var(--gold); }
-.toggle-label { font-size: 12px; color: var(--text-secondary); }
+  /* ROLL CALL */
+  .rollcall-section { padding: 5rem 2rem; background: var(--paper); position: relative; overflow: hidden; }
+  .rollcall-inner { max-width: 1100px; margin: 0 auto; }
+  .rollcall-head { text-align: center; margin-bottom: 3rem; }
+  .rollcall-head p { font-size: 1rem; color: var(--ink2); max-width: 480px; margin: 0.75rem auto 0; line-height: 1.6; }
+  .rollcall-counter { display: inline-flex; align-items: center; gap: 0.75rem; background: rgba(200,75,47,0.1); border: 0.5px solid rgba(200,75,47,0.2); border-radius: 100px; padding: 0.4rem 1rem; font-size: 0.8rem; font-weight: 600; color: var(--accent); margin-top: 1rem; }
+  .rc-count-num { font-family: var(--serif); font-size: 1.1rem; }
+  .college-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 2rem; }
+  .college-tile { border: 1.5px solid var(--border); border-radius: 16px; padding: 1rem; cursor: pointer; transition: all 0.25s cubic-bezier(0.34,1.3,0.64,1); background: rgba(255,255,255,0.5); position: relative; overflow: hidden; user-select: none; }
+  .college-tile::before { content: ''; position: absolute; inset: 0; background: var(--tile-color, var(--accent)); opacity: 0; transition: opacity 0.25s; border-radius: inherit; }
+  .college-tile:hover { transform: translateY(-3px) scale(1.02); border-color: var(--tile-color, var(--accent)); box-shadow: 0 8px 24px rgba(14,13,11,0.1); }
+  .college-tile.claimed { border-color: var(--tile-color, var(--accent)); background: rgba(255,255,255,0.9); }
+  .college-tile.claimed::before { opacity: 0.08; }
+  .college-tile:active { transform: scale(0.97); }
+  .tile-emoji { font-size: 1.5rem; margin-bottom: 0.4rem; display: block; }
+  .tile-name { font-size: 0.82rem; font-weight: 700; color: var(--ink); line-height: 1.2; margin-bottom: 0.2rem; position: relative; }
+  .tile-count { display: flex; align-items: center; gap: 4px; margin-top: 0.5rem; font-size: 0.65rem; font-weight: 700; color: var(--tile-color, var(--accent)); position: relative; }
+  .tile-count-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  .tile-check { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--tile-color, var(--accent)); display: none; align-items: center; justify-content: center; font-size: 0.65rem; color: white; animation: checkPop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  .college-tile.claimed .tile-check { display: flex; }
+  @keyframes checkPop { from{transform:scale(0)} to{transform:scale(1)} }
+  .rollcall-cta { text-align: center; margin-top: 2rem; font-size: 0.82rem; color: var(--ink3); }
+  .rollcall-cta strong { color: var(--ink); }
 
-/* Pulse animation for alerts */
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-.pulse { animation: pulse 2s infinite; }
+  /* ECHO WALL */
+  .echo-section { padding: 5rem 0 0; position: relative; overflow: hidden; min-height: 800px; background-color: #8c2a1c; }
+  .echo-wall-bg { position: absolute; inset: 0; z-index: 0; background-color: #9b2c20; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40' viewBox='0 0 120 40'%3E%3Crect width='120' height='40' fill='%239b2c20'/%3E%3Cpath d='M0 19h120v2H0zM59 0v19h2V0zM119 21v19h2V21zM-1 21v19h2V21z' fill='%23c8bdae' fill-opacity='0.7'/%3E%3Cpath d='M0 21h120v1H0zM61 0v19h1V0zM121 21v19h1V21zM1 21v19h1V21z' fill='%23000000' fill-opacity='0.2'/%3E%3C/svg%3E"); opacity: 1; }
+  .echo-section::after { content: ''; position: absolute; inset: 0; z-index: 1; background: radial-gradient(circle at 50% 30%, transparent 30%, rgba(0,0,0,0.8) 130%); pointer-events: none; }
+  .echo-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; padding: 0 2rem; }
+  .echo-head { padding-top: 5rem; margin-bottom: 2rem; text-align: center; }
+  .echo-head .section-label { color: var(--paper); background: rgba(0,0,0,0.4); padding: 6px 16px; border-radius: 100px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1); }
+  .echo-head .section-label::before { display: none; }
+  .echo-head h2 { color: #f5f2eb; text-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+  .echo-head p { color: rgba(245,242,235,0.8); font-size: 1rem; max-width: 520px; line-height: 1.6; margin: 0.5rem auto 0; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+  .echo-form-wrap { background: rgba(255,255,255,0.95); border: 1px solid rgba(255,255,255,0.8); border-radius: 16px; padding: 1.5rem; margin-bottom: 3rem; backdrop-filter: blur(12px); box-shadow: 0 16px 40px rgba(0,0,0,0.3); position: relative; z-index: 10; }
+  .echo-form-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+  .echo-form-row:last-child { margin-bottom: 0; }
+  .echo-select, .echo-input { background: rgba(14,13,11,0.04); border: 1px solid rgba(14,13,11,0.1); border-radius: 10px; padding: 0.8rem 1rem; font-family: var(--sans); font-size: 0.9rem; color: var(--ink); outline: none; transition: border-color 0.2s; }
+  .echo-input-small { flex: 1; min-width: 100px; }
+  .echo-select { flex: 1.5; min-width: 140px; }
+  .echo-input-large { flex: 3; min-width: 100%; }
+  .echo-select:focus, .echo-input:focus { border-color: var(--accent); background: #fff; }
+  .echo-char { display: flex; align-items: center; padding: 0 0.5rem; font-size: 0.75rem; color: var(--ink3); font-weight: 600; }
+  .echo-submit { background: var(--ink); color: #fff; border: none; border-radius: 10px; padding: 0.8rem 1.6rem; font-family: var(--sans); font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.15s; white-space: nowrap; }
+  .echo-submit:hover { background: var(--accent); transform: scale(1.02); }
+  .echo-pending-msg { display: none; align-items: center; justify-content: center; gap: 8px; margin-top: 1rem; padding: 0.8rem; background: rgba(232,160,32,0.15); border: 1px solid rgba(232,160,32,0.3); border-radius: 10px; font-size: 0.85rem; font-weight: 500; color: #a67216; }
+  
+  .echo-wall { column-count: 4; column-gap: 1rem; padding-top: 1rem; padding-bottom: 5rem; }
+  @media (max-width: 1024px) { .echo-wall { column-count: 3; } }
+  @media (max-width: 768px) { .echo-wall { column-count: 2; } }
+  @media (max-width: 480px) { .echo-wall { column-count: 1; } }
+  .white-tile { break-inside: avoid; background: #ffffff; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,1); position: relative; overflow: hidden; cursor: default; transform: translateY(0); transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s; animation: tileReveal 0.6s ease both; }
+  .white-tile:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.25), inset 0 2px 0 rgba(255,255,255,1); z-index: 5; }
+  @keyframes tileReveal { from{opacity:0;transform:scale(0.95) translateY(15px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  .wt-accent { position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--tc); }
+  .wt-text { font-family: var(--sans); font-size: 0.82rem; font-weight: 500; color: #1a1a1a; line-height: 1.45; margin-bottom: 0.8rem; margin-top: 0.2rem; }
+  .wt-footer { display: flex; align-items: center; justify-content: space-between; border-top: 0.5px solid var(--border); padding-top: 0.6rem; }
+  .wt-meta { display: flex; align-items: center; gap: 6px; flex: 1; }
+  .wt-college { font-size: 0.65rem; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 0.04em; }
+  .wl-actions { display: flex; gap: 6px; }
+  .wl-btn { background: rgba(0,0,0,0.04); border: none; border-radius: 6px; padding: 4px 8px; font-family: var(--sans); font-size: 0.65rem; font-weight: 700; color: var(--ink3); cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 4px; }
+  .wl-btn:hover { background: rgba(0,0,0,0.08); transform: scale(1.05); }
 
-/* Counter animation */
-@keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.count-up { animation: countUp 0.6s ease forwards; }
+  /* GENERAL */
+  section { padding: 5rem 2rem; }
+  .section-label { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+  .section-label::before { content: ''; width: 20px; height: 1.5px; background: var(--accent); }
+  h2 { font-family: var(--serif); font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.1; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 1rem; }
+  h2 em { font-style: italic; color: var(--accent); }
 
-/* Watermark */
-.watermark {
-  position: fixed; bottom: 12px; right: 16px;
-  font-size: 9px; color: var(--text-dim); letter-spacing: 2px;
-  text-transform: uppercase; opacity: 0.3;
-}
+  /* WAITLIST & FOOTER */
+  .waitlist { background: var(--ink); color: var(--paper); text-align: center; padding: 6rem 2rem; }
+  .waitlist h2 { color: var(--paper); }
+  .waitlist h2 em { color: var(--accent2); }
+  .waitlist p { color: rgba(245,242,235,0.6); margin: 1rem auto 2rem; max-width: 440px; font-size: 1rem; line-height: 1.6; }
+  .waitlist-count { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: rgba(245,242,235,0.5); margin-top: 1.5rem; }
+  .count-avatars { display: flex; }
+  .count-av { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--ink); margin-left: -6px; font-size: 0.55rem; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; }
+  .count-av:first-child { margin-left: 0; }
+  footer { background: var(--ink); border-top: 0.5px solid rgba(245,242,235,0.08); padding: 2rem 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  footer .foot-logo { font-family: var(--serif); font-size: 1.2rem; color: var(--paper); }
+  footer .foot-logo span { color: var(--accent); font-style: italic; }
+  footer p { font-size: 0.78rem; color: rgba(245,242,235,0.3); }
+
+  @media (max-width: 900px) {
+    .college-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  }
+  @media (max-width: 768px) {
+    nav { padding: 0 1.25rem; }
+    .nav-links { display: none; }
+    .cd-unit { padding: 1rem 1.2rem; min-width: 80px; }
+  }
+
+  /* =========================================
+     NEW 2D CARD ANIMATIONS (SHIMMER & ORB)
+     ========================================= */
+  @keyframes shimmerText {
+    0% { background-position: 200% center; }
+    100% { background-position: -200% center; }
+  }
+  .shimmer-text {
+    background: linear-gradient(
+      120deg, 
+      rgba(255,255,255, 0.9) 20%, 
+      #fff3d1 40%, 
+      #ffffff 60%, 
+      rgba(255,255,255, 0.9) 80%
+    );
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shimmerText 3s linear infinite;
+  }
+  
+  @keyframes pulseOrb {
+    0% { transform: scale(1) translate(0, 0); opacity: 0.6; filter: blur(40px); }
+    50% { transform: scale(1.1) translate(-10px, 10px); opacity: 0.9; filter: blur(50px); }
+    100% { transform: scale(1) translate(0, 0); opacity: 0.6; filter: blur(40px); }
+  }
+  .pulse-orb { animation: pulseOrb 6s ease-in-out infinite; }
+
+  @keyframes float2D {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(1deg); }
+  }
+  .float-2d { animation: float2D 4s ease-in-out infinite; }
+  .float-2d-delay { animation: float2D 4.5s ease-in-out infinite; animation-delay: 1s; }
+  .float-2d-fast { animation: float2D 3.5s ease-in-out infinite; animation-delay: 0.5s; }
+
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════ HEADER ═══════════════════ -->
-<div class="header">
-  <div class="header-inner">
-    <div class="brand">
-      <div class="brand-icon">AP</div>
-      <div class="brand-text">
-        <h1>Growth Intelligence Command Center</h1>
-        <span>Astro Arun Pandit · Name Numerology</span>
-      </div>
+<nav>
+  <a href="#" class="nav-logo">Un<span>rest</span></a>
+  <div class="nav-links">
+    <a href="#rollcall">Roll Call</a>
+    <a onclick="scrollToEchoWall()">Echo Wall</a>
+    <a href="#waitlist" class="nav-cta">Join waitlist</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grain"></div>
+  <div class="hero-lines"></div>
+  <div class="glow-tl"></div>
+  <div class="glow-br"></div>
+  <div class="glow-c"></div>
+
+  <div class="stat-badge stat-1"><div class="sb-num">90+</div><div class="sb-label">DU Colleges</div></div>
+  <div class="stat-badge blue stat-2"><div class="sb-num">Free</div><div class="sb-label">Forever for students</div></div>
+  <div class="stat-badge green stat-3"><div class="sb-num" id="hero-live-count">247</div><div class="sb-label">On the waitlist</div></div>
+
+  <div class="promo-strip"><div class="promo-dot"></div><div class="promo-text">⚽ <strong>Turf Sunday</strong> · 🏃 DU Bhaag Club · 🎪 Fest season</div></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">Now accepting early access</div>
+    <h1>Delhi University's<br><em>campus network</em><br>finally <span class="under">exists</span></h1>
+    <p class="hero-sub">A verified social network, marketplace, and community hub - built exclusively for DU students.</p>
+    <div class="hero-form" id="hero-form">
+      <input type="email" placeholder="Enter your DU email" id="hero-email">
+      <button onclick="joinWaitlist('hero')">Get early access</button>
     </div>
-    <div class="header-kpis">
-      <div class="header-kpi">
-        <div class="val glow-green" style="color:var(--green)">₹28.2L</div>
-        <div class="lbl">Total Revenue</div>
-      </div>
-      <div class="header-kpi">
-        <div class="val glow-gold" style="color:var(--gold)">577</div>
-        <div class="lbl">Total Orders</div>
-      </div>
-      <div class="header-kpi">
-        <div class="val" style="color:var(--blue)">₹4,943</div>
-        <div class="lbl">Avg Order Value</div>
-      </div>
-      <div class="header-kpi">
-        <div class="val" style="color:var(--orange)">40.7%</div>
-        <div class="lbl">Completion Rate</div>
-      </div>
+    <div class="success-msg" id="hero-success">🎉 You're on the list! We'll be in touch.</div>
+  </div>
+</section>
+
+<div class="countdown-section" id="countdown">
+  <div class="countdown-inner">
+    <div class="countdown-eyebrow">🚀 Launch countdown</div>
+    <h2 class="countdown-title">Unrest goes live on <em>11 June 2026</em></h2>
+    <p class="countdown-sub">Founding members get early access, free merch, and a verified badge. Claim your spot.</p>
+    <div class="countdown-grid">
+      <div class="cd-unit"><div class="cd-accent"></div><div class="cd-num" id="cd-days">--</div><div class="cd-label">Days</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-hours">--</div><div class="cd-label">Hours</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-mins">--</div><div class="cd-label">Minutes</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-secs">--</div><div class="cd-label">Seconds</div></div>
+    </div>
+    <div style="margin-top:2.5rem">
+      <div class="launch-bar"><div class="launch-bar-fill" id="launch-fill" style="width:0%"></div></div>
+      <div class="launch-bar-label" id="launch-pct">Calculating progress...</div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════ NAVIGATION ═══════════════════ -->
-<div class="nav">
-  <div class="nav-inner">
-    <button class="nav-btn active" onclick="showTab(0)">📊 Executive</button>
-    <button class="nav-btn" onclick="showTab(1)">💰 Revenue Intel</button>
-    <button class="nav-btn" onclick="showTab(2)">👥 Customer Intel</button>
-    <button class="nav-btn" onclick="showTab(3)">🔻 Funnel & Leaks<span class="badge">!</span></button>
-    <button class="nav-btn" onclick="showTab(4)">📡 Channel Intel</button>
-    <button class="nav-btn" onclick="showTab(5)">🧪 Growth Simulator</button>
-    <button class="nav-btn" onclick="showTab(6)">💎 Revenue Simulator</button>
-    <button class="nav-btn" onclick="showTab(7)">🚀 90-Day Playbook</button>
-  </div>
-</div>
-
-<!-- ═══════════════════ MAIN ═══════════════════ -->
-<div class="main">
-
-<!-- ═══ TAB 0: EXECUTIVE ═══ -->
-<div class="tab-panel active" id="tab-0">
-  <div class="section-title mb-16">
-    <span class="emoji">📊</span>
-    <h2>Executive Command View</h2>
-    <div class="line"></div>
-  </div>
-
-  <div class="grid-5 mb-20">
-    <div class="kpi" style="border-left: 3px solid var(--green)">
-      <div class="label">Total Revenue</div>
-      <div class="value" style="color:var(--green)">₹28.2L</div>
-      <div class="sub">₹2,817,205 lifetime</div>
+<div class="pulse-section">
+  <div class="pulse-inner">
+    <div class="pulse-left">
+      <div class="pulse-label">🔴 Live signups</div>
+      <div class="pulse-num"><span id="pulse-count">247</span></div>
+      <div class="pulse-sub">students on the waitlist</div>
     </div>
-    <div class="kpi" style="border-left: 3px solid var(--blue)">
-      <div class="label">Total Orders</div>
-      <div class="value" style="color:var(--blue)">577</div>
-      <div class="sub">235 completed · 339 draft</div>
-    </div>
-    <div class="kpi" style="border-left: 3px solid var(--gold)">
-      <div class="label">Avg Order Value</div>
-      <div class="value" style="color:var(--gold)">₹4,943</div>
-      <div class="sub">Premium: ₹5,963</div>
-    </div>
-    <div class="kpi" style="border-left: 3px solid var(--red)">
-      <div class="label">Revenue at Risk</div>
-      <div class="value" style="color:var(--red)">₹16.7L</div>
-      <div class="sub">339 unfulfilled orders</div>
-    </div>
-    <div class="kpi" style="border-left: 3px solid var(--purple)">
-      <div class="label">Premium Upsell Rate</div>
-      <div class="value" style="color:var(--purple)">62%</div>
-      <div class="sub">358 chose correction</div>
-    </div>
-  </div>
-
-  <!-- Monthly Revenue Chart -->
-  <div class="grid-2-1 mb-20">
-    <div class="card">
-      <div class="card-title"><span class="icon">📈</span> Monthly Revenue Trend</div>
-      <div class="bar-chart" style="height:200px" id="monthly-revenue-chart"></div>
-    </div>
-    <div class="card danger">
-      <div class="card-title"><span class="icon">🚨</span> Critical Alerts</div>
-      <div class="insight warn">⚠️ <b>59% of orders stuck in DRAFT</b> — ₹16.7L+ revenue locked. This is your #1 problem before any marketing spend.</div>
-      <div class="insight warn">⚠️ <b>International pricing broken</b> — 86 Stripe orders averaging ₹237 vs ₹5,779 Razorpay. Fix immediately.</div>
-      <div class="insight opp">✅ <b>WhatsApp = highest AOV</b> at ₹8,036 but only 14 orders. 10× this channel = ₹11L+ additional revenue.</div>
-      <div class="insight gold">🏆 <b>Jan 2026 spike:</b> 114 orders, ₹4.5L. Decode the campaign that drove this and replicate.</div>
-    </div>
-  </div>
-
-  <!-- Product Mix -->
-  <div class="card mb-20">
-    <div class="card-title"><span class="icon">💎</span> Product Mix Intelligence</div>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Product</th><th>Orders</th><th>Revenue</th><th>Avg Value</th><th>Completion</th><th>Rev Share</th><th>Performance</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong style="color:var(--gold)">Analysis+Correction+Consult</strong></td>
-          <td class="mono">217</td><td class="mono" style="color:var(--green)">₹14.0L</td><td class="mono">₹6,530</td>
-          <td class="mono">40.6%</td><td class="mono">49.8%</td>
-          <td><div style="height:6px;background:var(--bg-elevated);border-radius:3px"><div style="width:100%;height:100%;background:var(--gold);border-radius:3px"></div></div></td>
-        </tr>
-        <tr>
-          <td><strong style="color:var(--blue)">Analysis+Correction</strong></td>
-          <td class="mono">141</td><td class="mono" style="color:var(--green)">₹7.2L</td><td class="mono">₹5,100</td>
-          <td class="mono">45.4%</td><td class="mono">25.5%</td>
-          <td><div style="height:6px;background:var(--bg-elevated);border-radius:3px"><div style="width:51%;height:100%;background:var(--blue);border-radius:3px"></div></div></td>
-        </tr>
-        <tr>
-          <td><strong style="color:var(--cyan)">Analysis+Consultation</strong></td>
-          <td class="mono">114</td><td class="mono" style="color:var(--green)">₹5.8L</td><td class="mono">₹5,074</td>
-          <td class="mono">36.0%</td><td class="mono">20.5%</td>
-          <td><div style="height:6px;background:var(--bg-elevated);border-radius:3px"><div style="width:41%;height:100%;background:var(--cyan);border-radius:3px"></div></div></td>
-        </tr>
-        <tr>
-          <td><strong style="color:var(--purple)">Analysis Only</strong></td>
-          <td class="mono">87</td><td class="mono">₹0.96L</td><td class="mono" style="color:var(--orange)">₹1,100</td>
-          <td class="mono" style="color:var(--green)">48.3%</td><td class="mono">3.4%</td>
-          <td><div style="height:6px;background:var(--bg-elevated);border-radius:3px"><div style="width:7%;height:100%;background:var(--purple);border-radius:3px"></div></div></td>
-        </tr>
-        <tr>
-          <td><strong style="color:var(--text-muted)">International</strong></td>
-          <td class="mono">12</td><td class="mono" style="color:var(--red)">₹0.09L</td><td class="mono" style="color:var(--red)">₹724</td>
-          <td class="mono" style="color:var(--red)">0%</td><td class="mono">0.3%</td>
-          <td><div style="height:6px;background:var(--bg-elevated);border-radius:3px"><div style="width:1%;height:100%;background:var(--red);border-radius:3px"></div></div></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Revenue Split Visualization -->
-  <div class="grid-2 mb-20">
-    <div class="card highlight">
-      <div class="card-title"><span class="icon">🆚</span> Basic vs Premium Split</div>
-      <div style="display:flex;gap:16px;align-items:center">
-        <svg width="140" height="140" viewBox="0 0 140 140" id="donut-premium"></svg>
-        <div class="donut-legend">
-          <div class="donut-legend-item">
-            <div class="donut-legend-dot" style="background:var(--gold)"></div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--gold)">Premium (Correction)</div>
-              <div style="font-size:11px;color:var(--text-muted)">358 orders · ₹21.2L · 75.5%</div>
-            </div>
-          </div>
-          <div class="donut-legend-item">
-            <div class="donut-legend-dot" style="background:var(--blue)"></div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--blue)">Basic (Analysis)</div>
-              <div style="font-size:11px;color:var(--text-muted)">201 orders · ₹6.7L · 24.5%</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="insight opp mt-12">Push premium rate from 62% → 80% = ₹3.6L additional revenue with zero extra traffic.</div>
-    </div>
-    <div class="card success">
-      <div class="card-title"><span class="icon">📞</span> Consultation Upsell Impact</div>
-      <div style="display:flex;gap:16px;align-items:center">
-        <svg width="140" height="140" viewBox="0 0 140 140" id="donut-consult"></svg>
-        <div class="donut-legend">
-          <div class="donut-legend-item">
-            <div class="donut-legend-dot" style="background:var(--green)"></div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--green)">With Consultation</div>
-              <div style="font-size:11px;color:var(--text-muted)">331 orders · ₹19.8L · Avg ₹6,025</div>
-            </div>
-          </div>
-          <div class="donut-legend-item">
-            <div class="donut-legend-dot" style="background:var(--orange)"></div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--orange)">Without Consultation</div>
-              <div style="font-size:11px;color:var(--text-muted)">228 orders · ₹8.1L · Avg ₹3,574</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="insight info mt-12">Consultation adds ₹2,451 to AOV (+68%). Only 51 actually booked. Massive untapped upsell.</div>
+    <div class="pulse-feed" id="pulse-feed"></div>
+    <div class="pulse-bar-wrap">
+      <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px">Top colleges</div>
+      <div class="pulse-college-bars" id="pcb-wrap"></div>
     </div>
   </div>
 </div>
 
-<!-- ═══ TAB 1: REVENUE INTEL ═══ -->
-<div class="tab-panel" id="tab-1">
-  <div class="section-title mb-16"><span class="emoji">💰</span><h2>Revenue Intelligence</h2><div class="line"></div></div>
-
-  <div class="grid-2 mb-20">
-    <div class="card">
-      <div class="card-title"><span class="icon">📡</span> Revenue by Acquisition Source</div>
-      <div id="source-bars"></div>
-      <div class="insight gold mt-12">Website organic drives 47% of revenue (₹13.2L). Facebook Paid is 2nd at ₹3.15L with the highest paid AOV.</div>
+<section class="rollcall-section" id="rollcall">
+  <div class="rollcall-inner">
+    <div class="rollcall-head">
+      <div class="section-label">College roll call</div>
+      <h2>Is your college <em>in?</em></h2>
+      <p>Click your college tile to mark your attendance. Show the Unrest team which colleges want it most.</p>
+      <div class="rollcall-counter">
+        <span>🏫</span>
+        <span id="colleges-claimed">0</span> colleges represented
+        <span>·</span>
+        <span id="total-marked">0</span> students marked present
+      </div>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="icon">💳</span> Revenue by Payment Page</div>
-      <div id="payment-bars"></div>
-      <div class="insight warn mt-12">International page: 74 orders, ₹11,716 total (₹158 avg). Pricing or payment flow is catastrophically broken.</div>
+    <div class="college-grid" id="college-grid"></div>
+  </div>
+</section>
+
+<section class="echo-section" id="echo" style="display: none;">
+  <div class="echo-wall-bg"></div>
+  <div class="echo-inner">
+    <div class="echo-head">
+      <div class="section-label">Roll Call</div>
+      <h2>Echo your <em>voice</em></h2>
+    </div>
+    <div id="echo-unlocked">
+      <div class="echo-form-wrap">
+        <div class="echo-form-row">
+          <input class="echo-input echo-input-small" id="echo-name" type="text" placeholder="First Name" maxlength="15">
+          <select class="echo-select echo-input-small" id="echo-year">
+            <option value="" disabled selected>Year</option>
+            <option>1st yr</option><option>2nd yr</option><option>3rd yr</option><option>4th yr</option><option>Alumni</option>
+          </select>
+          <select class="echo-select" id="echo-college">
+            </select>
+        </div>
+        <div class="echo-form-row" style="margin-top: 0.6rem;">
+          <input class="echo-input echo-input-large" id="echo-text" type="text" placeholder="Start your journey with your first echo!" maxlength="120">
+          <button class="echo-submit" onclick="submitEcho()">Post echo →</button>
+        </div>
+      </div>
+      <div class="echo-wall" id="echo-wall"></div>
     </div>
   </div>
+</section>
 
-  <div class="card mb-20">
-    <div class="card-title"><span class="icon">📊</span> Monthly Performance Table</div>
-    <table class="data-table">
-      <thead><tr><th>Month</th><th>Orders</th><th>Revenue</th><th>AOV</th><th>AOV Trend</th></tr></thead>
-      <tbody>
-        <tr><td>May 2025</td><td class="mono">8</td><td class="mono">₹84,700</td><td class="mono" style="color:var(--green)">₹10,588</td><td>🟢 Launch month, high-value early adopters</td></tr>
-        <tr><td>Jun 2025</td><td class="mono" style="color:var(--green)">135</td><td class="mono" style="color:var(--green)">₹6.24L</td><td class="mono">₹4,623</td><td>📈 Volume spike — campaign launch?</td></tr>
-        <tr><td>Jul 2025</td><td class="mono">43</td><td class="mono">₹2.28L</td><td class="mono" style="color:var(--green)">₹5,859</td><td>🟢 Quality recovery</td></tr>
-        <tr><td>Aug 2025</td><td class="mono">43</td><td class="mono">₹3.20L</td><td class="mono" style="color:var(--green)">₹7,624</td><td>🏆 <b>Highest AOV month</b></td></tr>
-        <tr><td>Sep 2025</td><td class="mono">28</td><td class="mono">₹1.99L</td><td class="mono" style="color:var(--green)">₹7,111</td><td>🟢 High value maintained</td></tr>
-        <tr><td>Oct 2025</td><td class="mono">27</td><td class="mono">₹1.55L</td><td class="mono">₹5,751</td><td>➡️ Stable</td></tr>
-        <tr><td>Nov 2025</td><td class="mono">26</td><td class="mono">₹1.88L</td><td class="mono" style="color:var(--green)">₹7,842</td><td>🟢 High AOV, low volume</td></tr>
-        <tr><td>Dec 2025</td><td class="mono">42</td><td class="mono">₹1.90L</td><td class="mono" style="color:var(--orange)">₹4,514</td><td>🟡 AOV dip</td></tr>
-        <tr><td>Jan 2026</td><td class="mono" style="color:var(--green)">114</td><td class="mono" style="color:var(--green)">₹4.49L</td><td class="mono" style="color:var(--red)">₹3,942</td><td>⚠️ Volume spike, AOV dropped — check traffic quality</td></tr>
-        <tr><td>Feb 2026</td><td class="mono">60</td><td class="mono">₹2.02L</td><td class="mono" style="color:var(--red)">₹3,367</td><td>🔴 AOV declining trend</td></tr>
-        <tr><td>Mar 2026</td><td class="mono">51</td><td class="mono">₹1.76L</td><td class="mono" style="color:var(--red)">₹3,453</td><td>🔴 AOV still low — investigate</td></tr>
-      </tbody>
-    </table>
-    <div class="insight warn mt-12">⚠️ <b>AOV is trending DOWN</b> from ₹7,624 (Aug) to ₹3,453 (Mar). You're getting more orders but lower-quality ones. The volume growth is masking a quality decline.</div>
-  </div>
+<footer>
+  <div class="foot-logo">Un<span>rest</span></div>
+  <p>© 2026 Unrest · Built by a DU student, for DU students</p>
+</footer>
 
-  <div class="card mb-20">
-    <div class="card-title"><span class="icon">🔑</span> Revenue Concentration Risk</div>
-    <div class="grid-3">
-      <div style="background:var(--bg-elevated);border-radius:var(--radius);padding:16px;text-align:center">
-        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">TOP PRODUCT</div>
-        <div style="font-size:28px;font-weight:900;color:var(--gold)">49.8%</div>
-        <div style="font-size:11px;color:var(--text-secondary)">Analysis+Correction+Consult</div>
-      </div>
-      <div style="background:var(--bg-elevated);border-radius:var(--radius);padding:16px;text-align:center">
-        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">TOP CHANNEL</div>
-        <div style="font-size:28px;font-weight:900;color:var(--gold)">46.8%</div>
-        <div style="font-size:11px;color:var(--text-secondary)">Website Organic</div>
-      </div>
-      <div style="background:var(--bg-elevated);border-radius:var(--radius);padding:16px;text-align:center">
-        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">TOP GATEWAY</div>
-        <div style="font-size:28px;font-weight:900;color:var(--red)">99.3%</div>
-        <div style="font-size:11px;color:var(--text-secondary)">Razorpay (India only)</div>
-      </div>
-    </div>
-    <div class="insight warn mt-12">High concentration risk: 50% revenue from 1 product, 47% from 1 channel, 99% from 1 payment gateway. Diversify urgently.</div>
-  </div>
-</div>
+<div class="confetti-container" id="confetti-container"></div>
 
-<!-- ═══ TAB 2: CUSTOMER INTEL ═══ -->
-<div class="tab-panel" id="tab-2">
-  <div class="section-title mb-16"><span class="emoji">👥</span><h2>Customer Intelligence</h2><div class="line"></div></div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, query, where, onSnapshot, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  <div class="grid-2 mb-20">
-    <div class="card">
-      <div class="card-title"><span class="icon">🎂</span> Age Distribution</div>
-      <div id="age-bars"></div>
-      <div class="insight info mt-12">Core audience: 26-50 (78%). But &lt;18 (parents buying for kids) = 11% — untapped baby naming market at premium pricing.</div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="icon">💼</span> Profession Segments</div>
-      <div id="profession-bars"></div>
-      <div class="insight opp mt-12">Business owners (41) = largest segment. They'll pay for Business Name Analysis at 3-5× personal report price.</div>
-    </div>
-  </div>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDBJ0hHjVyEnwg7mV7ECeG163K7fs1fsiE",
+    authDomain: "du-verse-e75db.firebaseapp.com",
+    databaseURL: "https://du-verse-e75db-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "du-verse-e75db",
+    storageBucket: "du-verse-e75db.firebasestorage.app",
+    messagingSenderId: "84735746102",
+    appId: "1:84735746102:web:6fe5353a0586db71323897"
+  };
 
-  <div class="grid-2 mb-20">
-    <div class="card">
-      <div class="card-title"><span class="icon">🧠</span> Why They Buy (Reason Analysis)</div>
-      <div id="reason-bars"></div>
-      <div class="insight gold mt-12">Career + Money = 50% of all purchase reasons. Lead every ad, landing page, and email with these two pain points.</div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="icon">💑</span> Relationship Quality Profile</div>
-      <div style="margin-bottom:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:6px">With Father</div>
-        <div class="stacked-bar">
-          <div class="stacked-bar-seg" style="width:49.5%;background:var(--green);color:var(--bg-primary)">50%</div>
-          <div class="stacked-bar-seg" style="width:31.2%;background:var(--gold);color:var(--bg-primary)">31%</div>
-          <div class="stacked-bar-seg" style="width:19.3%;background:var(--red);color:white">19%</div>
-        </div>
-      </div>
-      <div style="margin-bottom:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:6px">With Mother</div>
-        <div class="stacked-bar">
-          <div class="stacked-bar-seg" style="width:69.5%;background:var(--green);color:var(--bg-primary)">70%</div>
-          <div class="stacked-bar-seg" style="width:17.5%;background:var(--gold);color:var(--bg-primary)">17%</div>
-          <div class="stacked-bar-seg" style="width:13%;background:var(--red);color:white">13%</div>
-        </div>
-      </div>
-      <div style="margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:6px">With Spouse</div>
-        <div class="stacked-bar">
-          <div class="stacked-bar-seg" style="width:50%;background:var(--green);color:var(--bg-primary)">50%</div>
-          <div class="stacked-bar-seg" style="width:23%;background:var(--gold);color:var(--bg-primary)">23%</div>
-          <div class="stacked-bar-seg" style="width:27%;background:var(--red);color:white">27%</div>
-        </div>
-      </div>
-      <div class="stacked-legend">
-        <span><span class="dot" style="background:var(--green)"></span> Good</span>
-        <span><span class="dot" style="background:var(--gold)"></span> Neutral</span>
-        <span><span class="dot" style="background:var(--red)"></span> Challenging</span>
-      </div>
-      <div class="insight warn mt-12">27% have challenging spouse relationships — highest friction. Create targeted ads: "Is your name compatibility affecting your marriage?"</div>
-    </div>
-  </div>
+  const app = initializeApp(firebaseConfig);
+  window.db = getFirestore(app);
+  window.auth = getAuth(app);
+  window.collection = collection; window.addDoc = addDoc; 
+  window.query = query; window.where = where; window.onSnapshot = onSnapshot;
+  window.updateDoc = updateDoc; window.doc = doc;
 
-  <!-- Gender Split -->
-  <div class="card mb-20">
-    <div class="card-title"><span class="icon">⚧</span> Gender Intelligence</div>
-    <div class="grid-2">
-      <div style="background:var(--blue-dim);border-radius:var(--radius);padding:20px;text-align:center">
-        <div style="font-size:42px;font-weight:900;color:var(--blue)">59%</div>
-        <div style="font-size:15px;color:var(--text-secondary)">Male · 342 orders</div>
-        <div style="font-size:12px;color:var(--text-muted)">₹17.7L revenue · Avg ₹5,230</div>
-      </div>
-      <div style="background:var(--purple-dim);border-radius:var(--radius);padding:20px;text-align:center">
-        <div style="font-size:42px;font-weight:900;color:var(--purple)">41%</div>
-        <div style="font-size:15px;color:var(--text-secondary)">Female · 235 orders</div>
-        <div style="font-size:12px;color:var(--text-muted)">₹10.4L revenue · Avg ₹4,521</div>
-      </div>
-    </div>
-    <div class="insight info mt-12">Males spend ₹709 more per order. Female segment is underserved — target mothers, brides, career women with dedicated campaigns.</div>
-  </div>
-</div>
-
-<!-- ═══ TAB 3: FUNNEL & LEAKS ═══ -->
-<div class="tab-panel" id="tab-3">
-  <div class="section-title mb-16"><span class="emoji">🔻</span><h2>Funnel Analysis & Revenue Leaks</h2><div class="line"></div></div>
-
-  <div class="grid-2-1 mb-20">
-    <div class="card danger">
-      <div class="card-title"><span class="icon">🔻</span> Order Completion Funnel</div>
-      <div class="funnel-step" style="background:var(--blue-dim);border-color:#3B82F644">
-        <span style="color:var(--blue);font-size:13px">Orders Initiated</span>
-        <span style="color:var(--blue);font-size:22px;font-weight:900;font-family:'JetBrains Mono'">577</span>
-        <span style="color:var(--text-muted);font-size:11px">100%</span>
-      </div>
-      <div class="funnel-drop" style="color:var(--text-muted)">▼ 7 payment failures</div>
-      <div class="funnel-step" style="background:var(--cyan-dim);border-color:#06B6D444">
-        <span style="color:var(--cyan);font-size:13px">Payment Attempted</span>
-        <span style="color:var(--cyan);font-size:22px;font-weight:900;font-family:'JetBrains Mono'">570</span>
-        <span style="color:var(--text-muted);font-size:11px">98.8%</span>
-      </div>
-      <div class="funnel-drop" style="color:var(--red)">▼ <b>332 STUCK IN DRAFT (57.5%!)</b> <span class="pulse">🚨</span></div>
-      <div class="funnel-step" style="background:var(--gold-glow);border-color:var(--gold-dim)">
-        <span style="color:var(--gold);font-size:13px">Submitted for Processing</span>
-        <span style="color:var(--gold);font-size:22px;font-weight:900;font-family:'JetBrains Mono'">238</span>
-        <span style="color:var(--text-muted);font-size:11px">41.2%</span>
-      </div>
-      <div class="funnel-drop" style="color:var(--text-muted)">▼ 3 in processing</div>
-      <div class="funnel-step" style="background:var(--green-dim);border-color:#10B98144">
-        <span style="color:var(--green);font-size:13px">Report Sent to Customer</span>
-        <span style="color:var(--green);font-size:22px;font-weight:900;font-family:'JetBrains Mono'">235</span>
-        <span style="color:var(--text-muted);font-size:11px">40.7%</span>
-      </div>
-    </div>
-
-    <div class="card" style="border-color:var(--red-dim);background:linear-gradient(180deg,#1A0808,#0C1220)">
-      <div class="card-title" style="color:var(--red)"><span class="icon">💀</span> THE LEAK</div>
-      <div style="text-align:center;padding:16px 0">
-        <div style="font-size:56px;font-weight:900;color:var(--red);font-family:'JetBrains Mono';line-height:1" class="glow-red">₹16.7L</div>
-        <div style="font-size:14px;color:var(--red);margin-top:6px;font-weight:700">REVENUE LOCKED</div>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:8px">339 orders paid but never fulfilled</div>
-      </div>
-      <div style="background:var(--bg-elevated);border-radius:var(--radius-sm);padding:12px;margin:12px 0">
-        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Recovery Potential</div>
-        <div style="display:flex;justify-content:space-between">
-          <span style="font-size:12px;color:var(--text-secondary)">If 50% recovered:</span>
-          <span style="font-size:14px;font-weight:800;color:var(--green);font-family:'JetBrains Mono'">+₹8.35L</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:4px">
-          <span style="font-size:12px;color:var(--text-secondary)">If 80% recovered:</span>
-          <span style="font-size:14px;font-weight:800;color:var(--green);font-family:'JetBrains Mono'">+₹13.4L</span>
-        </div>
-      </div>
-      <div class="insight warn">This is NOT a marketing problem. People already paid. Fix fulfillment.</div>
-    </div>
-  </div>
-
-  <!-- Completion by product -->
-  <div class="grid-2 mb-20">
-    <div class="card">
-      <div class="card-title"><span class="icon">📊</span> Completion Rate by Product</div>
-      <div id="completion-bars"></div>
-      <div class="insight info mt-12">Basic Analysis completes fastest (48.3%). Correction reports bottleneck at human analyst capacity.</div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="icon">🏦</span> Payment Gateway Split</div>
-      <div class="grid-2" style="margin-bottom:12px">
-        <div style="background:var(--green-dim);border-radius:var(--radius-sm);padding:14px;text-align:center">
-          <div style="font-size:13px;font-weight:700;color:var(--green)">Razorpay (India)</div>
-          <div style="font-size:24px;font-weight:900;color:var(--text-primary);margin:4px 0;font-family:'JetBrains Mono'">491</div>
-          <div style="font-size:11px;color:var(--text-muted)">₹27.97L · Avg ₹5,779</div>
-        </div>
-        <div style="background:var(--red-dim);border-radius:var(--radius-sm);padding:14px;text-align:center">
-          <div style="font-size:13px;font-weight:700;color:var(--red)">Stripe (Int'l)</div>
-          <div style="font-size:24px;font-weight:900;color:var(--text-primary);margin:4px 0;font-family:'JetBrains Mono'">86</div>
-          <div style="font-size:11px;color:var(--text-muted)">₹20,404 · Avg ₹237 😱</div>
-        </div>
-      </div>
-      <div class="insight warn">Stripe avg ₹237 vs Razorpay ₹5,779. That's a 24× gap. 86 international customers are being charged pennies. Fix this = ₹4.3L+ recovery.</div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ TAB 4: CHANNEL INTEL ═══ -->
-<div class="tab-panel" id="tab-4">
-  <div class="section-title mb-16"><span class="emoji">📡</span><h2>Channel Intelligence</h2><div class="line"></div></div>
-
-  <div class="card mb-20">
-    <div class="card-title"><span class="icon">🏆</span> Channel Performance Matrix</div>
-    <table class="data-table">
-      <thead><tr><th>Channel</th><th>Orders</th><th>Revenue</th><th>AOV</th><th>Quality Score</th><th>Action</th></tr></thead>
-      <tbody>
-        <tr><td><strong style="color:var(--green)">WhatsApp</strong></td><td class="mono">14</td><td class="mono">₹1.13L</td><td class="mono" style="color:var(--green)">₹8,036</td>
-          <td><div style="height:6px;width:100%;background:var(--green);border-radius:3px"></div></td><td style="color:var(--green);font-size:11px;font-weight:700">🚀 SCALE 10×</td></tr>
-        <tr><td><strong style="color:var(--gold)">Facebook Paid</strong></td><td class="mono">41</td><td class="mono">₹3.15L</td><td class="mono" style="color:var(--green)">₹7,680</td>
-          <td><div style="height:6px;width:96%;background:var(--gold);border-radius:3px"></div></td><td style="color:var(--gold);font-size:11px;font-weight:700">📈 Increase budget 3×</td></tr>
-        <tr><td><strong style="color:var(--blue)">Website Organic</strong></td><td class="mono">180</td><td class="mono">₹13.18L</td><td class="mono" style="color:var(--green)">₹7,322</td>
-          <td><div style="height:6px;width:91%;background:var(--blue);border-radius:3px"></div></td><td style="color:var(--blue);font-size:11px;font-weight:700">🛡️ Protect & grow SEO</td></tr>
-        <tr><td><strong>QuickReply.ai</strong></td><td class="mono">7</td><td class="mono">₹0.37L</td><td class="mono">₹5,300</td>
-          <td><div style="height:6px;width:66%;background:var(--cyan);border-radius:3px"></div></td><td style="font-size:11px;color:var(--text-muted)">Test scaling</td></tr>
-        <tr><td><strong>YouTube</strong></td><td class="mono">48</td><td class="mono">₹2.35L</td><td class="mono">₹4,896</td>
-          <td><div style="height:6px;width:61%;background:var(--purple);border-radius:3px"></div></td><td style="color:var(--purple);font-size:11px;font-weight:700">📹 3 videos/week</td></tr>
-        <tr><td><strong>Our Services</strong></td><td class="mono">32</td><td class="mono">₹1.08L</td><td class="mono" style="color:var(--orange)">₹3,363</td>
-          <td><div style="height:6px;width:42%;background:var(--orange);border-radius:3px"></div></td><td style="font-size:11px;color:var(--text-muted)">Below avg AOV</td></tr>
-        <tr><td><strong style="color:var(--red)">Facebook Organic</strong></td><td class="mono">69</td><td class="mono" style="color:var(--red)">₹10,931</td><td class="mono" style="color:var(--red)">₹158</td>
-          <td><div style="height:6px;width:2%;background:var(--red);border-radius:3px"></div></td><td style="color:var(--red);font-size:11px;font-weight:700">⚠️ Lead gen ONLY</td></tr>
-        <tr><td><strong style="color:var(--red)">Meta Ads</strong></td><td class="mono">9</td><td class="mono" style="color:var(--red)">₹6,741</td><td class="mono" style="color:var(--red)">₹749</td>
-          <td><div style="height:6px;width:9%;background:var(--red);border-radius:3px"></div></td><td style="color:var(--red);font-size:11px;font-weight:700">⚠️ Fix targeting</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="grid-3 mb-20">
-    <div class="card highlight">
-      <div class="card-title" style="color:var(--green)"><span class="icon">🌟</span> #1 Scale This</div>
-      <div style="text-align:center;padding:8px 0">
-        <div style="font-size:36px">📱</div>
-        <div style="font-size:18px;font-weight:800;margin:8px 0">WhatsApp</div>
-        <div style="font-size:32px;font-weight:900;color:var(--green);font-family:'JetBrains Mono'">₹8,036</div>
-        <div style="font-size:11px;color:var(--text-muted)">Highest AOV · Only 14 orders</div>
-      </div>
-      <div class="insight opp mt-12">Click-to-WhatsApp ads + bot automation = scale from 14 to 140+ orders at premium pricing.</div>
-    </div>
-    <div class="card">
-      <div class="card-title" style="color:var(--gold)"><span class="icon">📊</span> #2 Increase Budget</div>
-      <div style="text-align:center;padding:8px 0">
-        <div style="font-size:36px">📘</div>
-        <div style="font-size:18px;font-weight:800;margin:8px 0">Facebook Paid</div>
-        <div style="font-size:32px;font-weight:900;color:var(--gold);font-family:'JetBrains Mono'">₹7,680</div>
-        <div style="font-size:11px;color:var(--text-muted)">2nd highest AOV · 41 orders</div>
-      </div>
-      <div class="insight gold mt-12">Paid FB brings premium buyers. Organic FB (₹158 AOV) is noise. Reallocate all organic FB effort to paid.</div>
-    </div>
-    <div class="card">
-      <div class="card-title" style="color:var(--red)"><span class="icon">⚠️</span> #3 Fix or Kill</div>
-      <div style="text-align:center;padding:8px 0">
-        <div style="font-size:36px">🌐</div>
-        <div style="font-size:18px;font-weight:800;margin:8px 0">International</div>
-        <div style="font-size:32px;font-weight:900;color:var(--red);font-family:'JetBrains Mono'">₹237</div>
-        <div style="font-size:11px;color:var(--text-muted)">86 orders · Pricing broken</div>
-      </div>
-      <div class="insight warn mt-12">Fix Stripe pricing/flow. At correct pricing (₹5,000+), this segment alone = ₹4.3L+ annually.</div>
-    </div>
-  </div>
-
-  <div class="card mb-20">
-    <div class="card-title"><span class="icon">⏰</span> Timing Intelligence</div>
-    <div class="grid-2">
-      <div>
-        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:10px">Peak Order Hours</div>
-        <div id="hour-chart" class="bar-chart" style="height:120px"></div>
-        <div class="insight info mt-12">Peak: 11AM-2PM and 8PM-11PM. Schedule all ads, emails, WhatsApp blasts for these windows.</div>
-      </div>
-      <div>
-        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:10px">Day of Week</div>
-        <div id="dow-chart" class="bar-chart" style="height:120px"></div>
-        <div class="insight gold mt-12">Monday = most orders (100). Launch weekly campaigns Sunday night to capture Monday intent.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ TAB 5: GROWTH SIMULATOR ═══ -->
-<div class="tab-panel" id="tab-5">
-  <div class="section-title mb-16"><span class="emoji">🧪</span><h2>Growth Scenario Simulator</h2><div class="line"></div></div>
-
-  <div class="grid-2 mb-20">
-    <div class="card highlight">
-      <div class="card-title"><span class="icon">🎛️</span> Adjust Growth Levers</div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>Monthly Calculator Users</span>
-          <span class="sim-val" id="sim-users-val" style="color:var(--blue)">10,000</span>
-        </div>
-        <input type="range" id="sim-users" min="1000" max="500000" step="1000" value="10000" oninput="updateSimulator()">
-        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)"><span>1K</span><span>500K</span></div>
-      </div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>Calculator → Purchase Conversion</span>
-          <span class="sim-val" id="sim-cvr-val" style="color:var(--green)">3.0%</span>
-        </div>
-        <input type="range" id="sim-cvr" min="0.5" max="15" step="0.1" value="3.0" oninput="updateSimulator()">
-        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)"><span>0.5%</span><span>15%</span></div>
-      </div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>Average Order Value (₹)</span>
-          <span class="sim-val" id="sim-aov-val" style="color:var(--gold)">₹5,000</span>
-        </div>
-        <input type="range" id="sim-aov" min="1000" max="15000" step="100" value="5000" oninput="updateSimulator()">
-        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)"><span>₹1K</span><span>₹15K</span></div>
-      </div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>Premium Upsell Rate (%)</span>
-          <span class="sim-val" id="sim-premium-val" style="color:var(--purple)">62%</span>
-        </div>
-        <input type="range" id="sim-premium" min="30" max="95" step="1" value="62" oninput="updateSimulator()">
-        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)"><span>30%</span><span>95%</span></div>
-      </div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>Fulfillment/Completion Rate (%)</span>
-          <span class="sim-val" id="sim-fulfill-val" style="color:var(--orange)">85%</span>
-        </div>
-        <input type="range" id="sim-fulfill" min="30" max="100" step="1" value="85" oninput="updateSimulator()">
-        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)"><span>30%</span><span>100%</span></div>
-      </div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>Monthly Ad Spend (₹)</span>
-          <span class="sim-val" id="sim-adspend-val" style="color:var(--cyan)">₹50,000</span>
-        </div>
-        <input type="range" id="sim-adspend" min="0" max="1000000" step="5000" value="50000" oninput="updateSimulator()">
-        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)"><span>₹0</span><span>₹10L</span></div>
-      </div>
-    </div>
-
-    <div>
-      <div class="sim-output mb-16">
-        <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Projected Monthly Revenue</div>
-        <div class="big glow-gold" style="color:var(--gold)" id="sim-revenue">₹12.8L</div>
-        <div class="sub" id="sim-annual">Annual: ₹1.53Cr</div>
-      </div>
-
-      <div class="sim-breakdown">
-        <div class="sim-breakdown-item">
-          <div class="val" style="color:var(--blue)" id="sim-orders">300</div>
-          <div class="lbl">Monthly Orders</div>
-        </div>
-        <div class="sim-breakdown-item">
-          <div class="val" style="color:var(--green)" id="sim-roas">25.5×</div>
-          <div class="lbl">ROAS</div>
-        </div>
-        <div class="sim-breakdown-item">
-          <div class="val" style="color:var(--purple)" id="sim-cac">₹167</div>
-          <div class="lbl">CAC (Paid Only)</div>
-        </div>
-        <div class="sim-breakdown-item">
-          <div class="val" style="color:var(--orange)" id="sim-fulfill-rev">₹10.8L</div>
-          <div class="lbl">Realized Revenue</div>
-        </div>
-      </div>
-
-      <div class="insight gold mt-16" id="sim-insight">Loading...</div>
-
-      <div style="margin-top:16px">
-        <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px">Quick Scenarios</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <div class="scenario-card" onclick="loadScenario('current')">
-            <div class="sc-title" style="color:var(--text-muted)">📌 Current State</div>
-            <div class="sc-desc">Today's actual metrics</div>
-          </div>
-          <div class="scenario-card" onclick="loadScenario('optimized')">
-            <div class="sc-title" style="color:var(--gold)">⚡ Quick Wins</div>
-            <div class="sc-desc">Fix leaks + optimize conversion</div>
-          </div>
-          <div class="scenario-card" onclick="loadScenario('growth')">
-            <div class="sc-title" style="color:var(--green)">🚀 Growth Mode</div>
-            <div class="sc-desc">Aggressive scaling</div>
-          </div>
-          <div class="scenario-card" onclick="loadScenario('100x')">
-            <div class="sc-title" style="color:var(--purple)">💎 100× Target</div>
-            <div class="sc-desc">Full hypergrowth blueprint</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ TAB 6: REVENUE SIMULATOR ═══ -->
-<div class="tab-panel" id="tab-6">
-  <div class="section-title mb-16"><span class="emoji">💎</span><h2>Revenue Expansion Simulator</h2><div class="line"></div></div>
-
-  <div class="grid-2 mb-20">
-    <div class="card highlight">
-      <div class="card-title"><span class="icon">🏗️</span> Product Ladder Builder</div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>Basic Report Price (₹)</span>
-          <span class="sim-val" id="rev-basic-val" style="color:var(--blue)">₹1,100</span>
-        </div>
-        <input type="range" id="rev-basic" min="500" max="3000" step="100" value="1100" oninput="updateRevSim()">
-      </div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>Correction Report Price (₹)</span>
-          <span class="sim-val" id="rev-correction-val" style="color:var(--gold)">₹5,100</span>
-        </div>
-        <input type="range" id="rev-correction" min="2000" max="12000" step="100" value="5100" oninput="updateRevSim()">
-      </div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>Consultation Add-on Price (₹)</span>
-          <span class="sim-val" id="rev-consult-val" style="color:var(--green)">₹5,300</span>
-        </div>
-        <input type="range" id="rev-consult" min="1000" max="15000" step="100" value="5300" oninput="updateRevSim()">
-      </div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>Family Bundle Price (₹) <span style="font-size:10px;color:var(--text-dim)">[NEW]</span></span>
-          <span class="sim-val" id="rev-bundle-val" style="color:var(--purple)">₹15,000</span>
-        </div>
-        <input type="range" id="rev-bundle" min="8000" max="30000" step="500" value="15000" oninput="updateRevSim()">
-      </div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>Business Name Report Price (₹) <span style="font-size:10px;color:var(--text-dim)">[NEW]</span></span>
-          <span class="sim-val" id="rev-biz-val" style="color:var(--cyan)">₹10,000</span>
-        </div>
-        <input type="range" id="rev-biz" min="5000" max="30000" step="500" value="10000" oninput="updateRevSim()">
-      </div>
-
-      <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>Monthly Orders</span>
-          <span class="sim-val" id="rev-orders-val" style="color:var(--text-primary)">60</span>
-        </div>
-        <input type="range" id="rev-orders" min="10" max="1000" step="5" value="60" oninput="updateRevSim()">
-      </div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>% choosing Correction (vs Basic)</span>
-          <span class="sim-val" id="rev-corr-pct-val" style="color:var(--gold)">62%</span>
-        </div>
-        <input type="range" id="rev-corr-pct" min="20" max="95" step="1" value="62" oninput="updateRevSim()">
-      </div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>% adding Consultation</span>
-          <span class="sim-val" id="rev-consult-pct-val" style="color:var(--green)">57%</span>
-        </div>
-        <input type="range" id="rev-consult-pct" min="10" max="90" step="1" value="57" oninput="updateRevSim()">
-      </div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>% buying Family Bundle</span>
-          <span class="sim-val" id="rev-bundle-pct-val" style="color:var(--purple)">5%</span>
-        </div>
-        <input type="range" id="rev-bundle-pct" min="0" max="30" step="1" value="5" oninput="updateRevSim()">
-      </div>
-
-      <div class="sim-group">
-        <div class="sim-label">
-          <span>% buying Business Report</span>
-          <span class="sim-val" id="rev-biz-pct-val" style="color:var(--cyan)">3%</span>
-        </div>
-        <input type="range" id="rev-biz-pct" min="0" max="20" step="1" value="3" oninput="updateRevSim()">
-      </div>
-    </div>
-
-    <div>
-      <div class="sim-output mb-16">
-        <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Blended Monthly Revenue</div>
-        <div class="big glow-gold" style="color:var(--gold)" id="rev-total">₹3.2L</div>
-        <div class="sub" id="rev-annual-total">Annual: ₹38.4L</div>
-      </div>
-
-      <div class="sim-breakdown">
-        <div class="sim-breakdown-item">
-          <div class="val" style="color:var(--gold)" id="rev-blended-aov">₹5,340</div>
-          <div class="lbl">Blended AOV</div>
-        </div>
-        <div class="sim-breakdown-item">
-          <div class="val" style="color:var(--green)" id="rev-vs-current">+14%</div>
-          <div class="lbl">vs Current AOV</div>
-        </div>
-        <div class="sim-breakdown-item">
-          <div class="val" style="color:var(--purple)" id="rev-bundle-rev">₹0.45L</div>
-          <div class="lbl">Bundle Revenue</div>
-        </div>
-        <div class="sim-breakdown-item">
-          <div class="val" style="color:var(--cyan)" id="rev-biz-rev">₹0.18L</div>
-          <div class="lbl">Business Report Rev</div>
-        </div>
-      </div>
-
-      <div class="card mt-16" style="background:var(--bg-elevated)">
-        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:10px">Revenue Breakdown by Product</div>
-        <div id="rev-breakdown-bars"></div>
-      </div>
-
-      <div class="insight gold mt-16" id="rev-insight">Loading...</div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ TAB 7: 90-DAY PLAYBOOK ═══ -->
-<div class="tab-panel" id="tab-7">
-  <div class="section-title mb-16"><span class="emoji">🚀</span><h2>90-Day Growth Execution Playbook</h2><div class="line"></div></div>
-
-  <div class="grid-3 mb-20">
-    <div class="card" style="border-top:3px solid var(--red)">
-      <div style="font-size:10px;color:var(--red);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:4px">Week 1-2</div>
-      <div style="font-size:18px;font-weight:800;margin-bottom:12px">Stop the Bleeding</div>
-      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8">
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Audit all 339 draft orders: categorize failed payments vs completed payments with no report</div>
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Fix Stripe international payment flow — test end-to-end, fix pricing display</div>
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Send recovery emails to all unfulfilled orders with direct payment/status links</div>
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Set up order monitoring dashboard — alert if draft count exceeds 20% of weekly orders</div>
-        <div style="padding:6px 0">→ Implement auto-report generation for basic analysis reports (reduce human bottleneck)</div>
-      </div>
-      <div style="background:var(--red-dim);border-radius:var(--radius-sm);padding:10px;margin-top:12px;text-align:center">
-        <div style="font-size:10px;color:var(--text-muted)">Expected Impact</div>
-        <div style="font-size:20px;font-weight:900;color:var(--red);font-family:'JetBrains Mono'">+₹8-13L recovered</div>
-      </div>
-    </div>
-
-    <div class="card" style="border-top:3px solid var(--gold)">
-      <div style="font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:4px">Week 3-6</div>
-      <div style="font-size:18px;font-weight:800;margin-bottom:12px">Optimize the Engine</div>
-      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8">
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Launch WhatsApp sales funnel with Click-to-WhatsApp ads on Facebook/Instagram</div>
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Increase Facebook Paid budget 3× (proven ₹7,680 AOV channel)</div>
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Add comparison table on calculator result page: Basic vs Correction (anchor Premium)</div>
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Integrate consultation booking directly into purchase flow (not post-purchase)</div>
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Build 7-part post-purchase email sequence for repeat purchases</div>
-        <div style="padding:6px 0">→ Create "Name Score" concept for viral sharing from calculator</div>
-      </div>
-      <div style="background:var(--gold-glow);border-radius:var(--radius-sm);padding:10px;margin-top:12px;text-align:center">
-        <div style="font-size:10px;color:var(--text-muted)">Expected Impact</div>
-        <div style="font-size:20px;font-weight:900;color:var(--gold);font-family:'JetBrains Mono'">2-3× monthly revenue</div>
-      </div>
-    </div>
-
-    <div class="card" style="border-top:3px solid var(--green)">
-      <div style="font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:4px">Week 7-12</div>
-      <div style="font-size:18px;font-weight:800;margin-bottom:12px">Scale Proven Channels</div>
-      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8">
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Launch Baby Name Analysis product (target parents, ₹62 orders from &lt;18 segment)</div>
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Launch Business Name Analysis at ₹10-15K (target 41 business owners in data)</div>
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Scale YouTube to 3 videos/week — Celebrity Name Audits content series</div>
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Launch Family Bundle offer (4 names at discount)</div>
-        <div style="padding:6px 0;border-bottom:1px solid var(--border)">→ Build referral program: "Refer 3 friends → ₹500 off next report"</div>
-        <div style="padding:6px 0">→ Start Hindi & Tamil calculator/report translations for 2× market reach</div>
-      </div>
-      <div style="background:var(--green-dim);border-radius:var(--radius-sm);padding:10px;margin-top:12px;text-align:center">
-        <div style="font-size:10px;color:var(--text-muted)">Expected Impact</div>
-        <div style="font-size:20px;font-weight:900;color:var(--green);font-family:'JetBrains Mono'">5-10× within 90 days</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Hidden Opportunities -->
-  <div class="card mb-20">
-    <div class="card-title"><span class="icon">🔮</span> Hidden Opportunities from Your Data</div>
-    <div class="grid-3">
-      <div class="insight opp">🍼 <b>Baby Name Market:</b> 62 orders from &lt;18 age group (parents). Create dedicated product at ₹7,999+ — these parents will pay premium for their child's future.</div>
-      <div class="insight opp">💼 <b>Business Owner Segment:</b> 41 business owners buying personal reports. Launch Business Name Analysis at ₹14,999 — they'll buy both personal + business.</div>
-      <div class="insight opp">💑 <b>Spouse Tension = Purchase Trigger:</b> 27% report challenging spouse relationships. Create targeted ads: "Is your name compatibility affecting your marriage?"</div>
-      <div class="insight gold">⏰ <b>Peak Hours:</b> 11AM-2PM and 8PM-11PM. Schedule ALL ads, emails, WhatsApp blasts for these windows to maximize conversion.</div>
-      <div class="insight gold">📅 <b>Monday Magic:</b> Monday has the most orders (100). Sunday night campaign → Monday purchases. "Start your week with the right name energy."</div>
-      <div class="insight info">🤖 <b>ChatGPT Traffic:</b> 2 orders from chatgpt.com at ₹3,100 avg. People asking AI about numerology and finding you. Create content optimized for AI citation.</div>
-      <div class="insight info">📉 <b>AOV Alert:</b> AOV dropped from ₹7,624 (Aug) to ₹3,453 (Mar). Recent growth is volume-driven not value-driven. Re-focus on quality traffic.</div>
-      <div class="insight opp">🏥 <b>Health-Driven Buyers:</b> 7% cite health concerns as reason. Create a "Health & Name Vibration" content angle — deeply emotional, high-conversion messaging.</div>
-      <div class="insight warn">🌍 <b>International Customers:</b> 86 Stripe users paying ₹237 avg. Fix pricing = instant ₹4.3L recovery. Then scale UAE, UK, US markets specifically.</div>
-    </div>
-  </div>
-</div>
-
-</div><!-- /main -->
-
-<div class="watermark">Astro Arun Pandit · Confidential</div>
+  const q = query(collection(window.db, "echoes"), where("status", "==", "approved"));
+  onSnapshot(q, (snapshot) => {
+    window.liveEchoes = [];
+    snapshot.forEach((doc) => {
+      const data = doc.data(); data.id = doc.id;
+      window.liveEchoes.push(data);
+    });
+    if(window.renderEchoWall) window.renderEchoWall();
+  });
+</script>
 
 <script>
-// ═══════════════════════════════════════════════
-// TAB NAVIGATION
-// ═══════════════════════════════════════════════
-function showTab(index) {
-  document.querySelectorAll('.tab-panel').forEach((p, i) => {
-    p.classList.toggle('active', i === index);
-  });
-  document.querySelectorAll('.nav-btn').forEach((b, i) => {
-    b.classList.toggle('active', i === index);
-  });
+// --- FULL DU COLLEGE DATABASE (With accurate Colors & Emojis) ---
+const COLLEGES = [
+  // North Campus
+  { id:'stephens', name:"St. Stephen's College", emoji:'⛪', color:'#5d4037', seed:38 },
+  { id:'hindu', name:'Hindu College', emoji:'🎓', color:'#1e4f8c', seed:43 },
+  { id:'ramjas', name:'Ramjas College', emoji:'📚', color:'#2e7d32', seed:22 },
+  { id:'ipcw', name:'IP College for Women', emoji:'🕊️', color:'#00838f', seed:17 },
+  { id:'srcc', name:'SRCC', emoji:'🏛️', color:'#c84b2f', seed:58 },
+  { id:'miranda', name:'Miranda House', emoji:'🌸', color:'#9c27b0', seed:47 },
+  { id:'hansraj', name:'Hansraj College', emoji:'🌟', color:'#0097a7', seed:29 },
+  { id:'sgtb', name:'SGTB Khalsa College', emoji:'⚔️', color:'#f57c00', seed:24 },
+  { id:'kirorimal', name:'Kirori Mal College', emoji:'🏗️', color:'#e65100', seed:26 },
+  { id:'drc', name:'Daulat Ram College', emoji:'📖', color:'#d81b60', seed:21 },
+  // South Campus
+  { id:'lsr', name:'Lady Shri Ram College', emoji:'🎀', color:'#7b1fa2', seed:35 },
+  { id:'venky', name:'Sri Venkateswara College', emoji:'🦅', color:'#6d4c41', seed:32 },
+  { id:'kamala', name:'Kamala Nehru College', emoji:'🌿', color:'#8e24aa', seed:15 },
+  { id:'motilal', name:'Motilal Nehru College', emoji:'🎯', color:'#1565c0', seed:14 },
+  { id:'gargi', name:'Gargi College', emoji:'🌺', color:'#c2185b', seed:19 },
+  { id:'maitreyi', name:'Maitreyi College', emoji:'✨', color:'#0277bd', seed:13 },
+  { id:'sbsc', name:'Shaheed Bhagat Singh', emoji:'🦁', color:'#d32f2f', seed:28 },
+  { id:'jmc', name:'Jesus and Mary College', emoji:'⛪', color:'#4a148c', seed:24 },
+  { id:'cvs', name:'College of Vocational Studies', emoji:'💼', color:'#00695c', seed:18 },
+  { id:'aurobindo', name:'Sri Aurobindo College', emoji:'🌅', color:'#ef6c00', seed:12 },
+  { id:'dcac', name:'DCAC', emoji:'🎨', color:'#283593', seed:20 },
+  // Off-Campus / Others
+  { id:'zakir', name:'Zakir Husain Delhi College', emoji:'🕌', color:'#00695c', seed:9 },
+  { id:'deshbandhu', name:'Deshbandhu College', emoji:'🌱', color:'#558b2f', seed:8 },
+  { id:'dyalsingh', name:'Dyal Singh College', emoji:'🏫', color:'#455a64', seed:14 },
+  { id:'shivaji', name:'Shivaji College', emoji:'🛡️', color:'#fbc02d', seed:11 },
+  { id:'satyawati', name:'Satyawati College', emoji:'🌳', color:'#2e7d32', seed:7 },
+  { id:'sggscc', name:'SGGSCC', emoji:'🚗', color:'#1565c0', seed:23 },
+  { id:'sscbs', name:'SSCBS', emoji:'👔', color:'#37474f', seed:25 },
+  { id:'dduc', name:'Deen Dayal Upadhyaya', emoji:'📘', color:'#0277bd', seed:16 },
+  { id:'keshav', name:'Keshav Mahavidyalaya', emoji:'💎', color:'#ad1457', seed:10 },
+  { id:'agrasen', name:'Maharaja Agrasen College', emoji:'👑', color:'#c62828', seed:8 },
+  { id:'ramanujan', name:'Ramanujan College', emoji:'📐', color:'#00838f', seed:15 },
+  { id:'Other', name:'Other DU College', emoji:'🏫', color:'#455a64', seed:0 }
+];
+
+const COLLEGE_COLORS = {};
+COLLEGES.forEach(c => COLLEGE_COLORS[c.name] = c.color);
+
+let collegeCounts = {};
+let claimedColleges = new Set();
+let waitlistCount = 247;
+let hasUnlockedWall = false;
+window.liveEchoes = [];
+COLLEGES.forEach(c => { collegeCounts[c.id] = c.seed; });
+
+// Populate Dropdown
+window.onload = () => {
+  const sel = document.getElementById('echo-college');
+  if(sel) {
+    sel.innerHTML = '<option value="" disabled selected>Pick your college</option>' + 
+      COLLEGES.map(c => `<option>${c.name}</option>`).join('');
+  }
+};
+
+function formatUsername(name) { return name ? '@' + name.trim().toLowerCase().replace(/\s+/g, '') : '@anonymous'; }
+function scrollToEchoWall() {
+  const echoSec = document.getElementById('echo');
+  if (echoSec.style.display === 'none') { alert('Join the waitlist to unlock the Echo Wall!'); document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth' }); } 
+  else { echoSec.scrollIntoView({ behavior: 'smooth' }); }
 }
 
-// ═══════════════════════════════════════════════
-// CHART HELPERS
-// ═══════════════════════════════════════════════
-function fmt(n) {
-  if (n >= 10000000) return '₹' + (n / 10000000).toFixed(1) + 'Cr';
-  if (n >= 100000) return '₹' + (n / 100000).toFixed(1) + 'L';
-  if (n >= 1000) return '₹' + (n / 1000).toFixed(1) + 'K';
-  return '₹' + n.toLocaleString('en-IN');
+function joinWaitlist(source) {
+  const emailEl = document.getElementById(source === 'hero' ? 'hero-email' : 'waitlist-email');
+  const email = emailEl.value.trim();
+  if (!email || !email.includes('@')) { emailEl.style.outline = '2px solid #c84b2f'; setTimeout(() => emailEl.style.outline = '', 2000); return; }
+
+  try {
+    window.addDoc(window.collection(window.db, "waitlist"), { email: email, timestamp: new Date().toISOString() });
+  } catch(e) { console.log(e); }
+
+  document.getElementById(source === 'hero' ? 'hero-form' : 'waitlist-form').style.display = 'none';
+  document.getElementById(source === 'hero' ? 'hero-success' : 'waitlist-success').style.display = 'block';
+
+  waitlistCount++;
+  document.getElementById('pulse-count').textContent = waitlistCount;
+  document.getElementById('hero-live-count').textContent = waitlistCount;
+  spawnConfetti('#2a6b4a');
+
+  if (!hasUnlockedWall) {
+    hasUnlockedWall = true;
+    const echoSec = document.getElementById('echo');
+    echoSec.style.display = 'block';
+    setTimeout(() => echoSec.scrollIntoView({ behavior: 'smooth' }), 500);
+  }
 }
 
-function fmtPlain(n) {
-  if (n >= 10000000) return (n / 10000000).toFixed(1) + 'Cr';
-  if (n >= 100000) return (n / 100000).toFixed(1) + 'L';
-  return n.toLocaleString('en-IN');
+async function submitEcho() {
+  const name = document.getElementById('echo-name').value.trim() || 'Anonymous';
+  const year = document.getElementById('echo-year').value;
+  const college = document.getElementById('echo-college').value;
+  const text = document.getElementById('echo-text').value.trim();
+  if (!year || !college) { alert('Pick your year and college!'); return; }
+  if (text.length < 5) { alert('Write a longer echo!'); return; }
+  try {
+    await window.addDoc(window.collection(window.db, "echoes"), {
+      name: name, year: year, college: college, text: text, w: 1, l: 0, status: 'pending', timestamp: new Date().toISOString()
+    });
+    document.getElementById('echo-text').value = '';
+    alert("Echo sent for approval!");
+  } catch (err) { alert("Submission failed. Ensure you are signed in."); }
 }
 
-function buildBarChart(containerId, data, valueKey, labelKey, color, height, formatFn) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  const max = Math.max(...data.map(d => d[valueKey]));
-  el.style.height = height + 'px';
-  el.innerHTML = data.map(d => {
-    const h = (d[valueKey] / max) * (height - 40);
-    const val = formatFn ? formatFn(d[valueKey]) : d[valueKey];
-    return `<div class="bar-col">
-      <div class="bar-val">${val}</div>
-      <div class="bar-fill" style="height:${h}px;background:linear-gradient(180deg,${color},${color}88)"></div>
-      <div class="bar-lbl">${d[labelKey]}</div>
-    </div>`;
-  }).join('');
-}
-
-function buildHBars(containerId, data, color) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  const max = Math.max(...data.map(d => d.value));
-  el.innerHTML = data.map(d => {
-    const pct = (d.value / max * 100);
-    return `<div class="h-bar">
-      <div class="h-bar-header">
-        <span class="h-bar-label">${d.label}</span>
-        <span class="h-bar-value" style="color:${d.color || color}">${d.display || d.value.toLocaleString('en-IN')}</span>
+window.renderEchoWall = function() {
+  const wall = document.getElementById('echo-wall');
+  window.liveEchoes.sort((a, b) => (b.w - b.l) - (a.w - a.l));
+  wall.innerHTML = window.liveEchoes.map((p, i) => {
+    const color = COLLEGE_COLORS[p.college] || '#333';
+    return `
+      <div class="white-tile" style="--tc: ${color}; animation-delay: ${i * 0.05}s">
+        <div class="wt-accent"></div>
+        <div class="wt-text">"${p.text}"</div>
+        <div class="wt-footer">
+          <div class="wt-meta"><div class="wt-college">${formatUsername(p.name)} - ${p.college}</div></div>
+          <div class="wl-actions">
+            <button class="wl-btn" onclick="voteCloud('${p.id}', 'w', this)">W <span>${p.w}</span></button>
+            <button class="wl-btn" onclick="voteCloud('${p.id}', 'l', this)">L <span>${p.l}</span></button>
+          </div>
+        </div>
       </div>
-      <div class="h-bar-track"><div class="h-bar-fill" style="width:${pct}%;background:${d.color || color}"></div></div>
-    </div>`;
+    `;
   }).join('');
+};
+
+window.voteCloud = async function(id, type, btn) {
+  const currentVal = parseInt(btn.querySelector('span').textContent);
+  let newVal = btn.classList.contains(type === 'w' ? 'active-w' : 'active-l') ? currentVal - 1 : currentVal + 1;
+  try {
+     const payload = {}; payload[type] = newVal;
+     await window.updateDoc(window.doc(window.db, "echoes", id), payload);
+  } catch(e) {}
+};
+
+// --- COUNTDOWN & UTILS ---
+const LAUNCH_DATE = new Date("June 11, 2026 00:00:00 GMT+0530").getTime();
+function updateCountdown() {
+  const now = new Date().getTime(); const diff = LAUNCH_DATE - now;
+  if (diff <= 0) return;
+  document.getElementById('cd-days').textContent = String(Math.floor(diff / 86400000)).padStart(2, '0');
+  document.getElementById('cd-hours').textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
+  document.getElementById('cd-mins').textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+  document.getElementById('cd-secs').textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+}
+setInterval(updateCountdown, 1000);
+
+function spawnConfetti(color) {
+  const container = document.getElementById('confetti-container');
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div'); p.className = 'confetti-piece';
+    p.style.cssText = `left:${20+Math.random()*60}vw; top:${30+Math.random()*20}vh; width:8px; height:8px; background:${color}; animation-duration:1.5s;`;
+    container.appendChild(p); setTimeout(() => p.remove(), 1500);
+  }
 }
 
-function drawDonut(svgId, segments) {
-  const svg = document.getElementById(svgId);
-  if (!svg) return;
-  const total = segments.reduce((s, seg) => s + seg.value, 0);
-  const cx = 70, cy = 70, r = 65, ir = 43;
-  let cum = 0;
-  let paths = '';
-  segments.forEach(seg => {
-    const start = (cum / total) * 2 * Math.PI - Math.PI / 2;
-    cum += seg.value;
-    const end = (cum / total) * 2 * Math.PI - Math.PI / 2;
-    const large = seg.value / total > 0.5 ? 1 : 0;
-    const x1 = cx + r * Math.cos(start), y1 = cy + r * Math.sin(start);
-    const x2 = cx + r * Math.cos(end), y2 = cy + r * Math.sin(end);
-    const ix1 = cx + ir * Math.cos(start), iy1 = cy + ir * Math.sin(start);
-    const ix2 = cx + ir * Math.cos(end), iy2 = cy + ir * Math.sin(end);
-    paths += `<path d="M${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} L${ix2},${iy2} A${ir},${ir} 0 ${large} 0 ${ix1},${iy1} Z" fill="${seg.color}" opacity="0.85"/>`;
+function renderCollegeGrid() {
+  const grid = document.getElementById('college-grid'); grid.innerHTML = '';
+  COLLEGES.forEach(c => {
+    const claimed = claimedColleges.has(c.id);
+    const tile = document.createElement('div');
+    tile.className = 'college-tile' + (claimed ? ' claimed' : '');
+    tile.style.setProperty('--tile-color', c.color);
+    tile.innerHTML = `<span class="tile-emoji">${c.emoji}</span><div class="tile-name">${c.name}</div><div class="tile-count"><div class="tile-count-dot"></div>${collegeCounts[c.id]} here</div><div class="tile-check">✓</div>`;
+    tile.addEventListener('click', () => claimCollege(c.id, tile, c));
+    grid.appendChild(tile);
   });
-  paths += `<circle cx="${cx}" cy="${cy}" r="${ir - 2}" fill="#06090F"/>`;
-  svg.innerHTML = paths;
 }
 
-// ═══════════════════════════════════════════════
-// GROWTH SIMULATOR
-// ═══════════════════════════════════════════════
-function updateSimulator() {
-  const users = +document.getElementById('sim-users').value;
-  const cvr = +document.getElementById('sim-cvr').value;
-  const aov = +document.getElementById('sim-aov').value;
-  const premium = +document.getElementById('sim-premium').value;
-  const fulfill = +document.getElementById('sim-fulfill').value;
-  const adSpend = +document.getElementById('sim-adspend').value;
-
-  document.getElementById('sim-users-val').textContent = users >= 100000 ? (users/100000).toFixed(0) + 'L' : users.toLocaleString('en-IN');
-  document.getElementById('sim-cvr-val').textContent = cvr.toFixed(1) + '%';
-  document.getElementById('sim-aov-val').textContent = fmt(aov);
-  document.getElementById('sim-premium-val').textContent = premium + '%';
-  document.getElementById('sim-fulfill-val').textContent = fulfill + '%';
-  document.getElementById('sim-adspend-val').textContent = fmt(adSpend);
-
-  const orders = Math.round(users * cvr / 100);
-  const blendedAOV = aov * (premium / 100 * 1.2 + (100 - premium) / 100 * 0.4);
-  const grossRev = orders * blendedAOV;
-  const realizedRev = grossRev * fulfill / 100;
-  const roas = adSpend > 0 ? (realizedRev / adSpend) : Infinity;
-  const cac = adSpend > 0 ? Math.round(adSpend / orders) : 0;
-  const annual = realizedRev * 12;
-  const currentMonthlyRev = 2817205 / 10;
-  const multiplier = realizedRev / currentMonthlyRev;
-
-  document.getElementById('sim-revenue').textContent = fmt(Math.round(grossRev));
-  document.getElementById('sim-annual').textContent = 'Annual: ' + fmt(Math.round(annual)) + ' (' + multiplier.toFixed(1) + '× current)';
-  document.getElementById('sim-orders').textContent = orders.toLocaleString('en-IN');
-  document.getElementById('sim-roas').textContent = roas === Infinity ? '∞' : roas.toFixed(1) + '×';
-  document.getElementById('sim-cac').textContent = cac > 0 ? fmt(cac) : '₹0';
-  document.getElementById('sim-fulfill-rev').textContent = fmt(Math.round(realizedRev));
-
-  let insight = '';
-  if (fulfill < 60) insight = '🚨 Fulfillment rate below 60% — you\'re burning money on acquisition. Fix operations before scaling ads.';
-  else if (roas < 3 && adSpend > 0) insight = '⚠️ ROAS below 3× — reduce ad spend or improve conversion before scaling further.';
-  else if (multiplier >= 100) insight = '💎 100× TARGET ACHIEVED! This scenario projects ' + multiplier.toFixed(0) + '× your current revenue.';
-  else if (multiplier >= 10) insight = '🚀 ' + multiplier.toFixed(0) + '× growth projected. Strong trajectory — focus on fulfillment and channel scaling.';
-  else if (multiplier >= 3) insight = '📈 ' + multiplier.toFixed(1) + '× growth. Good start — increase traffic and conversion for exponential gains.';
-  else insight = '📌 ' + multiplier.toFixed(1) + '× current. Adjust levers to find your growth path.';
-  document.getElementById('sim-insight').textContent = insight;
+function claimCollege(id, tile, c) {
+  if (claimedColleges.has(id)) return;
+  claimedColleges.add(id); collegeCounts[id]++;
+  tile.classList.add('claimed');
+  tile.querySelector('.tile-count').innerHTML = `<div class="tile-count-dot"></div>${collegeCounts[id]} here`;
+  spawnConfetti(c.color); waitlistCount++; document.getElementById('pulse-count').textContent = waitlistCount;
 }
+renderCollegeGrid();
 
-function loadScenario(type) {
-  const scenarios = {
-    current: { users: 5000, cvr: 1.2, aov: 4943, premium: 62, fulfill: 41, adSpend: 20000 },
-    optimized: { users: 15000, cvr: 4, aov: 5500, premium: 75, fulfill: 85, adSpend: 50000 },
-    growth: { users: 50000, cvr: 5, aov: 6000, premium: 80, fulfill: 90, adSpend: 200000 },
-    '100x': { users: 300000, cvr: 7, aov: 8000, premium: 85, fulfill: 95, adSpend: 500000 },
+// Fake Pulse Engine
+const FAKE_NAMES = [['RK','Riya K.'],['AS','Aryan S.'],['PM','Priya M.'],['ND','Nikhil D.']];
+function renderPulseFeed() { document.getElementById('pulse-feed').innerHTML = FAKE_NAMES.map((n,i) => `<div class="pulse-item"><div class="pulse-avatar" style="background:#333">${n[0]}</div><div><span class="pulse-name">${n[1]}</span> just joined</div></div>`).join(''); }
+renderPulseFeed();
+function updatePulseBar() {
+  const sorted = [...COLLEGES].sort((a,b) => collegeCounts[b.id] - collegeCounts[a.id]).slice(0,5);
+  document.getElementById('pcb-wrap').innerHTML = sorted.map(c => `<div class="pcb-row"><div class="pcb-name">${c.name}</div><div class="pcb-track"><div class="pcb-fill" style="width:${(collegeCounts[c.id]/collegeCounts[sorted[0].id]*100)}%;background:${c.color}"></div></div></div>`).join('');
+}
+updatePulseBar();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<div id="share-modal" style="display:none;position:fixed;inset:0;z-index:2000;
+  background:rgba(10,9,8,0.92);backdrop-filter:blur(24px);
+  align-items:center;justify-content:center;padding:1rem;">
+
+  <button onclick="closeShareModal()" style="position:absolute;top:1.5rem;right:1.5rem;
+    background:rgba(255,255,255,0.1);border:none;color:#fff;font-size:1.4rem;
+    width:40px;height:40px;border-radius:50%;cursor:pointer;line-height:1;
+    display:flex;align-items:center;justify-content:center;transition:background 0.2s;">✕</button>
+
+  <div style="display:flex;gap:3rem;align-items:center;flex-wrap:wrap;justify-content:center;max-width:900px;width:100%;">
+
+    <div style="flex-shrink:0;">
+      <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+        color:rgba(255,255,255,0.5);margin-bottom:0.8rem;text-align:center;">Preview</div>
+
+      <div id="share-card" style="
+        width:280px;height:500px;border-radius:28px;overflow:hidden;
+        position:relative;font-family:'Instrument Serif',Georgia,serif;
+        box-shadow:0 32px 64px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.2);
+        flex-shrink:0; background:var(--sc-bg,#1e4f8c);
+      ">
+        
+        <div class="pulse-orb" style="position:absolute;top:-20%;right:-20%;width:250px;height:250px;
+          border-radius:50%;background:rgba(255,255,255,0.15);z-index:1;"></div>
+        <div class="pulse-orb" style="position:absolute;bottom:-10%;left:-20%;width:200px;height:200px;
+          border-radius:50%;background:rgba(0,0,0,0.25);z-index:1;animation-delay: 2s;"></div>
+
+        <div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;
+          justify-content:space-between;padding:28px 24px;">
+
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:1.4rem;color:#fff;letter-spacing:-0.03em;text-shadow:0 2px 4px rgba(0,0,0,0.2);">
+              Un<em style="color:rgba(255,255,255,0.7);font-style:italic;">rest</em>
+            </div>
+            <div style="font-size:0.5rem;font-weight:700;letter-spacing:0.1em;
+              text-transform:uppercase;color:#fff;background:rgba(0,0,0,0.2);
+              border-radius:100px;padding:4px 10px;font-family:'DM Sans',sans-serif;
+              box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);">
+              DU Campus Network
+            </div>
+          </div>
+
+          <div style="text-align:center; display:flex; flex-direction:column; align-items:center;">
+            
+            <div style="position:relative; width: 140px; height: 100px; margin-bottom: 20px;">
+                <div class="float-2d" id="sc-emoji" style="font-size:3.5rem; position:absolute; top:20px; left:40px; z-index:2; filter:drop-shadow(0 10px 15px rgba(0,0,0,0.3));">🎓</div>
+                <div class="float-2d-delay" style="font-size:1.8rem; position:absolute; top:10px; right:10px; z-index:1; filter:drop-shadow(0 5px 10px rgba(0,0,0,0.2));">📚</div>
+                <div class="float-2d-fast" style="font-size:1.5rem; position:absolute; bottom:10px; left:10px; z-index:3; filter:drop-shadow(0 5px 10px rgba(0,0,0,0.2));">✨</div>
+            </div>
+
+            <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.2em;
+              text-transform:uppercase;color:rgba(255,255,255,0.8);
+              font-family:'DM Sans',sans-serif;margin-bottom:6px;">I Claimed</div>
+            
+            <div id="sc-college" class="shimmer-text" style="font-size:2.6rem;line-height:1.05;
+              letter-spacing:-0.03em; margin: 0 -10px;">
+              Hindu College
+            </div>
+          </div>
+
+          <div style="background:rgba(0,0,0,0.2);border-radius:16px;padding:16px;
+            backdrop-filter:blur(12px); border: 1px solid rgba(255,255,255,0.1);">
+            <div style="font-size:0.55rem;font-weight:700;letter-spacing:0.1em;
+              text-transform:uppercase;color:rgba(255,255,255,0.5);font-family:'DM Sans',sans-serif;
+              margin-bottom:6px;text-align:center;">Is your college in?</div>
+            <div style="font-size:0.75rem;color:#fff;font-family:'DM Sans',sans-serif;
+              font-weight:500;line-height:1.4;text-align:center;">
+              DU's own network launches<br>
+              <strong>11 June 2026</strong>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;min-width:260px;max-width:320px;flex:1;">
+      
+      <div style="display:flex; align-items:center; gap: 1rem; margin-bottom: 1rem;">
+        <div class="pulse-orb" style="width: 40px; height: 40px; background: var(--accent); border-radius: 50%; opacity: 1; filter:blur(10px);"></div>
+        <div style="font-family:'Instrument Serif',serif;font-size:2.2rem;color:#fff;line-height:1;">
+          Share the<br><em style="color:#e8a020;">unrest</em>
+        </div>
+      </div>
+
+      <button onclick="shareWhatsApp()"
+        style="display:flex;align-items:center;gap:10px; background:#25D366;color:#fff;border:none;border-radius:12px;
+          padding:16px 20px;font-family:'DM Sans',sans-serif;font-size:1rem; font-weight:700;cursor:pointer;
+          box-shadow:0 8px 20px rgba(37,211,102,0.25);width:100%;justify-content:center;transition:transform 0.2s;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.963 2C6.513 2 2.073 6.44 2.073 11.89c0 1.853.502 3.59 1.379 5.088L2 22l5.17-1.426A9.847 9.847 0 0011.963 21.78c5.45 0 9.89-4.44 9.89-9.89 0-5.45-4.44-9.89-9.89-9.89zm0 18.14a8.192 8.192 0 01-4.188-1.147l-.3-.178-3.068.847.847-3.023-.196-.31a8.208 8.208 0 01-1.257-4.34C3.8 7.337 7.527 3.64 11.963 3.64c4.436 0 8.163 3.697 8.163 8.25 0 4.436-3.697 8.25-8.163 8.25z"/></svg>
+        Share on WhatsApp
+      </button>
+
+      <button id="download-btn" onclick="downloadCard()"
+        style="display:flex;align-items:center;gap:10px; background:rgba(255,255,255,0.1);color:#fff;
+          border:1px solid rgba(255,255,255,0.15);border-radius:12px; padding:16px 20px;font-family:'DM Sans',sans-serif;
+          font-size:0.95rem; font-weight:600;cursor:pointer;width:100%;justify-content:center;transition:background 0.2s;">
+        Download story card
+      </button>
+
+      <button onclick="copyLink()"
+        style="display:flex;align-items:center;gap:10px; background:transparent;color:rgba(255,255,255,0.6);
+          border:none; padding:10px;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:500;
+          cursor:pointer;width:100%;justify-content:center;text-decoration:underline;">
+        Copy waitlist link
+      </button>
+
+      <div id="copy-confirm" style="display:none;text-align:center;font-size:0.8rem;color:#4ade80;font-weight:600;font-family:'DM Sans',sans-serif;">✓ Copied to clipboard!</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  let _currentCollege = null;
+  const _origClaim = window.claimCollege;
+  window.claimCollege = function(id, tile, college) {
+    if (typeof _origClaim === 'function') _origClaim(id, tile, college);
+    _currentCollege = college;
+    
+    const modal = document.getElementById('share-modal');
+    const card  = document.getElementById('share-card');
+    
+    // Apply dynamic 2D colors and icons
+    card.style.background = `linear-gradient(145deg, ${college.color} 20%, #111 120%)`;
+    document.getElementById('sc-emoji').textContent   = college.emoji;
+    document.getElementById('sc-college').textContent = college.name;
+
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
   };
-  const s = scenarios[type];
-  document.getElementById('sim-users').value = s.users;
-  document.getElementById('sim-cvr').value = s.cvr;
-  document.getElementById('sim-aov').value = s.aov;
-  document.getElementById('sim-premium').value = s.premium;
-  document.getElementById('sim-fulfill').value = s.fulfill;
-  document.getElementById('sim-adspend').value = s.adSpend;
-  updateSimulator();
-}
 
-// ═══════════════════════════════════════════════
-// REVENUE SIMULATOR
-// ═══════════════════════════════════════════════
-function updateRevSim() {
-  const basicPrice = +document.getElementById('rev-basic').value;
-  const corrPrice = +document.getElementById('rev-correction').value;
-  const consultPrice = +document.getElementById('rev-consult').value;
-  const bundlePrice = +document.getElementById('rev-bundle').value;
-  const bizPrice = +document.getElementById('rev-biz').value;
-  const orders = +document.getElementById('rev-orders').value;
-  const corrPct = +document.getElementById('rev-corr-pct').value;
-  const consultPct = +document.getElementById('rev-consult-pct').value;
-  const bundlePct = +document.getElementById('rev-bundle-pct').value;
-  const bizPct = +document.getElementById('rev-biz-pct').value;
+  window.closeShareModal = function() {
+    document.getElementById('share-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  };
 
-  document.getElementById('rev-basic-val').textContent = fmt(basicPrice);
-  document.getElementById('rev-correction-val').textContent = fmt(corrPrice);
-  document.getElementById('rev-consult-val').textContent = fmt(consultPrice);
-  document.getElementById('rev-bundle-val').textContent = fmt(bundlePrice);
-  document.getElementById('rev-biz-val').textContent = fmt(bizPrice);
-  document.getElementById('rev-orders-val').textContent = orders;
-  document.getElementById('rev-corr-pct-val').textContent = corrPct + '%';
-  document.getElementById('rev-consult-pct-val').textContent = consultPct + '%';
-  document.getElementById('rev-bundle-pct-val').textContent = bundlePct + '%';
-  document.getElementById('rev-biz-pct-val').textContent = bizPct + '%';
+  window.shareWhatsApp = function() {
+    const name = _currentCollege ? _currentCollege.name : 'My college';
+    const url  = window.location.href.split('#')[0];
+    const msg  = `*Unrest* — Delhi University's own campus network is launching *11 June 2026*!\n\nI just claimed *${name}'s* spot. Is your college in?\n\nJoin the waitlist: ${url}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+  };
 
-  const basicOrders = Math.round(orders * (100 - corrPct) / 100);
-  const corrOrders = Math.round(orders * corrPct / 100);
-  const consultOrders = Math.round(orders * consultPct / 100);
-  const bundleOrders = Math.round(orders * bundlePct / 100);
-  const bizOrders = Math.round(orders * bizPct / 100);
+  window.downloadCard = async function() {
+    const btn = document.getElementById('download-btn');
+    btn.textContent = 'Generating…'; btn.disabled = true;
+    try {
+      const card = document.getElementById('share-card');
+      const canvas = await html2canvas(card, { scale: 3, useCORS: true, backgroundColor: null });
+      const link = document.createElement('a');
+      link.download = `unrest-${(_currentCollege ? _currentCollege.name : 'unrest').toLowerCase().replace(/\s+/g,'-')}.png`;
+      link.href = canvas.toDataURL('image/png'); link.click();
+    } catch(err) { alert('Could not generate card.'); }
+    btn.textContent = 'Download story card'; btn.disabled = false;
+  };
 
-  const basicRev = basicOrders * basicPrice;
-  const corrRev = corrOrders * corrPrice;
-  const consultRev = consultOrders * consultPrice;
-  const bundleRev = bundleOrders * bundlePrice;
-  const bizRev = bizOrders * bizPrice;
-  const totalRev = basicRev + corrRev + consultRev + bundleRev + bizRev;
-  const blendedAOV = Math.round(totalRev / orders);
-  const vsCurrentPct = ((blendedAOV - 4943) / 4943 * 100);
-
-  document.getElementById('rev-total').textContent = fmt(Math.round(totalRev));
-  document.getElementById('rev-annual-total').textContent = 'Annual: ' + fmt(Math.round(totalRev * 12));
-  document.getElementById('rev-blended-aov').textContent = fmt(blendedAOV);
-  document.getElementById('rev-vs-current').textContent = (vsCurrentPct >= 0 ? '+' : '') + vsCurrentPct.toFixed(0) + '%';
-  document.getElementById('rev-vs-current').style.color = vsCurrentPct >= 0 ? 'var(--green)' : 'var(--red)';
-  document.getElementById('rev-bundle-rev').textContent = fmt(Math.round(bundleRev));
-  document.getElementById('rev-biz-rev').textContent = fmt(Math.round(bizRev));
-
-  const products = [
-    { label: 'Correction Reports', value: corrRev, color: 'var(--gold)', display: fmt(Math.round(corrRev)) },
-    { label: 'Consultation Add-on', value: consultRev, color: 'var(--green)', display: fmt(Math.round(consultRev)) },
-    { label: 'Basic Reports', value: basicRev, color: 'var(--blue)', display: fmt(Math.round(basicRev)) },
-    { label: 'Family Bundles', value: bundleRev, color: 'var(--purple)', display: fmt(Math.round(bundleRev)) },
-    { label: 'Business Reports', value: bizRev, color: 'var(--cyan)', display: fmt(Math.round(bizRev)) },
-  ];
-  buildHBars('rev-breakdown-bars', products, 'var(--gold)');
-
-  let insight = '';
-  if (bundlePct >= 10 && bizPct >= 5)
-    insight = '💎 Product ladder activated! Bundle + Business reports contribute ' + fmt(Math.round(bundleRev + bizRev)) + '/month — these are pure incremental revenue.';
-  else if (blendedAOV > 8000)
-    insight = '🏆 Blended AOV above ₹8K — you\'re in premium territory. Every new order is 62% more valuable than today.';
-  else if (corrPct >= 80)
-    insight = '📈 80%+ choosing correction — great upsell execution. Now layer bundles and business reports for next AOV jump.';
-  else
-    insight = '📊 Adjust product mix and pricing to see how different strategies impact total revenue and AOV.';
-  document.getElementById('rev-insight').textContent = insight;
-}
-
-// ═══════════════════════════════════════════════
-// INIT ALL CHARTS
-// ═══════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', function() {
-  // Monthly Revenue
-  const monthly = [
-    {m:'May 25',r:84700},{m:'Jun 25',r:624109},{m:'Jul 25',r:228490},{m:'Aug 25',r:320200},
-    {m:'Sep 25',r:199118},{m:'Oct 25',r:155288},{m:'Nov 25',r:188200},{m:'Dec 25',r:189600},
-    {m:'Jan 26',r:449400},{m:'Feb 26',r:202000},{m:'Mar 26',r:176100}
-  ];
-  buildBarChart('monthly-revenue-chart', monthly, 'r', 'm', '#D4A03C', 200, fmt);
-
-  // Donuts
-  drawDonut('donut-premium', [{value:75.5,color:'#D4A03C'},{value:24.5,color:'#3B82F6'}]);
-  drawDonut('donut-consult', [{value:70.8,color:'#10B981'},{value:29.2,color:'#F59E0B'}]);
-
-  // Source bars
-  buildHBars('source-bars', [
-    {label:'Website Organic (180)',value:1318000,color:'#3B82F6',display:'₹13.2L'},
-    {label:'Facebook Paid (41)',value:314900,color:'#D4A03C',display:'₹3.15L'},
-    {label:'YouTube (48)',value:235000,color:'#8B5CF6',display:'₹2.35L'},
-    {label:'WhatsApp (14)',value:112501,color:'#10B981',display:'₹1.13L'},
-    {label:'Our Services (32)',value:107600,color:'#06B6D4',display:'₹1.08L'},
-    {label:'QuickReply.ai (7)',value:37100,color:'#94A3B8',display:'₹0.37L'},
-    {label:'Facebook Organic (69)',value:10931,color:'#EF4444',display:'₹10.9K'},
-    {label:'Meta Ads (9)',value:6741,color:'#EF4444',display:'₹6.7K'},
-  ], '#D4A03C');
-
-  // Payment bars
-  buildHBars('payment-bars', [
-    {label:'Correction Report Page (₹8,241 avg)',value:1747101,color:'#D4A03C',display:'₹17.5L'},
-    {label:'New Correction (₹3,418 avg)',value:680100,color:'#3B82F6',display:'₹6.8L'},
-    {label:'Horocosmo App (₹4,969 avg)',value:347800,color:'#06B6D4',display:'₹3.5L'},
-    {label:'International (₹158 avg!)',value:11716,color:'#EF4444',display:'₹11.7K'},
-    {label:'UAE (₹724 avg)',value:8688,color:'#F59E0B',display:'₹8.7K'},
-  ], '#D4A03C');
-
-  // Age bars
-  buildHBars('age-bars', [
-    {label:'<18 yrs (parents buying for kids)',value:62,color:'#06B6D4',display:'62 orders · Avg ₹5,006'},
-    {label:'18-25 yrs',value:39,color:'#3B82F6',display:'39 orders · Avg ₹5,554'},
-    {label:'26-30 yrs',value:101,color:'#10B981',display:'101 orders · Avg ₹4,997'},
-    {label:'31-35 yrs ⭐',value:124,color:'#D4A03C',display:'124 orders · Avg ₹5,233'},
-    {label:'36-40 yrs',value:117,color:'#F59E0B',display:'117 orders · Avg ₹4,417'},
-    {label:'41-50 yrs',value:95,color:'#8B5CF6',display:'95 orders · Avg ₹5,326'},
-    {label:'51-60 yrs',value:14,color:'#94A3B8',display:'14 orders · Avg ₹3,788'},
-    {label:'60+ yrs',value:4,color:'#64748B',display:'4 orders · Avg ₹5,150'},
-  ], '#D4A03C');
-
-  // Profession bars
-  buildHBars('profession-bars', [
-    {label:'Business Owners',value:41,color:'#D4A03C',display:'41'},
-    {label:'IT/Software',value:32,color:'#3B82F6',display:'32'},
-    {label:'Students',value:26,color:'#06B6D4',display:'26'},
-    {label:'Homemakers',value:18,color:'#8B5CF6',display:'18'},
-    {label:'Doctors/Healthcare',value:12,color:'#10B981',display:'12'},
-    {label:'Unemployed/Seeking',value:11,color:'#EF4444',display:'11'},
-    {label:'Sales/Marketing',value:8,color:'#F59E0B',display:'8'},
-    {label:'Lawyers/Legal',value:8,color:'#94A3B8',display:'8'},
-  ], '#D4A03C');
-
-  // Reason bars
-  buildHBars('reason-bars', [
-    {label:'💼 Career / Job Growth',value:28,color:'#3B82F6',display:'28%'},
-    {label:'💰 Money / Financial Issues',value:22,color:'#D4A03C',display:'22%'},
-    {label:'🌟 Overall Success & Growth',value:15,color:'#10B981',display:'15%'},
-    {label:'❤️ Relationships',value:10,color:'#EF4444',display:'10%'},
-    {label:'📈 Business Growth',value:8,color:'#8B5CF6',display:'8%'},
-    {label:'🏥 Health Concerns',value:7,color:'#06B6D4',display:'7%'},
-    {label:'👶 Baby / Child Name',value:6,color:'#F59E0B',display:'6%'},
-    {label:'🔍 Curiosity / Testing',value:4,color:'#94A3B8',display:'4%'},
-  ], '#D4A03C');
-
-  // Completion bars
-  buildHBars('completion-bars', [
-    {label:'Analysis Only',value:48.3,color:'#10B981',display:'48.3%'},
-    {label:'Analysis + Correction',value:45.4,color:'#3B82F6',display:'45.4%'},
-    {label:'Analysis + Correction + Consult',value:40.6,color:'#D4A03C',display:'40.6%'},
-    {label:'Analysis + Consultation',value:36.0,color:'#F59E0B',display:'36.0%'},
-    {label:'International',value:0,color:'#EF4444',display:'0% ⚠️'},
-  ], '#D4A03C');
-
-  // Hour chart
-  const hours = [
-    {h:'12a',v:25},{h:'1',v:17},{h:'2',v:6},{h:'3',v:10},{h:'4',v:12},{h:'5',v:12},
-    {h:'6',v:17},{h:'7',v:8},{h:'8',v:25},{h:'9',v:20},{h:'10',v:30},{h:'11a',v:43},
-    {h:'12p',v:34},{h:'1',v:32},{h:'2p',v:42},{h:'3',v:26},{h:'4',v:17},{h:'5',v:23},
-    {h:'6p',v:30},{h:'7',v:30},{h:'8p',v:37},{h:'9',v:23},{h:'10',v:19},{h:'11',v:39}
-  ];
-  buildBarChart('hour-chart', hours, 'v', 'h', '#3B82F6', 120, v => v);
-
-  // Day of week
-  const dow = [
-    {d:'Mon',v:100},{d:'Tue',v:81},{d:'Wed',v:95},{d:'Thu',v:84},
-    {d:'Fri',v:70},{d:'Sat',v:69},{d:'Sun',v:78}
-  ];
-  buildBarChart('dow-chart', dow, 'v', 'd', '#D4A03C', 120, v => v);
-
-  // Init simulators
-  updateSimulator();
-  updateRevSim();
-});
+  window.copyLink = function() {
+    navigator.clipboard.writeText(window.location.href.split('#')[0]).then(() => {
+      const confirm = document.getElementById('copy-confirm');
+      confirm.style.display = 'block'; setTimeout(() => confirm.style.display = 'none', 2000);
+    });
+  };
+})();
 </script>
 </body>
 </html>
