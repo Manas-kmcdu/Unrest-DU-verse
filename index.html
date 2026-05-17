@@ -68,6 +68,56 @@
   html { scroll-behavior: smooth; }
   body { font-family: var(--sans); background: var(--paper); color: var(--ink); overflow-x: hidden; }
 
+ @media (max-width: 768px) {
+  .preview {
+    overflow-x: hidden;
+    gap: 0;
+    padding: 2rem 1rem 3rem;
+    justify-content: center;
+  }
+  .phone-frame {
+    width: 220px;
+    transform: rotate(-2deg) scale(0.9);
+  }
+  .phone-frame2 {
+    display: none; /* hide second phone on mobile */
+  }
+}
+ #share-modal {
+  overflow-y: auto;
+  align-items: flex-start !important;
+  padding: 3rem 1rem 2rem !important;
+}
+
+@media (max-width: 768px) {
+  #share-modal > div {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    padding-bottom: 2rem;
+  }
+  #share-card {
+    width: 240px !important;
+    height: 420px !important;
+  }
+  #modal-demo-state,
+  #modal-share-state {
+    min-width: unset !important;
+    width: 100% !important;
+    max-width: 340px !important;
+  }
+  .demo-input {
+    font-size: 16px !important; /* prevent iOS zoom */
+  }
+}
+
+ @media (max-width: 768px) {
+  #share-modal div[style*="display:flex; gap:10px"] {
+    flex-wrap: wrap;
+  }
+}
+
   /* NAV */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
