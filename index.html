@@ -796,7 +796,7 @@ function claimCollege(id, tile, c, isAutoClaim = false) {
 
   // If user is verified but clicks a different college
   if (window.userVerifiedCollege && window.userVerifiedCollege.id !== id && !isAutoClaim) {
-    alert(`You are verified as ${window.userVerifiedCollege.name}. You can only view your own college's pass.`);
+    alert(`You are verified as a student of ${window.userVerifiedCollege.name}. You can only view your own college's pass.`);
     return;
   }
 
@@ -917,11 +917,14 @@ updatePulseBar();
 
     <div style="display:flex;flex-direction:column;gap:14px;min-width:260px;max-width:320px;flex:1;">
       
-      <div style="display:flex; align-items:center; gap: 1rem; margin-bottom: 1rem;">
-        <div class="pulse-orb" style="width: 40px; height: 40px; background: var(--accent); border-radius: 50%; opacity: 1; filter:blur(10px);"></div>
-        <div style="font-family:'Instrument Serif',serif;font-size:2.2rem;color:#fff;line-height:1;">
+     <div>
+        <div style="font-family:'Instrument Serif',serif;font-size:1.8rem;color:#fff;
+          line-height:1.1;margin-bottom:6px;">
           Spread the<br><em style="color:#e8a020;">unrest</em>
         </div>
+        <p style="font-size:0.82rem;color:rgba(255,255,255,0.5);line-height:1.55;margin:0;">
+          Share your claim card. Every college that sees this can get more signups.
+        </p>
       </div>
 
       <button onclick="shareWhatsApp()"
