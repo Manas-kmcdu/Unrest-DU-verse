@@ -451,6 +451,20 @@
     .hero-form button { width: 100%; padding: 14px 20px; border-radius: 100px; }
     .float-cards { display: none; }
     .stat-badge { display: none; }
+
+   .modal-backdrop, [class*="modal-overlay"], [class*="popup-wrapper"] { 
+    position: fixed !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: flex !important;
+    align-items: flex-start !important; /* Prevents center cropping */
+    padding: 20px 10px !important;
+  }
+
+  /* Scale down the blue card size slightly on mobile screens so inputs peek through */
+  .share-card, [class*="modal-content"] {
+    transform: scale(0.9) !important;
+    margin-bottom: 2rem !important;
   }
 
   /* =========================================
