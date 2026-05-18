@@ -10,260 +10,557 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
     }
 
-    :root {
-      --paper: #f5f2eb;
-      --ink: #0e0d0b;
-      --ink2: #5c5953;
-      --accent: #ff6a00;
-      --border: rgba(14,13,11,0.08);
+    :root{
+      --paper:#f5f2eb;
+      --ink:#0e0d0b;
+      --ink2:#5c5953;
+      --accent:#ff6a00;
+      --border:rgba(14,13,11,0.08);
+      --serif:'Instrument Serif',serif;
+      --sans:'DM Sans',sans-serif;
     }
 
-    body {
-      background: var(--paper);
-      color: var(--ink);
-      font-family: 'DM Sans', sans-serif;
-      min-height: 100vh;
-      overflow: hidden;
-      position: relative;
+    body{
+      background:var(--paper);
+      color:var(--ink);
+      font-family:var(--sans);
+      min-height:100vh;
+      overflow-x:hidden;
+      position:relative;
     }
 
-    .noise {
-      position: fixed;
-      inset: 0;
-      opacity: 0.03;
-      pointer-events: none;
+    .noise{
+      position:fixed;
+      inset:0;
+      opacity:0.03;
+      pointer-events:none;
       background-image:
         radial-gradient(circle at 20% 20%, black 1px, transparent 1px),
-        radial-gradient(circle at 80% 40%, black 1px, transparent 1px),
-        radial-gradient(circle at 50% 80%, black 1px, transparent 1px);
-      background-size: 120px 120px;
+        radial-gradient(circle at 80% 40%, black 1px, transparent 1px);
+      background-size:120px 120px;
     }
 
-    .grid {
-      position: fixed;
-      inset: 0;
+    .grid{
+      position:fixed;
+      inset:0;
       background-image:
         linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(circle at center, black 30%, transparent 90%);
+      background-size:60px 60px;
+      mask-image:radial-gradient(circle at center, black 30%, transparent 90%);
     }
 
-    .orb {
-      position: absolute;
-      width: 600px;
-      height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,106,0,0.18), transparent 70%);
-      filter: blur(60px);
-      animation: float 12s ease-in-out infinite;
+    .orb{
+      position:absolute;
+      width:600px;
+      height:600px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,106,0,0.18), transparent 70%);
+      filter:blur(60px);
+      animation:float 12s ease-in-out infinite;
     }
 
-    .orb.one {
-      top: -200px;
-      left: -120px;
+    .orb.one{
+      top:-200px;
+      left:-120px;
     }
 
-    .orb.two {
-      bottom: -250px;
-      right: -150px;
-      animation-delay: -4s;
+    .orb.two{
+      bottom:-250px;
+      right:-150px;
+      animation-delay:-4s;
     }
 
-    @keyframes float {
-      0% { transform: translateY(0px) translateX(0px); }
-      50% { transform: translateY(30px) translateX(20px); }
-      100% { transform: translateY(0px) translateX(0px); }
+    @keyframes float{
+      0%{transform:translateY(0px) translateX(0px);}
+      50%{transform:translateY(30px) translateX(20px);}
+      100%{transform:translateY(0px) translateX(0px);}
     }
 
-    .wrap {
-      position: relative;
-      z-index: 5;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
+    .wrap{
+      position:relative;
+      z-index:5;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:2rem;
     }
 
-    .card {
-      width: 100%;
-      max-width: 900px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.55);
-      backdrop-filter: blur(18px);
-      border-radius: 32px;
-      padding: 5rem;
-      text-align: center;
+    .card{
+      width:100%;
+      max-width:1200px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,0.55);
+      backdrop-filter:blur(18px);
+      border-radius:32px;
+      padding:4rem;
+      text-align:center;
       box-shadow:
         0 10px 40px rgba(0,0,0,0.05),
         inset 0 1px 0 rgba(255,255,255,0.6);
-      animation: fadeUp 1s ease;
+      animation:fadeUp 1s ease;
     }
 
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
+    @keyframes fadeUp{
+      from{
+        opacity:0;
+        transform:translateY(30px);
       }
-      to {
-        opacity: 1;
-        transform: translateY(0px);
-      }
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 18px;
-      border-radius: 999px;
-      background: rgba(255,106,0,0.08);
-      border: 1px solid rgba(255,106,0,0.16);
-      color: var(--accent);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 30px;
-    }
-
-    .pulse {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 1.8s infinite;
-    }
-
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      70% {
-        transform: scale(2.4);
-        opacity: 0;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 0;
+      to{
+        opacity:1;
+        transform:translateY(0px);
       }
     }
 
-    h1 {
-      font-size: clamp(4rem, 10vw, 8rem);
-      line-height: 0.95;
-      letter-spacing: -0.08em;
-      margin-bottom: 26px;
-      font-weight: 800;
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 18px;
+      border-radius:999px;
+      background:rgba(255,106,0,0.08);
+      border:1px solid rgba(255,106,0,0.16);
+      color:var(--accent);
+      font-size:13px;
+      font-weight:700;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      margin-bottom:30px;
     }
 
-    h1 span {
-      color: var(--accent);
-      font-style: italic;
-      font-family: 'Instrument Serif', serif;
-      font-weight: 400;
+    .pulse{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--accent);
+      animation:pulse 1.8s infinite;
     }
 
-    .sub {
-      max-width: 700px;
-      margin: 0 auto;
-      font-size: 1.15rem;
-      line-height: 1.8;
-      color: var(--ink2);
-    }
-
-    .status {
-      margin-top: 48px;
-      display: flex;
-      justify-content: center;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-
-    .status-card {
-      min-width: 180px;
-      padding: 20px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.7);
-      border: 1px solid var(--border);
-      transition: 0.35s ease;
-    }
-
-    .status-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(255,106,0,0.2);
-    }
-
-    .status-num {
-      font-size: 2rem;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-
-    .status-label {
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--ink2);
-    }
-
-    .footer {
-      margin-top: 50px;
-      font-size: 0.85rem;
-      color: #8a857d;
-      letter-spacing: 0.04em;
-    }
-
-    .loader {
-      width: 180px;
-      height: 2px;
-      background: rgba(0,0,0,0.08);
-      margin: 36px auto 0;
-      overflow: hidden;
-      border-radius: 999px;
-      position: relative;
-    }
-
-    .loader::after {
-      content: "";
-      position: absolute;
-      left: -40%;
-      width: 40%;
-      height: 100%;
-      background: var(--accent);
-      animation: load 2s infinite ease;
-    }
-
-    @keyframes load {
-      0% {
-        left: -40%;
+    @keyframes pulse{
+      0%{
+        transform:scale(1);
+        opacity:1;
       }
-      100% {
-        left: 100%;
+      70%{
+        transform:scale(2.4);
+        opacity:0;
+      }
+      100%{
+        transform:scale(1);
+        opacity:0;
       }
     }
 
-    @media (max-width: 768px) {
-      .card {
-        padding: 3rem 1.5rem;
+    h1{
+      font-size:clamp(4rem, 10vw, 8rem);
+      line-height:0.95;
+      letter-spacing:-0.08em;
+      margin-bottom:26px;
+      font-weight:800;
+    }
+
+    h1 span{
+      color:var(--accent);
+      font-style:italic;
+      font-family:var(--serif);
+      font-weight:400;
+    }
+
+    .sub{
+      max-width:700px;
+      margin:0 auto;
+      font-size:1.15rem;
+      line-height:1.8;
+      color:var(--ink2);
+    }
+
+    .loader{
+      width:180px;
+      height:2px;
+      background:rgba(0,0,0,0.08);
+      margin:36px auto 0;
+      overflow:hidden;
+      border-radius:999px;
+      position:relative;
+    }
+
+    .loader::after{
+      content:"";
+      position:absolute;
+      left:-40%;
+      width:40%;
+      height:100%;
+      background:var(--accent);
+      animation:load 2s infinite ease;
+    }
+
+    @keyframes load{
+      0%{left:-40%;}
+      100%{left:100%;}
+    }
+
+    /* PHONE SHOWCASE */
+
+    .preview{
+      padding:4rem 0 2rem;
+      display:flex;
+      justify-content:center;
+      gap:0;
+      overflow:hidden;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .phone-frame{
+      width:280px;
+      flex-shrink:0;
+      background:var(--ink);
+      border-radius:36px;
+      padding:12px;
+      box-shadow:0 32px 64px rgba(14,13,11,0.2);
+      transform:rotate(-2deg);
+      transition:transform 0.4s;
+    }
+
+    .phone-frame:hover{
+      transform:rotate(0deg) scale(1.02);
+    }
+
+    .phone-screen{
+      background:var(--paper);
+      border-radius:26px;
+      overflow:hidden;
+      height:520px;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .phone-frame2{
+      width:260px;
+      flex-shrink:0;
+      background:var(--ink);
+      border-radius:36px;
+      padding:12px;
+      box-shadow:0 24px 48px rgba(14,13,11,0.18);
+      transform:rotate(2deg) translateY(30px);
+      transition:transform 0.4s;
+      margin-left:-30px;
+    }
+
+    .phone-frame2:hover{
+      transform:rotate(0deg) translateY(0) scale(1.02);
+    }
+
+    .phone-screen2{
+      background:var(--paper);
+      border-radius:26px;
+      overflow:hidden;
+      height:520px;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .phone-status{
+      height:32px;
+      background:var(--paper);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 18px;
+      font-size:0.65rem;
+      font-weight:600;
+    }
+
+    .phone-nav{
+      height:48px;
+      border-bottom:0.5px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 16px;
+    }
+
+    .phone-nav-logo{
+      font-family:var(--serif);
+      font-size:1.1rem;
+    }
+
+    .phone-nav-logo span{
+      color:var(--accent);
+      font-style:italic;
+    }
+
+    .phone-tabs{
+      display:flex;
+      border-bottom:0.5px solid var(--border);
+    }
+
+    .phone-tab{
+      flex:1;
+      padding:8px 0;
+      text-align:center;
+      font-size:0.62rem;
+      font-weight:600;
+      color:#777;
+      border-bottom:2px solid transparent;
+    }
+
+    .phone-tab.active{
+      color:var(--accent);
+      border-bottom-color:var(--accent);
+    }
+
+    .feed{
+      flex:1;
+      padding:10px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      overflow-y:auto;
+    }
+
+    .post{
+      background:#fff;
+      border-radius:12px;
+      border:0.5px solid var(--border);
+      overflow:hidden;
+    }
+
+    .post-head{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+    }
+
+    .avatar{
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:0.6rem;
+      font-weight:700;
+      color:#fff;
+    }
+
+    .post-meta{
+      flex:1;
+      text-align:left;
+    }
+
+    .post-name{
+      font-size:0.65rem;
+      font-weight:600;
+    }
+
+    .post-college{
+      font-size:0.58rem;
+      color:#777;
+    }
+
+    .post-badge{
+      font-size:0.52rem;
+      font-weight:700;
+      padding:2px 6px;
+      border-radius:100px;
+    }
+
+    .post-img{
+      width:100%;
+      height:110px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:0.9rem;
+      font-weight:700;
+    }
+
+    .post-body{
+      padding:8px 10px;
+      font-size:0.63rem;
+      color:#444;
+      line-height:1.4;
+      text-align:left;
+    }
+
+    .post-actions{
+      display:flex;
+      gap:12px;
+      padding:6px 10px 8px;
+      border-top:0.5px solid var(--border);
+    }
+
+    .post-act{
+      font-size:0.58rem;
+      color:#777;
+    }
+
+    .sports-nav{
+      height:44px;
+      border-bottom:0.5px solid var(--border);
+      display:flex;
+      align-items:center;
+      padding:0 14px;
+      gap:8px;
+    }
+
+    .sports-logo{
+      font-family:var(--serif);
+      font-size:1.1rem;
+    }
+
+    .sports-logo span{
+      color:var(--accent);
+      font-style:italic;
+    }
+
+    .sports-pill{
+      margin-left:auto;
+      background:rgba(42,107,74,0.1);
+      border-radius:100px;
+      padding:2px 8px;
+      font-size:0.52rem;
+      font-weight:700;
+      color:#2a6b4a;
+    }
+
+    .sports-tabs{
+      display:flex;
+      border-bottom:0.5px solid var(--border);
+    }
+
+    .sports-tab{
+      flex:1;
+      padding:8px 0;
+      text-align:center;
+      font-size:0.58rem;
+      font-weight:600;
+      color:#777;
+      border-bottom:2px solid transparent;
+    }
+
+    .sports-tab.active{
+      color:#2a6b4a;
+      border-bottom-color:#2a6b4a;
+    }
+
+    .sports-feed{
+      flex:1;
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .sport-card{
+      background:#fff;
+      border-radius:10px;
+      padding:10px;
+      border:0.5px solid var(--border);
+      text-align:left;
+    }
+
+    .sc-top{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      margin-bottom:5px;
+    }
+
+    .sc-title{
+      font-size:0.63rem;
+      font-weight:700;
+      flex:1;
+    }
+
+    .sc-badge{
+      font-size:0.5rem;
+      font-weight:700;
+      padding:2px 6px;
+      border-radius:100px;
+      background:#111;
+      color:white;
+    }
+
+    .sc-body{
+      font-size:0.58rem;
+      color:#666;
+      line-height:1.4;
+      margin-bottom:6px;
+    }
+
+    .sc-footer{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-top:0.5px solid var(--border);
+      padding-top:5px;
+    }
+
+    .sc-meta{
+      font-size:0.54rem;
+      color:#777;
+    }
+
+    .sc-join{
+      background:var(--accent);
+      border-radius:6px;
+      padding:3px 8px;
+      font-size:0.54rem;
+      font-weight:700;
+      color:#fff;
+    }
+
+    .footer{
+      margin-top:40px;
+      font-size:0.85rem;
+      color:#8a857d;
+      letter-spacing:0.04em;
+    }
+
+    @media(max-width:768px){
+
+      .card{
+        padding:2.5rem 1.5rem;
       }
 
-      .sub {
-        font-size: 1rem;
+      .preview{
+        flex-direction:column;
+        gap:2rem;
       }
 
-      .status-card {
-        width: 100%;
+      .phone-frame{
+        width:240px;
+      }
+
+      .phone-frame2{
+        width:230px;
+        margin-left:0;
+        transform:none;
+      }
+
+      .phone-frame2:hover{
+        transform:scale(1.02);
+      }
+
+      h1{
+        font-size:3.5rem;
+      }
+
+      .sub{
+        font-size:1rem;
       }
     }
+
   </style>
 </head>
 
@@ -276,11 +573,12 @@
 <div class="orb two"></div>
 
 <div class="wrap">
+
   <div class="card">
 
     <div class="badge">
       <div class="pulse"></div>
-      Building the DU network
+      BUILDING THE DU NETWORK
     </div>
 
     <h1>
@@ -289,36 +587,211 @@
 
     <p class="sub">
       A verified social ecosystem for Delhi University students —
-      designed for campus culture, conversations, events,
-      competitions, societies, mentoring and everything in between.
+      built for campus culture, conversations, sports, societies,
+      mentoring, events and everything in between.
     </p>
 
     <div class="loader"></div>
 
-    <div class="status">
+    <div class="preview">
 
-      <div class="status-card">
-        <div class="status-num">90+</div>
-        <div class="status-label">DU Colleges</div>
+      <!-- PHONE 1 -->
+
+      <div class="phone-frame">
+
+        <div class="phone-screen">
+
+          <div class="phone-status">
+            <span>9:41</span>
+            <span>●●●</span>
+          </div>
+
+          <div class="phone-nav">
+            <div class="phone-nav-logo">
+              UN<span>REST</span>
+            </div>
+          </div>
+
+          <div class="phone-tabs">
+            <div class="phone-tab active">For You</div>
+            <div class="phone-tab">Campus</div>
+            <div class="phone-tab">Following</div>
+          </div>
+
+          <div class="feed">
+
+            <div class="post">
+
+              <div class="post-head">
+
+                <div class="avatar" style="background:#c84b2f;">
+                  SR
+                </div>
+
+                <div class="post-meta">
+                  <div class="post-name">SRCC</div>
+                  <div class="post-college">North Campus</div>
+                </div>
+
+                <div class="post-badge" style="background:rgba(200,75,47,0.12); color:#c84b2f;">
+                  FEST
+                </div>
+
+              </div>
+
+              <div class="post-img" style="background:linear-gradient(135deg,#2b1207,#c84b2f); color:white;">
+                CROSSROADS '26
+              </div>
+
+              <div class="post-body">
+                Registrations open for Crossroads '26. Bigger than ever.
+              </div>
+
+              <div class="post-actions">
+                <div class="post-act">♡ 267</div>
+                <div class="post-act">↺ 38</div>
+                <div class="post-act">✦ 21</div>
+              </div>
+
+            </div>
+
+            <div class="post">
+
+              <div class="post-head">
+
+                <div class="avatar" style="background:#1e4f8c;">
+                  SC
+                </div>
+
+                <div class="post-meta">
+                  <div class="post-name">Sports Council</div>
+                  <div class="post-college">South Campus</div>
+                </div>
+
+              </div>
+
+              <div class="post-body">
+                Inter-college football trials this week. DM to register.
+              </div>
+
+              <div class="post-actions">
+                <div class="post-act">♡ 92</div>
+                <div class="post-act">↺ 11</div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
 
-      <div class="status-card">
-        <div class="status-num">1L+</div>
-        <div class="status-label">Students</div>
-      </div>
+      <!-- PHONE 2 -->
 
-      <div class="status-card">
-        <div class="status-num">Realtime</div>
-        <div class="status-label">Campus Network</div>
+      <div class="phone-frame2">
+
+        <div class="phone-screen2">
+
+          <div class="phone-status">
+            <span>9:41</span>
+            <span>●●●</span>
+          </div>
+
+          <div class="sports-nav">
+
+            <div class="sports-logo">
+              UN<span>REST</span>
+            </div>
+
+            <div class="sports-pill">
+              LIVE
+            </div>
+
+          </div>
+
+          <div class="sports-tabs">
+            <div class="sports-tab active">Sports</div>
+            <div class="sports-tab">Trials</div>
+            <div class="sports-tab">Teams</div>
+          </div>
+
+          <div class="sports-feed">
+
+            <div class="sport-card">
+
+              <div class="sc-top">
+                <div>🏆</div>
+
+                <div class="sc-title">
+                  DU Football Championship
+                </div>
+
+                <div class="sc-badge">
+                  LIVE
+                </div>
+              </div>
+
+              <div class="sc-body">
+                Hindu College vs SRCC. Semi-finals begin at 4PM.
+              </div>
+
+              <div class="sc-footer">
+                <div class="sc-meta">
+                  North Campus
+                </div>
+
+                <div class="sc-join">
+                  Watch
+                </div>
+              </div>
+
+            </div>
+
+            <div class="sport-card">
+
+              <div class="sc-top">
+                <div>🏸</div>
+
+                <div class="sc-title">
+                  Badminton Trials
+                </div>
+
+                <div class="sc-badge">
+                  OPEN
+                </div>
+              </div>
+
+              <div class="sc-body">
+                Open tryouts for women's badminton team.
+              </div>
+
+              <div class="sc-footer">
+                <div class="sc-meta">
+                  Miranda House
+                </div>
+
+                <div class="sc-join">
+                  Register
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
 
     </div>
 
     <div class="footer">
-      unrestdu.in · Delhi University’s verified student network
+      unrestdu.in · Delhi University's verified student network
     </div>
 
   </div>
+
 </div>
 
 </body>
