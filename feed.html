@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
   <title>Creating Unrest</title>
 
@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
+
     *{
       margin:0;
       padding:0;
@@ -206,27 +207,23 @@
       100%{left:100%;}
     }
 
-    /* PHONE SHOWCASE */
-
     .preview{
       padding:4rem 0 2rem;
       display:flex;
       justify-content:center;
-      gap:0;
-      overflow:hidden;
       align-items:center;
       flex-wrap:wrap;
+      gap:0;
     }
 
     .phone-frame{
       width:280px;
-      flex-shrink:0;
       background:var(--ink);
       border-radius:36px;
       padding:12px;
       box-shadow:0 32px 64px rgba(14,13,11,0.2);
       transform:rotate(-2deg);
-      transition:transform 0.4s;
+      transition:0.4s ease;
     }
 
     .phone-frame:hover{
@@ -244,18 +241,17 @@
 
     .phone-frame2{
       width:260px;
-      flex-shrink:0;
       background:var(--ink);
       border-radius:36px;
       padding:12px;
       box-shadow:0 24px 48px rgba(14,13,11,0.18);
       transform:rotate(2deg) translateY(30px);
-      transition:transform 0.4s;
+      transition:0.4s ease;
       margin-left:-30px;
     }
 
     .phone-frame2:hover{
-      transform:rotate(0deg) translateY(0) scale(1.02);
+      transform:rotate(0deg) translateY(0px) scale(1.02);
     }
 
     .phone-screen2{
@@ -269,7 +265,6 @@
 
     .phone-status{
       height:32px;
-      background:var(--paper);
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -278,35 +273,51 @@
       font-weight:600;
     }
 
-    .phone-nav{
+    .phone-nav,
+    .sports-nav{
       height:48px;
       border-bottom:0.5px solid var(--border);
       display:flex;
       align-items:center;
-      justify-content:space-between;
       padding:0 16px;
     }
 
-    .phone-nav-logo{
+    .phone-nav-logo,
+    .sports-logo{
       font-family:var(--serif);
-      font-size:1.1rem;
-    }
-
-    .phone-nav-logo span{
-      color:var(--accent);
+      font-size:1.35rem;
+      letter-spacing:-0.04em;
       font-style:italic;
+      color:var(--ink);
     }
 
-    .phone-tabs{
+    .phone-nav-logo span,
+    .sports-logo span{
+      color:var(--accent);
+    }
+
+    .sports-pill{
+      margin-left:auto;
+      background:rgba(42,107,74,0.1);
+      border-radius:999px;
+      padding:3px 8px;
+      font-size:0.52rem;
+      font-weight:700;
+      color:#2a6b4a;
+    }
+
+    .phone-tabs,
+    .sports-tabs{
       display:flex;
       border-bottom:0.5px solid var(--border);
     }
 
-    .phone-tab{
+    .phone-tab,
+    .sports-tab{
       flex:1;
       padding:8px 0;
       text-align:center;
-      font-size:0.62rem;
+      font-size:0.6rem;
       font-weight:600;
       color:#777;
       border-bottom:2px solid transparent;
@@ -317,16 +328,22 @@
       border-bottom-color:var(--accent);
     }
 
-    .feed{
+    .sports-tab.active{
+      color:#2a6b4a;
+      border-bottom-color:#2a6b4a;
+    }
+
+    .feed,
+    .sports-feed{
       flex:1;
-      padding:10px 12px;
+      padding:10px;
       display:flex;
       flex-direction:column;
       gap:10px;
-      overflow-y:auto;
     }
 
-    .post{
+    .post,
+    .sport-card{
       background:#fff;
       border-radius:12px;
       border:0.5px solid var(--border);
@@ -337,7 +354,7 @@
       display:flex;
       align-items:center;
       gap:8px;
-      padding:8px 10px;
+      padding:10px;
     }
 
     .avatar{
@@ -347,9 +364,9 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      color:white;
       font-size:0.6rem;
       font-weight:700;
-      color:#fff;
     }
 
     .post-meta{
@@ -358,44 +375,44 @@
     }
 
     .post-name{
-      font-size:0.65rem;
-      font-weight:600;
+      font-size:0.68rem;
+      font-weight:700;
     }
 
     .post-college{
-      font-size:0.58rem;
+      font-size:0.56rem;
       color:#777;
     }
 
     .post-badge{
       font-size:0.52rem;
       font-weight:700;
-      padding:2px 6px;
-      border-radius:100px;
+      padding:3px 7px;
+      border-radius:999px;
     }
 
     .post-img{
-      width:100%;
       height:110px;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:0.9rem;
       font-weight:700;
+      color:white;
+      font-size:1rem;
     }
 
     .post-body{
-      padding:8px 10px;
-      font-size:0.63rem;
-      color:#444;
-      line-height:1.4;
+      padding:10px;
       text-align:left;
+      font-size:0.62rem;
+      line-height:1.5;
+      color:#555;
     }
 
     .post-actions{
       display:flex;
-      gap:12px;
-      padding:6px 10px 8px;
+      gap:14px;
+      padding:8px 10px;
       border-top:0.5px solid var(--border);
     }
 
@@ -404,68 +421,8 @@
       color:#777;
     }
 
-    .sports-nav{
-      height:44px;
-      border-bottom:0.5px solid var(--border);
-      display:flex;
-      align-items:center;
-      padding:0 14px;
-      gap:8px;
-    }
-
-    .sports-logo{
-      font-family:var(--serif);
-      font-size:1.1rem;
-    }
-
-    .sports-logo span{
-      color:var(--accent);
-      font-style:italic;
-    }
-
-    .sports-pill{
-      margin-left:auto;
-      background:rgba(42,107,74,0.1);
-      border-radius:100px;
-      padding:2px 8px;
-      font-size:0.52rem;
-      font-weight:700;
-      color:#2a6b4a;
-    }
-
-    .sports-tabs{
-      display:flex;
-      border-bottom:0.5px solid var(--border);
-    }
-
-    .sports-tab{
-      flex:1;
-      padding:8px 0;
-      text-align:center;
-      font-size:0.58rem;
-      font-weight:600;
-      color:#777;
-      border-bottom:2px solid transparent;
-    }
-
-    .sports-tab.active{
-      color:#2a6b4a;
-      border-bottom-color:#2a6b4a;
-    }
-
-    .sports-feed{
-      flex:1;
-      padding:10px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-
     .sport-card{
-      background:#fff;
-      border-radius:10px;
       padding:10px;
-      border:0.5px solid var(--border);
       text-align:left;
     }
 
@@ -473,29 +430,29 @@
       display:flex;
       align-items:center;
       gap:6px;
-      margin-bottom:5px;
+      margin-bottom:6px;
     }
 
     .sc-title{
-      font-size:0.63rem;
-      font-weight:700;
       flex:1;
+      font-size:0.65rem;
+      font-weight:700;
     }
 
     .sc-badge{
-      font-size:0.5rem;
-      font-weight:700;
-      padding:2px 6px;
-      border-radius:100px;
       background:#111;
       color:white;
+      font-size:0.5rem;
+      padding:3px 6px;
+      border-radius:999px;
+      font-weight:700;
     }
 
     .sc-body{
       font-size:0.58rem;
       color:#666;
-      line-height:1.4;
-      margin-bottom:6px;
+      line-height:1.5;
+      margin-bottom:8px;
     }
 
     .sc-footer{
@@ -503,7 +460,7 @@
       align-items:center;
       justify-content:space-between;
       border-top:0.5px solid var(--border);
-      padding-top:5px;
+      padding-top:7px;
     }
 
     .sc-meta{
@@ -513,11 +470,11 @@
 
     .sc-join{
       background:var(--accent);
+      color:white;
       border-radius:6px;
-      padding:3px 8px;
+      padding:4px 8px;
       font-size:0.54rem;
       font-weight:700;
-      color:#fff;
     }
 
     .footer{
@@ -595,8 +552,6 @@
 
     <div class="preview">
 
-      <!-- PHONE 1 -->
-
       <div class="phone-frame">
 
         <div class="phone-screen">
@@ -608,7 +563,7 @@
 
           <div class="phone-nav">
             <div class="phone-nav-logo">
-              UN<span>REST</span>
+              Un<span>rest</span>
             </div>
           </div>
 
@@ -639,7 +594,7 @@
 
               </div>
 
-              <div class="post-img" style="background:linear-gradient(135deg,#2b1207,#c84b2f); color:white;">
+              <div class="post-img" style="background:linear-gradient(135deg,#2b1207,#c84b2f);">
                 CROSSROADS '26
               </div>
 
@@ -687,8 +642,6 @@
 
       </div>
 
-      <!-- PHONE 2 -->
-
       <div class="phone-frame2">
 
         <div class="phone-screen2">
@@ -701,7 +654,7 @@
           <div class="sports-nav">
 
             <div class="sports-logo">
-              UN<span>REST</span>
+              Un<span>rest</span>
             </div>
 
             <div class="sports-pill">
@@ -721,7 +674,7 @@
             <div class="sport-card">
 
               <div class="sc-top">
-                <div></div>
+                <div>🏆</div>
 
                 <div class="sc-title">
                   DU Football Championship
@@ -751,7 +704,7 @@
             <div class="sport-card">
 
               <div class="sc-top">
-                <div></div>
+                <div>🏸</div>
 
                 <div class="sc-title">
                   Badminton Trials
