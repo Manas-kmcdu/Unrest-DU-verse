@@ -866,8 +866,9 @@
   <div class="echo-wall-bg"></div>
   <div class="echo-inner">
     <div class="echo-head">
-      <div class="section-label">Roll Call</div>
-      <h2>Echo your <em>thoughts</em></h2>
+      <div class="section-label">Early Access</div>
+      <h2>Post an echo to <em>get in</em></h2>
+      <p>Your echo is your entry ticket. Submit one thought to unlock early access to the Unrest feed.</p>
     </div>
     <div id="echo-unlocked">
       <div class="echo-form-wrap">
@@ -885,7 +886,17 @@
           <button class="echo-submit" onclick="submitEcho()">Post echo →</button>
         </div>
         <div class="echo-pending-msg" id="echo-pending-msg">
-        Your echo has been sent to moderators for review. It will appear on the wall soon!
+        Your echo has been sent for review. It will appear on the wall soon!
+        </div>
+        <div id="echo-feed-unlock" style="display:none;margin-top:1rem;text-align:center;">
+          <div style="font-size:0.85rem;color:var(--green);font-weight:600;margin-bottom:10px;">
+            Echo submitted - your early access is unlocked!
+          </div>
+          <button onclick="unlockFeed()" style="background:var(--ink);color:#fff;border:none;border-radius:12px;
+            padding:14px 28px;font-family:var(--sans);font-size:1rem;font-weight:700;cursor:pointer;
+            box-shadow:0 8px 20px rgba(14,13,11,0.2);transition:all 0.2s;">
+            Enter Unrest Feed →
+          </button>
         </div>
 
         <div id="admin-panel" class="mod-queue-wrap">
@@ -903,35 +914,6 @@
 </section>
 
 <!-- OTP VERIFICATION SECTION -->
-<section class="otp-section" id="otp" style="display: none;">
-  <div class="otp-container">
-    <div class="otp-box">
-      <h2 style="font-family: var(--serif); font-size: 2rem; margin-bottom: 0.5rem;">Verify your number</h2>
-      <p style="color: var(--ink2); margin-bottom: 1.5rem; font-size: 0.95rem;">One last step to unlock your feed & connect with your campus</p>
-      
-      <div id="otp-form-state">
-        <input type="tel" id="phone-input" placeholder="+91 98765 43210" class="otp-input" maxlength="13">
-        <div id="recaptcha-container" style="margin-bottom: 1rem;"></div>
-        <button onclick="sendOTP()" class="otp-btn">Send OTP</button>
-        <p style="font-size: 0.8rem; color: var(--ink3); text-align: center; margin-top: 1rem;">We'll send a 6-digit code to verify</p>
-      </div>
-
-      <div id="otp-verify-state" style="display: none;">
-        <p style="color: var(--ink2); margin-bottom: 1rem; font-size: 0.9rem;">Enter the 6-digit code sent to your number</p>
-        <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 1rem;">
-          <input type="text" id="otp-digit-1" class="otp-digit" maxlength="1">
-          <input type="text" id="otp-digit-2" class="otp-digit" maxlength="1">
-          <input type="text" id="otp-digit-3" class="otp-digit" maxlength="1">
-          <input type="text" id="otp-digit-4" class="otp-digit" maxlength="1">
-          <input type="text" id="otp-digit-5" class="otp-digit" maxlength="1">
-          <input type="text" id="otp-digit-6" class="otp-digit" maxlength="1">
-        </div>
-        <button onclick="verifyOTP()" class="otp-btn">Verify & Unlock Feed</button>
-        <button onclick="resendOTP()" class="otp-btn-secondary">Resend OTP</button>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- SOCIAL FEED SECTION -->
 <section class="social-feed-section" id="feed" style="display: none;">
@@ -1395,22 +1377,11 @@ async function submitEcho() {
       setTimeout(() => msg.style.display = 'none', 4000);
       
       // Show OTP section if email verified and not already shown
-      if (window.hasEmailVerified && !window.hasPhoneVerified && document.getElementById('otp').style.display === 'none') {
-        setTimeout(() => {
-          document.getElementById('otp').style.display = 'block';
-          document.getElementById('otp').style.opacity = '0';
-          document.getElementById('otp').style.transform = 'translateY(20px)';
-          document.getElementById('otp').style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-          setTimeout(() => {
-            document.getElementById('otp').style.opacity = '1';
-            document.getElementById('otp').style.transform = 'translateY(0)';
-          }, 50);
-          // Smooth scroll to OTP
-          setTimeout(() => {
-            document.getElementById('otp').scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 300);
-        }, 1500);
-      }
+     // Reveal feed unlock button
+      setTimeout(() => {
+        const btn = document.getElementById('echo-feed-unlock');
+        if (btn) btn.style.display = 'block';
+      }, 1200);
     }
   } catch (err) { alert("Submission failed. Please try again."); }
 }
@@ -1860,109 +1831,6 @@ updatePulseBar();
     });
   };
 
-  /* OTP FLOW - DOUBLE VERIFICATION */
-  window.hasEmailVerified = false;
-  window.hasPhoneVerified = false;
-
-  window.sendOTP = function() {
-    const phone = document.getElementById('phone-input').value.trim();
-    
-    // Validate phone
-    if (!phone || phone.length < 10) {
-      alert('Enter valid 10-digit phone number');
-      return;
-    }
-    
-    // Format phone to E.164 (+91XXXXXXXXXX)
-    let formatted = phone.replace(/\D/g, '');
-    if (formatted.length === 10) {
-      formatted = '+91' + formatted;
-    } else if (!formatted.startsWith('+')) {
-      formatted = '+' + formatted;
-    }
-    
-    // Firebase phone auth
-    try {
-      // Create RecaptchaVerifier (one-time)
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new window.firebase.auth.RecaptchaVerifier('recaptcha-container', {
-          size: 'normal',
-          callback: (response) => {
-            // reCAPTCHA solved
-          },
-          'expired-callback': () => {
-            alert('reCAPTCHA expired, please try again');
-          }
-        });
-      }
-      
-      // Send OTP
-      window.firebase.auth().signInWithPhoneNumber(formatted, window.recaptchaVerifier)
-        .then((confirmationResult) => {
-          window.confirmationResult = confirmationResult;
-          document.getElementById('otp-form-state').style.display = 'none';
-          document.getElementById('otp-verify-state').style.display = 'block';
-          document.getElementById('otp-digit-1').focus();
-          
-          // Show notification
-          const notify = document.createElement('div');
-          notify.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2a6b4a;color:#fff;padding:12px 24px;border-radius:100px;font-weight:600;z-index:3000;animation:slideDown 0.3s ease;';
-          notify.textContent = '✓ OTP sent to ' + formatted;
-          document.body.appendChild(notify);
-          setTimeout(() => notify.remove(), 3000);
-        })
-        .catch((error) => {
-          console.error('Error sending OTP:', error);
-          alert('Error sending OTP: ' + error.message);
-          if (window.recaptchaVerifier) {
-            window.recaptchaVerifier.clear();
-            window.recaptchaVerifier = null;
-          }
-        });
-    } catch(err) {
-      console.error('Phone auth error:', err);
-      alert('Phone auth error: ' + err.message);
-    }
-  };
-
-  window.verifyOTP = function() {
-    const digits = [1,2,3,4,5,6].map(i => document.getElementById('otp-digit-' + i).value).join('');
-    if (digits.length !== 6) {
-      alert('Enter all 6 digits');
-      return;
-    }
-    
-    if (!window.confirmationResult) {
-      alert('OTP not sent yet');
-      return;
-    }
-    
-    // Verify OTP with Firebase
-    window.confirmationResult.confirm(digits)
-      .then((result) => {
-        // Phone verified
-        window.hasPhoneVerified = true;
-        
-        // Store phone in user data
-        if (result.user) {
-          window.userPhoneNumber = result.user.phoneNumber;
-        }
-        
-        // Check both flags
-        if (window.hasEmailVerified && window.hasPhoneVerified) {
-          unlockFeed();
-        }
-      })
-      .catch((error) => {
-        console.error('Error verifying OTP:', error);
-        alert('Invalid OTP. Try again.');
-      });
-  };
-
-  window.resendOTP = function() {
-    // Resend same way as sendOTP
-    window.sendOTP();
-  };
 
   window.unlockFeed = function() {
     // Hide OTP section
