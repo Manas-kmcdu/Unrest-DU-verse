@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Unrest Feed</title>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:#f2efe8;
+      overflow:hidden;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+
+const { useState, useEffect, useRef } = React;
+
+const CSS = `
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+*{
+  box-sizing:border-box;
+}
+
+:root{
+  --paper:#f2efe8;
+  --white:#ffffff;
+  --ink:#0e0d0b;
+  --ink2:#3d3b35;
+  --ink3:#7a776e;
+  --ink4:#b0ada6;
+  --border:rgba(14,13,11,0.1);
+  --accent:#c84b2f;
+  --serif:'Instrument Serif', serif;
+  --sans:'DM Sans', sans-serif;
+}
+
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+}
+
+button,input,select{
+  font-family:var(--sans);
+}
+
+@keyframes pulse{
+  0%,100%{opacity:1}
+  50%{opacity:0.5}
+}
+`;
+
+const EXPLORE_TILES = [
+  "Surveys",
+  "About DU",
+  "Tech",
+  "AI",
+  "Fashion",
+  "Automation",
+  "Theatre",
+  "Photography",
+  "Sports",
+  "Case Competitions"
+];
+
+const POSTS = [
+  {
+    id:1,
+    name:"Rohan Mehta",
+    college:"Hindu College",
+    initials:"RM",
+    text:"North Campus is genuinely unbeatable in winters. The chai stalls, the cold fog, the DTC chaos.",
+    time:"2h ago"
+  },
+  {
+    id:2,
+    name:"Priya Sharma",
+    college:"Lady Shri Ram",
+    initials:"PS",
+    text:"Placement season is doing something weird to people. Everyone suddenly joined three consulting clubs.",
+    time:"4h ago"
+  }
+];
+
+function Banner(){
+  return(
+    <div style={{
+      background:"#fff0c2",
+      borderRadius:"12px",
+      height:"130px",
+      position:"relative",
+      overflow:"hidden",
+      marginBottom:"22px",
+      padding:"18px"
+    }}>
+      <div style={{
+        position:"absolute",
+        right:"-20px",
+        top:"-20px",
+        width:"120px",
+        height:"120px",
+        borderRadius:"50%",
+        background:"rgba(196,122,0,0.08)"
+      }}/>
+
+      <div style={{
+        fontFamily:"var(--serif)",
+        fontSize:"2rem",
+        lineHeight:"1.05",
+        color:"#3d2800",
+        fontStyle:"italic"
+      }}>
+        end semester
+        <br/>
+        exams incoming
+      </div>
+
+      <div style={{
+        position:"absolute",
+        bottom:"16px",
+        right:"16px",
+        fontSize:"0.65rem",
+        letterSpacing:"0.08em",
+        textTransform:"uppercase",
+        color:"#c47a00",
+        fontWeight:"700"
+      }}>
+        Academics
+      </div>
+    </div>
+  )
+}
+
+function Avatar({ initials }){
+  return(
+    <div style={{
+      width:"38px",
+      height:"38px",
+      borderRadius:"50%",
+      background:"#c84b2f",
+      color:"#fff",
+      display:"flex",
+      alignItems:"center",
+      justifyContent:"center",
+      fontWeight:"700",
+      fontSize:"0.72rem",
+      flexShrink:0
+    }}>
+      {initials}
+    </div>
+  )
+}
+
+function PostCard({ post }){
+  return(
+    <div style={{
+      padding:"22px 0",
+      borderBottom:"1px solid var(--border)"
+    }}>
+      <div style={{
+        display:"flex",
+        gap:"12px"
+      }}>
+        <Avatar initials={post.initials}/>
+
+        <div style={{flex:1}}>
+          <div style={{
+            display:"flex",
+            alignItems:"center",
+            gap:"8px",
+            marginBottom:"3px"
+          }}>
+            <span style={{
+              fontWeight:"600",
+              fontSize:"0.92rem"
+            }}>
+              {post.name}
+            </span>
+
+            <span style={{
+              fontSize:"0.65rem",
+              color:"var(--ink3)"
+            }}>
+              {post.college}
+            </span>
+
+            <span style={{
+              fontSize:"0.65rem",
+              color:"var(--ink4)"
+            }}>
+              · {post.time}
+            </span>
+          </div>
+
+          <p style={{
+            margin:0,
+            fontSize:"0.92rem",
+            lineHeight:"1.7",
+            color:"var(--ink)"
+          }}>
+            {post.text}
+          </p>
+
+          <div style={{
+            display:"flex",
+            gap:"18px",
+            marginTop:"12px",
+            fontSize:"0.75rem",
+            color:"var(--ink3)"
+          }}>
+            <span>W</span>
+            <span>L</span>
+            <span>comments</span>
+            <span>save</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ExploreTiles(){
+  return(
+    <div style={{
+      display:"grid",
+      gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",
+      gap:"14px",
+      marginBottom:"26px"
+    }}>
+      {EXPLORE_TILES.map(tile=>(
+        <div
+          key={tile}
+          style={{
+            background:"var(--white)",
+            border:"1px solid var(--border)",
+            borderRadius:"10px",
+            padding:"18px",
+            minHeight:"110px",
+            position:"relative",
+            overflow:"hidden",
+            cursor:"pointer",
+            transition:"0.2s"
+          }}
+        >
+          <div style={{
+            position:"absolute",
+            right:"-25px",
+            top:"-25px",
+            width:"80px",
+            height:"80px",
+            borderRadius:"50%",
+            background:"rgba(200,75,47,0.05)"
+          }}/>
+
+          <div style={{
+            fontFamily:"var(--serif)",
+            fontSize:"1.35rem",
+            lineHeight:"1.1"
+          }}>
+            {tile}
+          </div>
+
+          <div style={{
+            position:"absolute",
+            bottom:"14px",
+            left:"18px",
+            fontSize:"0.62rem",
+            letterSpacing:"0.08em",
+            textTransform:"uppercase",
+            color:"var(--accent)",
+            fontWeight:"700"
+          }}>
+            Explore
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function App(){
+
+  const [tab,setTab] = useState("du");
+
+  const TABS = [
+    {id:"du",label:"DU"},
+    {id:"college",label:"College"},
+    {id:"explore",label:"Explore"}
+  ];
+
+  return(
+    <div style={{
+      minHeight:"100vh",
+      background:"var(--paper)",
+      fontFamily:"var(--sans)"
+    }}>
+
+      <style>{CSS}</style>
+
+      {/* NAVBAR */}
+      <nav style={{
+        height:"56px",
+        borderBottom:"1px solid var(--border)",
+        display:"flex",
+        alignItems:"center",
+        padding:"0 28px",
+        background:"rgba(242,239,232,0.96)",
+        position:"sticky",
+        top:0,
+        zIndex:100
+      }}>
+
+        <a
+          href="../index.html"
+          style={{
+            textDecoration:"none",
+            color:"var(--ink)",
+            fontFamily:"var(--serif)",
+            fontSize:"1.7rem",
+            marginRight:"28px"
+          }}
+        >
+          Un<em style={{
+            color:"var(--accent)",
+            fontStyle:"italic"
+          }}>rest</em>
+        </a>
+
+        <div style={{
+          display:"flex",
+          gap:"4px",
+          background:"rgba(14,13,11,0.06)",
+          borderRadius:"999px",
+          padding:"3px"
+        }}>
+          {TABS.map(t=>(
+            <button
+              key={t.id}
+              onClick={()=>setTab(t.id)}
+              style={{
+                border:"none",
+                borderRadius:"999px",
+                padding:"7px 16px",
+                background:tab===t.id ? "#fff" : "transparent",
+                color:tab===t.id ? "var(--ink)" : "var(--ink3)",
+                fontSize:"0.76rem",
+                fontWeight:tab===t.id ? "600" : "500",
+                cursor:"pointer"
+              }}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        <div style={{marginLeft:"auto"}}>
+          <div style={{
+            background:"#fff",
+            border:"1px solid var(--border)",
+            borderRadius:"6px",
+            padding:"6px 10px",
+            fontSize:"0.78rem"
+          }}>
+            Kirori Mal
+          </div>
+        </div>
+
+      </nav>
+
+      {/* MAIN GRID */}
+      <div style={{
+        maxWidth:"1200px",
+        margin:"0 auto",
+        display:"grid",
+        gridTemplateColumns:"240px minmax(0,1fr) 240px",
+        height:"calc(100vh - 56px)"
+      }}>
+
+        {/* LEFT SIDEBAR */}
+        <aside style={{
+          padding:"24px 20px",
+          borderRight:"1px solid var(--border)",
+          position:"sticky",
+          top:"56px",
+          height:"calc(100vh - 56px)",
+          overflow:"hidden"
+        }}>
+
+          <div style={{
+            fontSize:"0.6rem",
+            textTransform:"uppercase",
+            letterSpacing:"0.1em",
+            color:"var(--ink4)",
+            marginBottom:"12px",
+            fontWeight:"700"
+          }}>
+            Your College
+          </div>
+
+          <div style={{
+            background:"#fff",
+            border:"1px solid var(--border)",
+            borderRadius:"8px",
+            padding:"12px",
+            display:"flex",
+            alignItems:"center",
+            gap:"10px"
+          }}>
+            <div style={{
+              width:"8px",
+              height:"8px",
+              borderRadius:"50%",
+              background:"var(--accent)",
+              animation:"pulse 2s infinite"
+            }}/>
+
+            <span style={{
+              fontSize:"0.84rem",
+              fontWeight:"600"
+            }}>
+              Kirori Mal
+            </span>
+          </div>
+
+        </aside>
+
+        {/* FEED */}
+        <main style={{
+          padding:"24px 30px",
+          overflowY:"auto",
+          height:"calc(100vh - 56px)"
+        }}>
+
+          <div style={{
+            background:"#fff",
+            border:"1px solid var(--border)",
+            borderRadius:"10px",
+            padding:"14px",
+            marginBottom:"20px"
+          }}>
+            <input
+              placeholder="What's happening at DU?"
+              style={{
+                width:"100%",
+                border:"none",
+                outline:"none",
+                fontSize:"0.95rem",
+                background:"transparent"
+              }}
+            />
+          </div>
+
+          <Banner/>
+
+          {tab==="explore" && <ExploreTiles/>}
+
+          {POSTS.map(post=>(
+            <PostCard key={post.id} post={post}/>
+          ))}
+
+        </main>
+
+        {/* RIGHT SIDEBAR */}
+        <aside style={{
+          padding:"24px 20px",
+          borderLeft:"1px solid var(--border)",
+          position:"sticky",
+          top:"56px",
+          height:"calc(100vh - 56px)",
+          overflow:"hidden"
+        }}>
+
+          <div style={{
+            fontSize:"0.6rem",
+            textTransform:"uppercase",
+            letterSpacing:"0.1em",
+            color:"var(--ink4)",
+            marginBottom:"12px",
+            fontWeight:"700"
+          }}>
+            Trending at DU
+          </div>
+
+          {["#NorthCampus","#PlacementSeason","#DULife","#CaseComps"].map(tag=>(
+            <div
+              key={tag}
+              style={{
+                padding:"10px 0",
+                borderBottom:"1px solid rgba(0,0,0,0.05)"
+              }}
+            >
+              <div style={{
+                fontSize:"0.82rem",
+                fontWeight:"600"
+              }}>
+                {tag}
+              </div>
+
+              <div style={{
+                fontSize:"0.66rem",
+                color:"var(--ink3)",
+                marginTop:"2px"
+              }}>
+                trending discussion
+              </div>
+            </div>
+          ))}
+
+        </aside>
+
+      </div>
+
+    </div>
+  )
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+</script>
+
+</body>
+</html>
