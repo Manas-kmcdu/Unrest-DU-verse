@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Unrest - DU Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --paper:#f4f1ea;
+  --paper2:#ede9e0;
+  --ink:#100f0d;
+  --ink2:#4a4740;
+  --ink3:#9a9590;
+  --accent:#c84b2f;
+  --border:rgba(16,15,13,0.10);
+  --border2:rgba(16,15,13,0.06);
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --green:#2a5c45;
+  --blue:#1a3a5c;
+}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  min-height:100vh;
+  font-size:14px;
+  line-height:1.6;
+}
+/* Layout */
+.shell{display:flex;min-height:100vh;}
+.sidebar{
+  width:220px;
+  min-height:100vh;
+  border-right:1px solid var(--border);
+  padding:0;
+  position:sticky;
+  top:0;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:var(--paper);
+  flex-shrink:0;
+}
+.main{flex:1;min-width:0;max-width:660px;border-right:1px solid var(--border);}
+.aside{width:280px;flex-shrink:0;padding:28px 20px;}
+
+/* Sidebar */
+.logo{
+  padding:28px 24px 24px;
+  border-bottom:1px solid var(--border);
+  font-family:var(--serif);
+  font-size:1.55rem;
+  letter-spacing:-0.03em;
+  color:var(--ink);
+}
+.logo span{color:var(--accent);font-style:italic;}
+.logo sub{
+  display:block;
+  font-family:var(--sans);
+  font-size:0.65rem;
+  font-weight:600;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--ink3);
+  margin-top:2px;
+  font-style:normal;
+}
+.nav-section{padding:20px 16px 8px;font-size:0.65rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink3);}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 20px;
+  font-size:0.88rem;font-weight:500;
+  color:var(--ink2);
+  cursor:pointer;
+  border-left:2px solid transparent;
+  transition:all 0.15s;
+}
+.nav-item:hover{color:var(--ink);background:var(--paper2);}
+.nav-item.active{color:var(--ink);border-left-color:var(--accent);background:var(--paper2);font-weight:600;}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;}
+.nav-item.active .nav-dot{background:var(--accent);}
+.sidebar-footer{
+  margin-top:auto;
+  padding:20px;
+  border-top:1px solid var(--border);
+  font-size:0.72rem;
+  color:var(--ink3);
+  line-height:1.8;
+}
+
+/* Main feed */
+.feed-header{
+  padding:20px 28px 0;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  gap:0;
+}
+.tab{
+  padding:12px 0;
+  margin-right:28px;
+  font-size:0.85rem;font-weight:600;
+  color:var(--ink3);
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:all 0.15s;
+}
+.tab:hover{color:var(--ink);}
+.tab.active{color:var(--ink);border-bottom-color:var(--ink);}
+
+/* Banner */
+.banner{
+  margin:20px;
+  border:1px solid var(--border);
+  border-radius:4px;
+  background:var(--paper2);
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  overflow:hidden;
+  position:relative;
+}
+.banner-label{
+  font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--accent);
+  flex-shrink:0;
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+  border-right:1px solid var(--border);
+  padding-right:10px;
+  margin-right:4px;
+}
+.banner-text{
+  font-family:var(--serif);
+  font-size:1.05rem;
+  font-style:italic;
+  color:var(--ink);
+  flex:1;
+}
+.banner-scroll-track{overflow:hidden;flex:1;}
+.banner-scroll{
+  display:flex;
+  gap:60px;
+  animation:scroll-x 22s linear infinite;
+  white-space:nowrap;
+}
+@keyframes scroll-x{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* Composer */
+.composer{
+  margin:0 20px 20px;
+  border:1px solid var(--border);
+  border-radius:4px;
+  background:#fff;
+  overflow:hidden;
+}
+.composer-top{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:16px 18px 12px;
+}
+.avatar-sm{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--ink);
+  color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.7rem;font-weight:700;
+  flex-shrink:0;
+  margin-top:2px;
+}
+.composer-field{
+  flex:1;
+  font-family:var(--sans);
+  font-size:0.92rem;
+  color:var(--ink);
+  border:none;
+  outline:none;
+  resize:none;
+  background:transparent;
+  line-height:1.6;
+  min-height:68px;
+}
+.composer-field::placeholder{color:var(--ink3);}
+.composer-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 18px 14px;
+  border-top:1px solid var(--border2);
+}
+.composer-meta{
+  display:flex;align-items:center;gap:8px;
+}
+.college-select{
+  font-family:var(--sans);
+  font-size:0.75rem;
+  font-weight:600;
+  color:var(--ink2);
+  border:1px solid var(--border);
+  border-radius:3px;
+  padding:4px 8px;
+  background:transparent;
+  cursor:pointer;
+  outline:none;
+}
+.char-count{font-size:0.72rem;color:var(--ink3);}
+.post-btn{
+  font-family:var(--sans);
+  font-size:0.8rem;font-weight:700;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  padding:8px 20px;
+  border-radius:3px;
+  border:none;
+  background:var(--ink);
+  color:#fff;
+  cursor:pointer;
+  transition:background 0.15s;
+}
+.post-btn:hover{background:var(--accent);}
+.post-btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+/* Feed */
+.feed{padding:0 20px;}
+.post-card{
+  border:1px solid var(--border);
+  border-radius:4px;
+  background:#fff;
+  margin-bottom:14px;
+  overflow:hidden;
+  transition:border-color 0.15s;
+}
+.post-card:hover{border-color:rgba(16,15,13,0.18);}
+.post-card-header{
+  display:flex;align-items:flex-start;
+  padding:16px 18px 12px;
+  gap:12px;
+}
+.post-avatar{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.68rem;font-weight:700;
+  color:#fff;flex-shrink:0;
+}
+.post-meta{flex:1;}
+.post-author{font-size:0.88rem;font-weight:700;color:var(--ink);}
+.post-college-badge{
+  display:inline-block;
+  font-size:0.6rem;font-weight:700;
+  letter-spacing:0.1em;text-transform:uppercase;
+  padding:2px 7px;border-radius:2px;
+  margin-left:7px;
+  background:var(--paper2);
+  color:var(--ink2);
+}
+.post-time{font-size:0.72rem;color:var(--ink3);margin-top:1px;}
+.post-text{
+  padding:0 18px 14px;
+  font-size:0.92rem;
+  line-height:1.7;
+  color:var(--ink);
+}
+.post-actions{
+  display:flex;align-items:center;gap:2px;
+  padding:10px 14px;
+  border-top:1px solid var(--border2);
+}
+.action-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:6px 10px;
+  border-radius:3px;
+  border:none;
+  background:transparent;
+  font-family:var(--sans);
+  font-size:0.78rem;font-weight:500;
+  color:var(--ink3);
+  cursor:pointer;
+  transition:all 0.12s;
+}
+.action-btn:hover{background:var(--paper2);color:var(--ink);}
+.action-btn.w-btn.voted{color:var(--green);background:rgba(42,92,69,0.08);}
+.action-btn.l-btn.voted{color:var(--accent);background:rgba(200,75,47,0.07);}
+.action-btn.save-btn.saved{color:var(--blue);background:rgba(26,58,92,0.07);}
+.action-divider{flex:1;}
+.action-label{font-size:0.65rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;}
+
+/* Comments */
+.comments-section{border-top:1px solid var(--border2);background:var(--paper);}
+.comment-row{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 18px;
+  border-bottom:1px solid var(--border2);
+}
+.comment-row:last-child{border-bottom:none;}
+.comment-avatar{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--ink2);
+  color:#fff;
+  font-size:0.55rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.comment-body{flex:1;}
+.comment-author{font-size:0.72rem;font-weight:700;color:var(--ink);}
+.comment-text{font-size:0.78rem;color:var(--ink2);}
+.comment-input-row{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 18px 12px;
+}
+.comment-field{
+  flex:1;
+  font-family:var(--sans);
+  font-size:0.8rem;
+  border:1px solid var(--border);
+  border-radius:3px;
+  padding:6px 10px;
+  background:#fff;
+  outline:none;
+  color:var(--ink);
+}
+.comment-field::placeholder{color:var(--ink3);}
+.comment-submit{
+  font-family:var(--sans);
+  font-size:0.72rem;font-weight:700;
+  padding:6px 12px;
+  border:none;border-radius:3px;
+  background:var(--ink);color:#fff;
+  cursor:pointer;
+}
+.comment-submit:hover{background:var(--accent);}
+
+/* Explore */
+.explore-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  padding:20px;
+}
+.explore-tile{
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:20px 18px;
+  background:#fff;
+  cursor:pointer;
+  transition:all 0.15s;
+  position:relative;
+  overflow:hidden;
+}
+.explore-tile:hover{border-color:rgba(16,15,13,0.2);transform:translateY(-1px);}
+.explore-tile-label{
+  font-size:0.6rem;font-weight:700;letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--ink3);margin-bottom:6px;
+}
+.explore-tile-title{
+  font-family:var(--serif);
+  font-size:1.15rem;
+  font-style:italic;
+  color:var(--ink);
+  line-height:1.2;
+}
+.explore-tile-count{
+  font-size:0.7rem;color:var(--ink3);margin-top:8px;
+}
+.explore-tile-accent{
+  position:absolute;bottom:0;right:0;
+  width:40px;height:40px;
+  border-radius:50% 0 0 0;
+  opacity:0.12;
+}
+
+/* Aside */
+.aside-section{margin-bottom:28px;}
+.aside-label{
+  font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:14px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+.trending-item{
+  padding:10px 0;
+  border-bottom:1px solid var(--border2);
+  cursor:pointer;
+}
+.trending-item:last-child{border-bottom:none;}
+.trending-num{font-size:0.68rem;font-weight:700;color:var(--ink3);}
+.trending-topic{font-size:0.85rem;font-weight:600;color:var(--ink);margin:2px 0;}
+.trending-count{font-size:0.72rem;color:var(--ink3);}
+.college-pill{
+  display:inline-block;
+  padding:4px 10px;border-radius:2px;
+  border:1px solid var(--border);
+  font-size:0.72rem;font-weight:600;
+  color:var(--ink2);
+  margin:3px 3px 3px 0;
+  cursor:pointer;
+  background:#fff;
+  transition:all 0.12s;
+}
+.college-pill:hover{background:var(--ink);color:#fff;}
+
+/* Loading / empty */
+.feed-empty{
+  text-align:center;
+  padding:60px 20px;
+  color:var(--ink3);
+  font-size:0.9rem;
+}
+.feed-empty strong{display:block;font-family:var(--serif);font-size:1.5rem;font-style:italic;color:var(--ink2);margin-bottom:8px;}
+.loading-bar{
+  height:2px;background:var(--paper2);
+  position:relative;overflow:hidden;
+  margin:0 20px 20px;border-radius:1px;
+}
+.loading-bar::after{
+  content:"";position:absolute;left:-40%;width:40%;height:100%;
+  background:var(--accent);
+  animation:shimmer 1.6s infinite ease;
+}
+@keyframes shimmer{0%{left:-40%;}100%{left:120%;}}
+
+/* Mobile */
+@media(max-width:900px){
+  .aside{display:none;}
+  .sidebar{width:180px;}
+}
+@media(max-width:640px){
+  .shell{flex-direction:column;}
+  .sidebar{width:100%;min-height:auto;height:auto;position:relative;flex-direction:row;align-items:center;border-right:none;border-bottom:1px solid var(--border);}
+  .logo{padding:14px 16px;border-bottom:none;border-right:1px solid var(--border);}
+  .logo sub{display:none;}
+  .sidebar-footer,.nav-section{display:none;}
+  .nav-item{padding:14px 12px;border-left:none;border-bottom:2px solid transparent;font-size:0.82rem;}
+  .nav-item.active{border-bottom-color:var(--accent);}
+  .explore-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// --- Firebase (CDN loaded async) ---
+let db = null;
+let firestoreModule = null;
+
+async function initFirebase() {
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    const fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    firestoreModule = fs;
+    const cfg = {
+      apiKey: "AIzaSyDBJ0hHjVyEnwg7mV7ECeG163K7fs1fsiE",
+      authDomain: "du-verse-e75db.firebaseapp.com",
+      databaseURL: "https://du-verse-e75db-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "du-verse-e75db",
+      storageBucket: "du-verse-e75db.firebasestorage.app",
+      messagingSenderId: "84735746102",
+      appId: "1:84735746102:web:6fe5353a0586db71323897"
+    };
+    const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+    db = fs.getFirestore(app);
+    return true;
+  } catch(e) {
+    console.error("Firebase init failed:", e);
+    return false;
+  }
+}
+
+// --- Helpers ---
+const COLLEGES = [
+  "Hindu College","SRCC","Miranda House","LSR","Kirori Mal",
+  "St. Stephen's","Hansraj","Ramjas","IP College","Jesus & Mary",
+  "Dyal Singh","Gargi","Kamala Nehru","Lady Irwin","DCAC"
+];
+
+const COLLEGE_COLORS = {
+  "Hindu College":"#1a3a5c","SRCC":"#c84b2f","Miranda House":"#2a5c45",
+  "LSR":"#5c2a6b","Kirori Mal":"#2a4a6b","St. Stephen's":"#6b3a2a",
+  "Hansraj":"#3a5c2a","Ramjas":"#5c4a2a","IP College":"#2a5c5c",
+  "Jesus & Mary":"#6b2a4a","Dyal Singh":"#3a3a6b","Gargi":"#5c2a2a",
+  "Kamala Nehru":"#2a6b6b","Lady Irwin":"#6b5c2a","DCAC":"#4a6b2a"
+};
+
+const BANNERS = [
+  "End Semester Discussions heating up across campuses",
+  "Flatmate & PG Hunt season - DDA flats, Mukherjee Nagar, GTB Nagar",
+  "Internship Season 2026 - placements, PPOs, referrals",
+  "Society Recruitments open - drama, debate, music, tech",
+  "Fest Season approaching - registrations, volunteers, performers",
+  "Semester exams incoming - libraries packed, notes being traded"
+];
+
+const EXPLORE_TILES = [
+  { label:"Community", title:"Surveys", count:"12 active", color:"#c84b2f" },
+  { label:"Knowledge", title:"About DU", count:"Colleges, courses, history", color:"#1a3a5c" },
+  { label:"Culture", title:"Fest Season", count:"48 fests listed", color:"#2a5c45" },
+  { label:"Build", title:"Tech Forums", count:"3.2k members", color:"#3a3a6b" },
+  { label:"Style", title:"Fashion Forums", count:"1.4k posts", color:"#6b2a4a" },
+  { label:"Play", title:"Sports Forums", count:"Trials, teams, scores", color:"#2a4a6b" },
+  { label:"Future", title:"AI Discussions", count:"Weekly threads", color:"#5c4a2a" },
+  { label:"Debate", title:"Campus Opinion", count:"Hot takes welcome", color:"#6b3a2a" },
+];
+
+const TRENDING = [
+  { topic:"#EndSemVibes", count:"2.1k posts" },
+  { topic:"#PGHunt2026", count:"890 posts" },
+  { topic:"#InternSeason", count:"1.4k posts" },
+  { topic:"#FestRecruits", count:"560 posts" },
+  { topic:"#NorthSouth", count:"340 posts" },
+];
+
+function relativeTime(ts) {
+  if (!ts) return "now";
+  const now = Date.now();
+  const t = ts.toMillis ? ts.toMillis() : ts;
+  const diff = Math.floor((now - t) / 1000);
+  if (diff < 60) return `${diff}s`;
+  if (diff < 3600) return `${Math.floor(diff/60)}m`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}h`;
+  return `${Math.floor(diff/86400)}d`;
+}
+
+function initials(name) {
+  return name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+}
+
+function avatarColor(college) {
+  return COLLEGE_COLORS[college] || "#4a4740";
+}
+
+// --- PostCard ---
+function PostCard({ post, onVote, onSave, onComment, currentCollege }) {
+  const [showComments, setShowComments] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [voting, setVoting] = useState(false);
+
+  async function handleVote(type) {
+    if (voting) return;
+    setVoting(true);
+    await onVote(post.id, type);
+    setVoting(false);
+  }
+
+  async function submitComment(e) {
+    e.preventDefault();
+    if (!commentText.trim()) return;
+    await onComment(post.id, commentText.trim());
+    setCommentText("");
+  }
+
+  return (
+    <div className="post-card">
+      <div className="post-card-header">
+        <div className="post-avatar" style={{background:avatarColor(post.college)}}>
+          {initials(post.author)}
+        </div>
+        <div className="post-meta">
+          <div>
+            <span className="post-author">{post.author}</span>
+            <span className="post-college-badge">{post.college}</span>
+          </div>
+          <div className="post-time">{relativeTime(post.createdAt)}</div>
+        </div>
+      </div>
+      <div className="post-text">{post.text}</div>
+      <div className="post-actions">
+        <button
+          className={`action-btn w-btn${post.myVote==="w"?" voted":""}`}
+          onClick={()=>handleVote("w")}
+        >
+          <span className="action-label">W</span>
+          <span>{post.w||0}</span>
+        </button>
+        <button
+          className={`action-btn l-btn${post.myVote==="l"?" voted":""}`}
+          onClick={()=>handleVote("l")}
+        >
+          <span className="action-label">L</span>
+          <span>{post.l||0}</span>
+        </button>
+        <button
+          className="action-btn"
+          onClick={()=>setShowComments(s=>!s)}
+        >
+          <span>Reply</span>
+          {post.comments?.length ? <span style={{fontSize:"0.7rem",color:"var(--ink3)"}}>{post.comments.length}</span> : null}
+        </button>
+        <div className="action-divider"/>
+        <button
+          className={`action-btn save-btn${post.saved?" saved":""}`}
+          onClick={()=>onSave(post.id)}
+        >
+          {post.saved ? "Saved" : "Save"}
+        </button>
+      </div>
+      {showComments && (
+        <div className="comments-section">
+          {(post.comments||[]).map((c,i)=>(
+            <div className="comment-row" key={i}>
+              <div className="comment-avatar" style={{background:avatarColor(c.college)}}>
+                {initials(c.author)}
+              </div>
+              <div className="comment-body">
+                <span className="comment-author">{c.author} </span>
+                <span className="comment-text">{c.text}</span>
+              </div>
+            </div>
+          ))}
+          <div className="comment-input-row">
+            <input
+              className="comment-field"
+              placeholder="Reply..."
+              value={commentText}
+              onChange={e=>setCommentText(e.target.value)}
+              onKeyDown={e=>e.key==="Enter"&&submitComment(e)}
+            />
+            <button className="comment-submit" onClick={submitComment}>Post</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// --- Composer ---
+function Composer({ onPost, college, setCollege }) {
+  const [text, setText] = useState("");
+  const [posting, setPosting] = useState(false);
+  const MAX = 280;
+
+  async function handlePost() {
+    if (!text.trim() || posting) return;
+    setPosting(true);
+    await onPost(text.trim(), college);
+    setText("");
+    setPosting(false);
+  }
+
+  return (
+    <div className="composer">
+      <div className="composer-top">
+        <div className="avatar-sm">{initials("You")}</div>
+        <textarea
+          className="composer-field"
+          placeholder="What's happening at DU?"
+          value={text}
+          onChange={e=>setText(e.target.value.slice(0,MAX))}
+          rows={3}
+        />
+      </div>
+      <div className="composer-bottom">
+        <div className="composer-meta">
+          <select
+            className="college-select"
+            value={college}
+            onChange={e=>setCollege(e.target.value)}
+          >
+            {COLLEGES.map(c=><option key={c} value={c}>{c}</option>)}
+          </select>
+          <span className="char-count">{MAX-text.length}</span>
+        </div>
+        <button className="post-btn" onClick={handlePost} disabled={!text.trim()||posting}>
+          {posting?"Posting...":"Post"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// --- Banner ---
+function Banner() {
+  const [idx, setIdx] = useState(0);
+  useEffect(()=>{
+    const t = setInterval(()=>setIdx(i=>(i+1)%BANNERS.length),4000);
+    return ()=>clearInterval(t);
+  },[]);
+  return (
+    <div className="banner">
+      <div className="banner-label">Live</div>
+      <div className="banner-text" style={{transition:"opacity 0.4s"}}>
+        {BANNERS[idx]}
+      </div>
+    </div>
+  );
+}
+
+// --- Explore ---
+function Explore() {
+  return (
+    <div className="explore-grid">
+      {EXPLORE_TILES.map(t=>(
+        <div className="explore-tile" key={t.title}>
+          <div className="explore-tile-label">{t.label}</div>
+          <div className="explore-tile-title">{t.title}</div>
+          <div className="explore-tile-count">{t.count}</div>
+          <div className="explore-tile-accent" style={{background:t.color}}/>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// --- Main App ---
+function App() {
+  const [tab, setTab] = useState("DU");
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fbReady, setFbReady] = useState(false);
+  const [college, setCollege] = useState("Hindu College");
+  const unsubRef = useRef(null);
+
+  // Init Firebase
+  useEffect(()=>{
+    initFirebase().then(ok=>{
+      setFbReady(ok);
+      if (!ok) setLoading(false);
+    });
+    return ()=>{ if(unsubRef.current) unsubRef.current(); };
+  },[]);
+
+  // Subscribe to Firestore
+  useEffect(()=>{
+    if (!fbReady || !db || !firestoreModule) return;
+    const { collection, query, orderBy, onSnapshot, limit } = firestoreModule;
+    const q = query(collection(db,"posts"), orderBy("createdAt","desc"), limit(40));
+    unsubRef.current = onSnapshot(q, snap=>{
+      const data = snap.docs.map(d=>({id:d.id,...d.data()}));
+      setPosts(data);
+      setLoading(false);
+    }, err=>{
+      console.error("Firestore error:", err);
+      setLoading(false);
+    });
+    return ()=>{ if(unsubRef.current) unsubRef.current(); };
+  },[fbReady]);
+
+  async function handlePost(text, col) {
+    if (!db || !firestoreModule) return;
+    const { collection, addDoc, serverTimestamp } = firestoreModule;
+    await addDoc(collection(db,"posts"),{
+      author: "Anonymous",
+      college: col,
+      text,
+      w: 0,
+      l: 0,
+      comments: [],
+      createdAt: serverTimestamp()
+    });
+  }
+
+  async function handleVote(id, type) {
+    if (!db || !firestoreModule) return;
+    const { doc, updateDoc, increment } = firestoreModule;
+    await updateDoc(doc(db,"posts",id),{[type]: increment(1)});
+  }
+
+  function handleSave(id) {
+    setPosts(ps=>ps.map(p=>p.id===id?{...p,saved:!p.saved}:p));
+  }
+
+  async function handleComment(id, text) {
+    if (!db || !firestoreModule) return;
+    const { doc, updateDoc, arrayUnion } = firestoreModule;
+    await updateDoc(doc(db,"posts",id),{
+      comments: arrayUnion({ author:"Anonymous", college, text })
+    });
+  }
+
+  const tabs = ["DU","College","Explore"];
+
+  return (
+    <div className="shell">
+      {/* Sidebar */}
+      <div className="sidebar">
+        <div className="logo">
+          Un<span>rest</span>
+          <sub>Delhi University Network</sub>
+        </div>
+        <div className="nav-section">Discover</div>
+        {tabs.map(t=>(
+          <div
+            key={t}
+            className={`nav-item${tab===t?" active":""}`}
+            onClick={()=>setTab(t)}
+          >
+            <div className="nav-dot"/>
+            {t}
+          </div>
+        ))}
+        <div className="nav-section">Network</div>
+        {["Societies","Mentors","Events"].map(t=>(
+          <div key={t} className="nav-item">
+            <div className="nav-dot"/>
+            {t}
+          </div>
+        ))}
+        <div className="sidebar-footer">
+          unrestdu.in<br/>
+          DU's verified student network
+        </div>
+      </div>
+
+      {/* Main */}
+      <div className="main">
+        <div className="feed-header">
+          {tabs.map(t=>(
+            <div
+              key={t}
+              className={`tab${tab===t?" active":""}`}
+              onClick={()=>setTab(t)}
+            >
+              {t}
+            </div>
+          ))}
+        </div>
+
+        {tab === "Explore" ? (
+          <Explore/>
+        ) : (
+          <>
+            <div style={{height:"20px"}}/>
+            <Banner/>
+            <Composer onPost={handlePost} college={college} setCollege={setCollege}/>
+            {loading && <div className="loading-bar"/>}
+            <div className="feed">
+              {!loading && posts.length === 0 && (
+                <div className="feed-empty">
+                  <strong>Nothing yet.</strong>
+                  Be the first to post.
+                </div>
+              )}
+              {posts.map(p=>(
+                <PostCard
+                  key={p.id}
+                  post={p}
+                  onVote={handleVote}
+                  onSave={handleSave}
+                  onComment={handleComment}
+                  currentCollege={college}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Aside */}
+      <div className="aside">
+        <div className="aside-section">
+          <div className="aside-label">Trending at DU</div>
+          {TRENDING.map((t,i)=>(
+            <div className="trending-item" key={t.topic}>
+              <div className="trending-num">{i+1}</div>
+              <div className="trending-topic">{t.topic}</div>
+              <div className="trending-count">{t.count}</div>
+            </div>
+          ))}
+        </div>
+        <div className="aside-section">
+          <div className="aside-label">Colleges</div>
+          {COLLEGES.slice(0,8).map(c=>(
+            <span
+              key={c}
+              className="college-pill"
+              onClick={()=>setCollege(c)}
+            >{c}</span>
+          ))}
+        </div>
+        <div style={{fontSize:"0.72rem",color:"var(--ink3)",lineHeight:1.8}}>
+          Privacy · Terms · unrestdu.in
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
