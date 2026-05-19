@@ -81,7 +81,7 @@ const EXPLORE_TILES = [
   "Case Competitions"
 ];
 
-const POSTS = [
+const INITIAL_POSTS = [
   {
     id:1,
     name:"Rohan Mehta",
@@ -231,10 +231,10 @@ function PostCard({ post }){
             color:"var(--ink3)",
             fontSize:"0.78rem"
           }}>
-            <span>W</span>
-            <span>L</span>
-            <span>comments</span>
-            <span>save</span>
+            <span style={{cursor:"pointer"}}>W</span>
+            <span style={{cursor:"pointer"}}>L</span>
+            <span style={{cursor:"pointer"}}>comments</span>
+            <span style={{cursor:"pointer"}}>save</span>
           </div>
 
         </div>
@@ -307,6 +307,8 @@ function ExploreTiles(){
 function App(){
 
   const [tab,setTab] = useState("du");
+  const [posts,setPosts] = useState(INITIAL_POSTS);
+  const [text,setText] = useState("");
 
   const TABS = [
     {id:"du",label:"DU"},
@@ -314,12 +316,27 @@ function App(){
     {id:"explore",label:"Explore"}
   ];
 
+  const createPost = () => {
+
+    if(!text.trim()) return;
+
+    const newPost = {
+      id:Date.now(),
+      name:"Manas Pandeya",
+      college:"Kirori Mal",
+      initials:"MP",
+      text:text,
+      time:"now"
+    };
+
+    setPosts([newPost,...posts]);
+    setText("");
+  };
+
   return(
     <div>
 
       <style>{CSS}</style>
-
-      {/* NAVBAR */}
 
       <nav style={{
         height:"64px",
@@ -390,8 +407,6 @@ function App(){
 
       </nav>
 
-      {/* MAIN */}
-
       <div style={{
         maxWidth:"1380px",
         margin:"0 auto",
@@ -399,8 +414,6 @@ function App(){
         gridTemplateColumns:"260px minmax(720px,1fr) 260px",
         height:"calc(100vh - 64px)"
       }}>
-
-        {/* LEFT SIDEBAR */}
 
         <aside style={{
           padding:"24px 20px",
@@ -480,12 +493,15 @@ function App(){
             ["DU-wide","1,247"],
             ["Your echoes","3"]
           ].map(item=>(
-            <div style={{
-              display:"flex",
-              justifyContent:"space-between",
-              padding:"10px 0",
-              borderBottom:"1px solid rgba(0,0,0,0.05)"
-            }}>
+            <div
+              key={item[0]}
+              style={{
+                display:"flex",
+                justifyContent:"space-between",
+                padding:"10px 0",
+                borderBottom:"1px solid rgba(0,0,0,0.05)"
+              }}
+            >
               <span style={{fontSize:"0.84rem"}}>
                 {item[0]}
               </span>
@@ -518,19 +534,20 @@ function App(){
             "Following",
             "Saved"
           ].map(link=>(
-            <div style={{
-              padding:"9px 0",
-              fontSize:"0.92rem",
-              cursor:"pointer",
-              color:link==="DU" ? "var(--accent)" : "var(--ink)"
-            }}>
+            <div
+              key={link}
+              style={{
+                padding:"9px 0",
+                fontSize:"0.92rem",
+                cursor:"pointer",
+                color:link==="DU" ? "var(--accent)" : "var(--ink)"
+              }}
+            >
               {link}
             </div>
           ))}
 
         </aside>
-
-        {/* FEED */}
 
         <main style={{
           padding:"28px",
@@ -549,23 +566,66 @@ function App(){
             <div style={{
               display:"flex",
               gap:"14px",
-              alignItems:"center"
+              alignItems:"flex-start"
             }}>
 
               <Avatar initials="MP"/>
 
-              <input
-                placeholder="What's happening at DU?"
-                style={{
-                  flex:1,
-                  border:"1px solid rgba(0,0,0,0.08)",
-                  borderRadius:"10px",
-                  padding:"14px",
-                  background:"#fafafa",
-                  fontSize:"0.95rem",
-                  outline:"none"
-                }}
-              />
+              <div style={{flex:1}}>
+
+                <input
+                  value={text}
+                  onChange={(e)=>setText(e.target.value)}
+                  placeholder="What's happening at DU?"
+                  style={{
+                    width:"100%",
+                    border:"1px solid rgba(0,0,0,0.08)",
+                    borderRadius:"10px",
+                    padding:"14px",
+                    background:"#fafafa",
+                    fontSize:"0.95rem",
+                    outline:"none",
+                    marginBottom:"12px"
+                  }}
+                />
+
+                <div style={{
+                  display:"flex",
+                  alignItems:"center",
+                  justifyContent:"space-between"
+                }}>
+
+                  <button style={{
+                    border:"1px solid var(--border)",
+                    background:"#fff",
+                    borderRadius:"8px",
+                    padding:"8px 12px",
+                    fontSize:"0.76rem",
+                    cursor:"pointer",
+                    color:"var(--ink2)"
+                  }}>
+                    Add poll
+                  </button>
+
+                  <button
+                    onClick={createPost}
+                    style={{
+                      border:"none",
+                      background:"#000",
+                      color:"#fff",
+                      borderRadius:"8px",
+                      padding:"10px 16px",
+                      fontSize:"0.82rem",
+                      fontWeight:"700",
+                      cursor:"pointer"
+                    }}
+                  >
+                    Post
+                  </button>
+
+                </div>
+
+              </div>
 
             </div>
 
@@ -575,14 +635,12 @@ function App(){
 
           {tab==="explore"
             ? <ExploreTiles/>
-            : POSTS.map(post=>(
+            : posts.map(post=>(
                 <PostCard key={post.id} post={post}/>
               ))
           }
 
         </main>
-
-        {/* RIGHT SIDEBAR */}
 
         <aside style={{
           padding:"24px 20px",
@@ -612,10 +670,13 @@ function App(){
             ["#DULife","156 posts"],
             ["#CentralLibrary","98 posts"]
           ].map((tag,i)=>(
-            <div style={{
-              padding:"12px 0",
-              borderBottom:"1px solid rgba(0,0,0,0.05)"
-            }}>
+            <div
+              key={tag[0]}
+              style={{
+                padding:"12px 0",
+                borderBottom:"1px solid rgba(0,0,0,0.05)"
+              }}
+            >
 
               <div style={{
                 fontSize:"0.68rem",
@@ -661,12 +722,15 @@ function App(){
             ["Aditya Bose","SRCC","AB"],
             ["Nandini Roy","Miranda House","NR"]
           ].map(user=>(
-            <div style={{
-              display:"flex",
-              alignItems:"center",
-              justifyContent:"space-between",
-              marginBottom:"16px"
-            }}>
+            <div
+              key={user[0]}
+              style={{
+                display:"flex",
+                alignItems:"center",
+                justifyContent:"space-between",
+                marginBottom:"16px"
+              }}
+            >
 
               <div style={{
                 display:"flex",
