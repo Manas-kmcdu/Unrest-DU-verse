@@ -1,890 +1,1194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Unrest — DU Network</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unrest - Feed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --paper:#f4f1ea;
-  --paper2:#ede9e0;
-  --ink:#100f0d;
-  --ink2:#4a4740;
-  --ink3:#9a9590;
-  --accent:#c84b2f;
-  --border:rgba(16,15,13,0.10);
-  --border2:rgba(16,15,13,0.06);
-  --serif:'Instrument Serif',Georgia,serif;
-  --sans:'DM Sans',system-ui,sans-serif;
-  --green:#2a5c45;
-  --blue:#1a3a5c;
-}
-body{
-  background:var(--paper);
-  color:var(--ink);
-  font-family:var(--sans);
-  min-height:100vh;
-  font-size:14px;
-  line-height:1.6;
-}
-/* Layout */
-.shell{display:flex;min-height:100vh;}
-.sidebar{
-  width:220px;
-  min-height:100vh;
-  border-right:1px solid var(--border);
-  padding:0;
-  position:sticky;
-  top:0;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  background:var(--paper);
-  flex-shrink:0;
-}
-.main{flex:1;min-width:0;max-width:660px;border-right:1px solid var(--border);}
-.aside{width:200px;flex-shrink:0;padding:20px 14px;}
+  :root {
+    --ink: #0e0d0b;
+    --ink2: #3d3b35;
+    --ink3: #7a776e;
+    --paper: #f5f2eb;
+    --cream: #ede9df;
+    --white: #ffffff;
+    --accent: #c84b2f;
+    --accent2: #e8a020;
+    --green: #2a6b4a;
+    --blue: #1e4f8c;
+    --border: rgba(14,13,11,0.10);
+    --border-strong: rgba(14,13,11,0.18);
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+    --nav-h: 56px;
+    --sidebar-w: 260px;
+  }
 
-/* Sidebar */
-.logo{
-  padding:28px 24px 24px;
-  border-bottom:1px solid var(--border);
-  font-family:var(--serif);
-  font-size:1.55rem;
-  letter-spacing:-0.03em;
-  color:var(--ink);
-}
-.logo span{color:var(--accent);font-style:italic;}
-.logo sub{
-  display:block;
-  font-family:var(--sans);
-  font-size:0.65rem;
-  font-weight:600;
-  letter-spacing:0.12em;
-  text-transform:uppercase;
-  color:var(--ink3);
-  margin-top:2px;
-  font-style:normal;
-}
-.nav-section{padding:20px 16px 8px;font-size:0.65rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink3);}
-.nav-item{
-  display:flex;align-items:center;gap:10px;
-  padding:9px 20px;
-  font-size:0.88rem;font-weight:500;
-  color:var(--ink2);
-  cursor:pointer;
-  border-left:2px solid transparent;
-  transition:all 0.15s;
-}
-.nav-item:hover{color:var(--ink);background:var(--paper2);}
-.nav-item.active{color:var(--ink);border-left-color:var(--accent);background:var(--paper2);font-weight:600;}
-.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;}
-.nav-item.active .nav-dot{background:var(--accent);}
-.sidebar-footer{
-  margin-top:auto;
-  padding:20px;
-  border-top:1px solid var(--border);
-  font-size:0.72rem;
-  color:var(--ink3);
-  line-height:1.8;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-/* Main feed */
-.feed-header{
-  padding:20px 28px 0;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  gap:0;
-}
-.tab{
-  padding:12px 0;
-  margin-right:28px;
-  font-size:0.85rem;font-weight:600;
-  color:var(--ink3);
-  cursor:pointer;
-  border-bottom:2px solid transparent;
-  transition:all 0.15s;
-}
-.tab:hover{color:var(--ink);}
-.tab.active{color:var(--ink);border-bottom-color:var(--ink);}
+  /* NAV */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: var(--nav-h);
+    background: rgba(245,242,235,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 0.5px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 1.5rem;
+    gap: 1.5rem;
+  }
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+  .nav-logo em { font-style: italic; color: var(--accent); }
 
-/* Banner */
-.banner{
-  margin:20px;
-  border:1px solid var(--border);
-  border-radius:4px;
-  background:var(--paper2);
-  padding:14px 18px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-  overflow:hidden;
-  position:relative;
-}
-.banner-label{
-  font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
-  color:var(--accent);
-  flex-shrink:0;
-  writing-mode:vertical-rl;
-  transform:rotate(180deg);
-  border-right:1px solid var(--border);
-  padding-right:10px;
-  margin-right:4px;
-}
-.banner-text{
-  font-family:var(--serif);
-  font-size:1.05rem;
-  font-style:italic;
-  color:var(--ink);
-  flex:1;
-}
-.banner-scroll-track{overflow:hidden;flex:1;}
-.banner-scroll{
-  display:flex;
-  gap:60px;
-  animation:scroll-x 22s linear infinite;
-  white-space:nowrap;
-}
-@keyframes scroll-x{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+  .nav-tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--cream);
+    border: 0.5px solid var(--border);
+    border-radius: 100px;
+    padding: 3px;
+    margin-left: auto;
+  }
+  .nav-tab {
+    padding: 6px 18px;
+    border-radius: 100px;
+    border: none;
+    background: transparent;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--ink3);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-tab.active {
+    background: var(--white);
+    color: var(--ink);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(14,13,11,0.08);
+  }
+  .nav-tab:hover:not(.active) { color: var(--ink2); }
 
-/* Composer */
-.composer{
-  margin:0 20px 20px;
-  border:1px solid var(--border);
-  border-radius:4px;
-  background:#fff;
-  overflow:hidden;
-}
-.composer-top{
-  display:flex;
-  align-items:flex-start;
-  gap:12px;
-  padding:16px 18px 12px;
-}
-.avatar-sm{
-  width:32px;height:32px;border-radius:50%;
-  background:var(--ink);
-  color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.7rem;font-weight:700;
-  flex-shrink:0;
-  margin-top:2px;
-}
-.composer-field{
-  flex:1;
-  font-family:var(--sans);
-  font-size:0.92rem;
-  color:var(--ink);
-  border:none;
-  outline:none;
-  resize:none;
-  background:transparent;
-  line-height:1.6;
-  min-height:68px;
-}
-.composer-field::placeholder{color:var(--ink3);}
-.composer-bottom{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px 18px 14px;
-  border-top:1px solid var(--border2);
-}
-.composer-meta{
-  display:flex;align-items:center;gap:8px;
-}
-.college-select{
-  font-family:var(--sans);
-  font-size:0.75rem;
-  font-weight:600;
-  color:var(--ink2);
-  border:1px solid var(--border);
-  border-radius:3px;
-  padding:4px 8px;
-  background:transparent;
-  cursor:pointer;
-  outline:none;
-}
-.char-count{font-size:0.72rem;color:var(--ink3);}
-.post-btn{
-  font-family:var(--sans);
-  font-size:0.8rem;font-weight:700;
-  letter-spacing:0.06em;
-  text-transform:uppercase;
-  padding:8px 20px;
-  border-radius:3px;
-  border:none;
-  background:var(--ink);
-  color:#fff;
-  cursor:pointer;
-  transition:background 0.15s;
-}
-.post-btn:hover{background:var(--accent);}
-.post-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .nav-right {
+    display: flex; align-items: center; gap: 10px;
+    flex-shrink: 0;
+  }
+  .nav-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 700; color: #fff;
+    cursor: pointer;
+    border: 2px solid var(--white);
+  }
+  .nav-college-badge {
+    font-size: 0.68rem; font-weight: 600;
+    padding: 4px 10px;
+    background: var(--cream);
+    border: 0.5px solid var(--border-strong);
+    border-radius: 100px;
+    color: var(--ink2);
+  }
 
-/* Feed */
-.feed{padding:0 20px;}
-.post-card{
-  border:1px solid var(--border);
-  border-radius:4px;
-  background:#fff;
-  margin-bottom:14px;
-  overflow:hidden;
-  transition:border-color 0.15s;
-}
-.post-card:hover{border-color:rgba(16,15,13,0.18);}
-.post-card-header{
-  display:flex;align-items:flex-start;
-  padding:16px 18px 12px;
-  gap:12px;
-}
-.post-avatar{
-  width:34px;height:34px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.68rem;font-weight:700;
-  color:#fff;flex-shrink:0;
-}
-.post-meta{flex:1;}
-.post-author{font-size:0.88rem;font-weight:700;color:var(--ink);}
-.post-college-badge{
-  display:inline-block;
-  font-size:0.6rem;font-weight:700;
-  letter-spacing:0.1em;text-transform:uppercase;
-  padding:2px 7px;border-radius:2px;
-  margin-left:7px;
-  background:var(--paper2);
-  color:var(--ink2);
-}
-.post-time{font-size:0.72rem;color:var(--ink3);margin-top:1px;}
-.post-text{
-  padding:0 18px 14px;
-  font-size:0.92rem;
-  line-height:1.7;
-  color:var(--ink);
-}
-.post-actions{
-  display:flex;align-items:center;gap:2px;
-  padding:10px 14px;
-  border-top:1px solid var(--border2);
-}
-.action-btn{
-  display:flex;align-items:center;gap:5px;
-  padding:6px 10px;
-  border-radius:3px;
-  border:none;
-  background:transparent;
-  font-family:var(--sans);
-  font-size:0.78rem;font-weight:500;
-  color:var(--ink3);
-  cursor:pointer;
-  transition:all 0.12s;
-}
-.action-btn:hover{background:var(--paper2);color:var(--ink);}
-.action-btn.w-btn.voted{color:var(--green);background:rgba(42,92,69,0.08);}
-.action-btn.l-btn.voted{color:var(--accent);background:rgba(200,75,47,0.07);}
-.action-btn.save-btn.saved{color:var(--blue);background:rgba(26,58,92,0.07);}
-.action-divider{flex:1;}
-.action-label{font-size:0.65rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;}
+  /* LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) 1fr 220px;
+    gap: 0;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: calc(var(--nav-h) + 2rem);
+    padding-bottom: 4rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 
-/* Comments */
-.comments-section{border-top:1px solid var(--border2);background:var(--paper);}
-.comment-row{
-  display:flex;align-items:flex-start;gap:8px;
-  padding:10px 18px;
-  border-bottom:1px solid var(--border2);
-}
-.comment-row:last-child{border-bottom:none;}
-.comment-avatar{
-  width:22px;height:22px;border-radius:50%;
-  background:var(--ink2);
-  color:#fff;
-  font-size:0.55rem;font-weight:700;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
-}
-.comment-body{flex:1;}
-.comment-author{font-size:0.72rem;font-weight:700;color:var(--ink);}
-.comment-text{font-size:0.78rem;color:var(--ink2);}
-.comment-input-row{
-  display:flex;align-items:center;gap:8px;
-  padding:10px 18px 12px;
-}
-.comment-field{
-  flex:1;
-  font-family:var(--sans);
-  font-size:0.8rem;
-  border:1px solid var(--border);
-  border-radius:3px;
-  padding:6px 10px;
-  background:#fff;
-  outline:none;
-  color:var(--ink);
-}
-.comment-field::placeholder{color:var(--ink3);}
-.comment-submit{
-  font-family:var(--sans);
-  font-size:0.72rem;font-weight:700;
-  padding:6px 12px;
-  border:none;border-radius:3px;
-  background:var(--ink);color:#fff;
-  cursor:pointer;
-}
-.comment-submit:hover{background:var(--accent);}
+  @media (max-width: 1024px) {
+    .layout { grid-template-columns: var(--sidebar-w) 1fr; }
+    .right-sidebar { display: none; }
+  }
+  @media (max-width: 720px) {
+    .layout { grid-template-columns: 1fr; padding-left: 1rem; padding-right: 1rem; }
+    .left-sidebar { display: none; }
+    .nav-tabs { display: none; }
+  }
 
-/* Explore */
-.explore-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  padding:20px;
-}
-.explore-tile{
-  border:1px solid var(--border);
-  border-radius:4px;
-  padding:20px 18px;
-  background:#fff;
-  cursor:pointer;
-  transition:all 0.15s;
-  position:relative;
-  overflow:hidden;
-}
-.explore-tile:hover{border-color:rgba(16,15,13,0.2);transform:translateY(-1px);}
-.explore-tile-label{
-  font-size:0.6rem;font-weight:700;letter-spacing:0.14em;
-  text-transform:uppercase;color:var(--ink3);margin-bottom:6px;
-}
-.explore-tile-title{
-  font-family:var(--serif);
-  font-size:1.15rem;
-  font-style:italic;
-  color:var(--ink);
-  line-height:1.2;
-}
-.explore-tile-count{
-  font-size:0.7rem;color:var(--ink3);margin-top:8px;
-}
-.explore-tile-accent{
-  position:absolute;bottom:0;right:0;
-  width:40px;height:40px;
-  border-radius:50% 0 0 0;
-  opacity:0.12;
-}
+  /* SIDEBARS */
+  .left-sidebar {
+    padding-right: 2rem;
+    padding-top: 0.5rem;
+  }
+  .sidebar-section { margin-bottom: 2rem; }
+  .sidebar-label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 0.6rem;
+  }
+  .sidebar-college {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    margin-bottom: 0.5rem;
+  }
+  .sc-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .sc-name { font-size: 0.82rem; font-weight: 600; color: var(--ink); }
+  .sc-count { font-size: 0.68rem; color: var(--ink3); margin-left: auto; }
 
-/* Aside */
-.aside-section{margin-bottom:20px;}
-.aside-label{
-  font-size:0.58rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
-  color:var(--ink3);margin-bottom:10px;
-  padding-bottom:6px;
-  border-bottom:1px solid var(--border);
-}
-.trending-item{
-  padding:7px 0;
-  border-bottom:1px solid var(--border2);
-  cursor:pointer;
-}
-.trending-item:last-child{border-bottom:none;}
-.trending-num{font-size:0.6rem;font-weight:700;color:var(--ink3);}
-.trending-topic{font-size:0.78rem;font-weight:600;color:var(--ink);margin:1px 0;}
-.trending-count{font-size:0.65rem;color:var(--ink3);}
-.college-pill{
-  display:inline-block;
-  padding:3px 7px;border-radius:2px;
-  border:1px solid var(--border);
-  font-size:0.65rem;font-weight:600;
-  color:var(--ink2);
-  margin:2px 2px 2px 0;
-  cursor:pointer;
-  background:#fff;
-  transition:all 0.12s;
-}
-.college-pill:hover{background:var(--ink);color:#fff;}
+  .sidebar-stat {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 0.8rem;
+  }
+  .sidebar-stat:last-child { border-bottom: none; }
+  .sidebar-stat-val { font-weight: 600; color: var(--ink); }
+  .sidebar-stat-label { color: var(--ink3); }
 
-/* Loading / empty */
-.feed-empty{
-  text-align:center;
-  padding:60px 20px;
-  color:var(--ink3);
-  font-size:0.9rem;
-}
-.feed-empty strong{display:block;font-family:var(--serif);font-size:1.5rem;font-style:italic;color:var(--ink2);margin-bottom:8px;}
-.loading-bar{
-  height:2px;background:var(--paper2);
-  position:relative;overflow:hidden;
-  margin:0 20px 20px;border-radius:1px;
-}
-.loading-bar::after{
-  content:"";position:absolute;left:-40%;width:40%;height:100%;
-  background:var(--accent);
-  animation:shimmer 1.6s infinite ease;
-}
-@keyframes shimmer{0%{left:-40%;}100%{left:120%;}}
+  .right-sidebar {
+    padding-left: 2rem;
+    padding-top: 0.5rem;
+  }
+  .trending-item {
+    padding: 10px 0;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .trending-item:last-child { border-bottom: none; }
+  .trending-rank {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--ink3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .trending-text {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-top: 2px;
+    line-height: 1.3;
+  }
+  .trending-meta { font-size: 0.68rem; color: var(--ink3); margin-top: 2px; }
 
-/* Mobile */
-@media(max-width:900px){
-  .aside{display:none;}
-  .sidebar{width:180px;}
-}
-@media(max-width:640px){
-  .shell{flex-direction:column;}
-  .sidebar{width:100%;min-height:auto;height:auto;position:relative;flex-direction:row;align-items:center;border-right:none;border-bottom:1px solid var(--border);}
-  .logo{padding:14px 16px;border-bottom:none;border-right:1px solid var(--border);}
-  .logo sub{display:none;}
-  .sidebar-footer,.nav-section{display:none;}
-  .nav-item{padding:14px 12px;border-left:none;border-bottom:2px solid transparent;font-size:0.82rem;}
-  .nav-item.active{border-bottom-color:var(--accent);}
-  .explore-grid{grid-template-columns:1fr;}
-}
+  /* FEED */
+  .feed-col {
+    border-left: 0.5px solid var(--border);
+    border-right: 0.5px solid var(--border);
+    min-height: 100vh;
+    padding: 0 1.5rem;
+  }
+
+  .compose-bar {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding-bottom: 1.25rem;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 0;
+  }
+  .compose-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.62rem; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .compose-field {
+    flex: 1;
+    border: none;
+    background: none;
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    color: var(--ink);
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    padding: 6px 0;
+  }
+  .compose-field::placeholder { color: var(--ink3); }
+  .compose-actions {
+    display: flex; justify-content: flex-end; gap: 8px;
+    padding-top: 0.75rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .compose-submit {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .compose-submit:hover { background: var(--accent); }
+  .compose-submit:active { transform: scale(0.97); }
+
+  /* POSTS */
+  .post {
+    padding: 1.25rem 0;
+    border-bottom: 0.5px solid var(--border);
+    position: relative;
+  }
+  .post:hover { background: transparent; }
+
+  .post-header {
+    display: flex; align-items: flex-start; gap: 10px;
+    margin-bottom: 0.6rem;
+  }
+  .post-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.62rem; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .post-meta { flex: 1; }
+  .post-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .post-college-line {
+    font-size: 0.72rem;
+    color: var(--ink3);
+    margin-top: 1px;
+  }
+  .post-college-line strong {
+    color: var(--ink2);
+    font-weight: 500;
+  }
+  .post-time {
+    font-size: 0.7rem;
+    color: var(--ink3);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .post-text {
+    font-size: 0.92rem;
+    color: var(--ink2);
+    line-height: 1.65;
+    margin-bottom: 0.9rem;
+    padding-left: 46px;
+  }
+  .post-text a { color: var(--accent); text-decoration: none; }
+
+  /* RATIO BANNER */
+  .ratio-banner {
+    margin-left: 46px;
+    margin-bottom: 0.75rem;
+    padding: 8px 14px;
+    background: rgba(200,75,47,0.06);
+    border: 0.5px solid rgba(200,75,47,0.2);
+    border-left: 2.5px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.01em;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .ratio-banner.visible { display: flex; }
+  .ratio-label { font-weight: 700; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* ACTIONS */
+  .post-actions {
+    display: flex; align-items: center; gap: 0;
+    padding-left: 46px;
+  }
+  .action-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 10px;
+    border: none;
+    background: none;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--ink3);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: color 0.15s, background 0.15s;
+    user-select: none;
+  }
+  .action-btn:hover { background: var(--cream); color: var(--ink2); }
+
+  .vote-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 12px;
+    border: 0.5px solid var(--border-strong);
+    background: var(--white);
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink2);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .vote-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .vote-btn.w-btn { border-radius: 8px 0 0 8px; border-right: none; }
+  .vote-btn.l-btn { border-radius: 0 8px 8px 0; }
+  .vote-btn.w-active { background: var(--green); border-color: var(--green); color: #fff; }
+  .vote-btn.l-active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .vote-divider {
+    width: 0.5px;
+    height: 20px;
+    background: var(--border-strong);
+    flex-shrink: 0;
+  }
+
+  .vote-ratio {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--ink3);
+    padding: 0 6px;
+    letter-spacing: 0.02em;
+  }
+
+  .comment-count {
+    font-size: 0.68rem;
+    color: var(--ink3);
+    padding: 0 6px;
+  }
+
+  /* COLLEGE TAG */
+  .college-tag {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    margin-left: 46px;
+  }
+
+  /* EVENT CARD */
+  .event-card {
+    margin-left: 46px;
+    margin-bottom: 0.75rem;
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--white);
+  }
+  .event-header {
+    padding: 14px 16px 10px;
+    border-bottom: 0.5px solid var(--border);
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .event-type {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink3);
+    margin-bottom: 4px;
+  }
+  .event-name {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .event-date {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--accent);
+    padding: 4px 10px;
+    background: rgba(200,75,47,0.08);
+    border: 0.5px solid rgba(200,75,47,0.15);
+    border-radius: 100px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .event-details {
+    padding: 10px 16px;
+    font-size: 0.78rem;
+    color: var(--ink3);
+    display: flex; gap: 16px;
+  }
+  .event-detail { display: flex; align-items: center; gap: 5px; }
+  .event-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--ink3); }
+  .event-register {
+    display: block;
+    padding: 8px 16px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s;
+  }
+  .event-register:hover { background: var(--accent); }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex; align-items: center;
+    padding: 1rem 0 0.75rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 0;
+    gap: 8px;
+  }
+  .section-header-line { flex: 1; height: 0.5px; background: var(--border); }
+
+  /* MOBILE TAB BAR */
+  .mobile-tabs {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 200;
+    background: rgba(245,242,235,0.96);
+    backdrop-filter: blur(16px);
+    border-top: 0.5px solid var(--border);
+    padding: 6px 1rem 8px;
+    justify-content: space-around;
+  }
+  .mobile-tab {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 3px;
+    padding: 6px 16px;
+    border-radius: 10px;
+    border: none;
+    background: none;
+    font-family: var(--sans);
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: var(--ink3);
+    cursor: pointer;
+    transition: color 0.15s;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .mobile-tab.active { color: var(--accent); }
+  .mobile-tab-icon {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  @media (max-width: 720px) {
+    .mobile-tabs { display: flex; }
+    body { padding-bottom: 64px; }
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .post { animation: fadeUp 0.35s ease both; }
+
+  /* COMPOSE expanded */
+  .compose-wrap {
+    padding: 1rem 0 0;
+    margin-bottom: 0;
+  }
+  .compose-expanded {
+    display: none;
+  }
+  .compose-field:focus ~ .compose-expanded,
+  .compose-wrap:focus-within .compose-expanded {
+    display: flex;
+  }
 </style>
 </head>
 <body>
-<div id="root"></div>
 
-<script type="text/babel">
-const { useState, useEffect, useRef, useCallback } = React;
+<nav class="nav">
+  <a href="#" class="nav-logo">Un<em>rest</em></a>
 
-// --- Firebase (CDN loaded async) ---
-let db = null;
-let firestoreModule = null;
+  <div class="nav-tabs" id="main-tabs">
+    <button class="nav-tab active" onclick="switchTab('du')">DU</button>
+    <button class="nav-tab" onclick="switchTab('college')">College</button>
+    <button class="nav-tab" onclick="switchTab('competitions')">Competitions & Events</button>
+  </div>
 
-async function initFirebase() {
-  try {
-    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-    const fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-    firestoreModule = fs;
-    const cfg = {
-      apiKey: "AIzaSyDBJ0hHjVyEnwg7mV7ECeG163K7fs1fsiE",
-      authDomain: "du-verse-e75db.firebaseapp.com",
-      databaseURL: "https://du-verse-e75db-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "du-verse-e75db",
-      storageBucket: "du-verse-e75db.firebasestorage.app",
-      messagingSenderId: "84735746102",
-      appId: "1:84735746102:web:6fe5353a0586db71323897"
-    };
-    const app = getApps().length ? getApps()[0] : initializeApp(cfg);
-    db = fs.getFirestore(app);
-    return true;
-  } catch(e) {
-    console.error("Firebase init failed:", e);
-    return false;
-  }
-}
+  <div class="nav-right">
+    <span class="nav-college-badge" id="user-college-badge">SRCC</span>
+    <div class="nav-avatar" id="user-avatar">RK</div>
+  </div>
+</nav>
 
-// --- Helpers ---
+<div class="layout">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="left-sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Your college</div>
+      <div class="sidebar-college">
+        <div class="sc-dot" style="background:#c84b2f"></div>
+        <div>
+          <div class="sc-name" id="sidebar-college-name">SRCC</div>
+        </div>
+        <div class="sc-count" id="sidebar-college-count">347 members</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Activity</div>
+      <div class="sidebar-stat"><span class="sidebar-stat-label">Posts today</span><span class="sidebar-stat-val">84</span></div>
+      <div class="sidebar-stat"><span class="sidebar-stat-label">Active now</span><span class="sidebar-stat-val">23</span></div>
+      <div class="sidebar-stat"><span class="sidebar-stat-label">DU-wide</span><span class="sidebar-stat-val">1,247</span></div>
+      <div class="sidebar-stat"><span class="sidebar-stat-label">Your echoes</span><span class="sidebar-stat-val">3</span></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Quick links</div>
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <button onclick="switchTab('du')" style="text-align:left;background:none;border:none;font-family:var(--sans);font-size:0.82rem;color:var(--ink2);padding:6px 8px;border-radius:8px;cursor:pointer;font-weight:500;transition:background 0.15s;" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='none'">DU feed</button>
+        <button onclick="switchTab('college')" style="text-align:left;background:none;border:none;font-family:var(--sans);font-size:0.82rem;color:var(--ink2);padding:6px 8px;border-radius:8px;cursor:pointer;font-weight:500;transition:background 0.15s;" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='none'">My college</button>
+        <button onclick="switchTab('competitions')" style="text-align:left;background:none;border:none;font-family:var(--sans);font-size:0.82rem;color:var(--ink2);padding:6px 8px;border-radius:8px;cursor:pointer;font-weight:500;transition:background 0.15s;" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='none'">Competitions & Events</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN FEED -->
+  <div class="feed-col">
+
+    <!-- COMPOSE -->
+    <div class="compose-wrap" id="compose-area">
+      <div class="compose-bar">
+        <div class="compose-avatar" id="compose-avatar">RK</div>
+        <textarea
+          class="compose-field"
+          id="compose-input"
+          rows="2"
+          placeholder="What's happening at DU?"
+          onfocus="expandCompose()"
+          oninput="autoResize(this)"
+        ></textarea>
+      </div>
+      <div class="compose-actions" id="compose-footer" style="display:none">
+        <span style="font-size:0.72rem;color:var(--ink3);align-self:center;" id="compose-charcount">0 / 240</span>
+        <button class="compose-submit" onclick="submitPost()">Post</button>
+      </div>
+    </div>
+
+    <!-- FEED SECTIONS -->
+    <div id="feed-du" class="feed-section">
+      <div class="section-header"><span>DU</span><div class="section-header-line"></div></div>
+    </div>
+
+    <div id="feed-college" class="feed-section" style="display:none">
+      <div class="section-header"><span id="college-section-label">SRCC</span><div class="section-header-line"></div></div>
+    </div>
+
+    <div id="feed-competitions" class="feed-section" style="display:none">
+      <div class="section-header"><span>Competitions & Events</span><div class="section-header-line"></div></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="right-sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Trending</div>
+      <div id="trending-list"></div>
+    </div>
+
+    <div class="sidebar-section" style="margin-top:1.5rem">
+      <div class="sidebar-label">Top colleges today</div>
+      <div id="top-colleges-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MOBILE TABS -->
+<div class="mobile-tabs" id="mobile-tabs">
+  <button class="mobile-tab active" onclick="switchTab('du')">
+    <div class="mobile-tab-icon"></div>
+    DU
+  </button>
+  <button class="mobile-tab" onclick="switchTab('college')">
+    <div class="mobile-tab-icon"></div>
+    College
+  </button>
+  <button class="mobile-tab" onclick="switchTab('competitions')">
+    <div class="mobile-tab-icon"></div>
+    Events
+  </button>
+</div>
+
+<script>
 const COLLEGES = [
-  "Hindu College","SRCC","Miranda House","LSR","Kirori Mal",
-  "St. Stephen's","Hansraj","Ramjas","IP College","Jesus & Mary",
-  "Dyal Singh","Gargi","Kamala Nehru","Lady Irwin","DCAC"
+  { id:'srcc', name:'SRCC', color:'#c84b2f' },
+  { id:'hindu', name:'Hindu College', color:'#1e4f8c' },
+  { id:'miranda', name:'Miranda House', color:'#9c27b0' },
+  { id:'stephens', name:"St. Stephen's", color:'#5d4037' },
+  { id:'hansraj', name:'Hansraj', color:'#0097a7' },
+  { id:'lsr', name:'LSR', color:'#7b1fa2' },
+  { id:'kirorimal', name:'Kirori Mal', color:'#e65100' },
+  { id:'ramjas', name:'Ramjas', color:'#2e7d32' },
+  { id:'gargi', name:'Gargi', color:'#c2185b' },
+  { id:'venky', name:'Sri Venky', color:'#6d4c41' },
 ];
 
-const COLLEGE_COLORS = {
-  "Hindu College":"#1a3a5c","SRCC":"#c84b2f","Miranda House":"#2a5c45",
-  "LSR":"#5c2a6b","Kirori Mal":"#2a4a6b","St. Stephen's":"#6b3a2a",
-  "Hansraj":"#3a5c2a","Ramjas":"#5c4a2a","IP College":"#2a5c5c",
-  "Jesus & Mary":"#6b2a4a","Dyal Singh":"#3a3a6b","Gargi":"#5c2a2a",
-  "Kamala Nehru":"#2a6b6b","Lady Irwin":"#6b5c2a","DCAC":"#4a6b2a"
-};
-
-const BANNERS = [
-  "End Semester Discussions heating up across campuses",
-  "Flatmate & PG Hunt season — DDA flats, Mukherjee Nagar, GTB Nagar",
-  "Internship Season 2026 — placements, PPOs, referrals",
-  "Society Recruitments open — drama, debate, music, tech",
-  "Fest Season approaching — registrations, volunteers, performers",
-  "Semester exams incoming — libraries packed, notes being traded"
+// Seed data - realistic DU posts
+const DU_POSTS = [
+  {
+    id: 'du1',
+    author: 'Rohan Mehta',
+    initials: 'RM',
+    college: 'Hindu College',
+    collegeColor: '#1e4f8c',
+    year: '3rd yr · Economics',
+    text: "North Campus is genuinely unbeatable in winters. The chai stalls, the cold fog, the DTC chaos - people who say South Campus is better have never experienced this.",
+    time: '2h ago',
+    postedAt: Date.now() - 2.5 * 60 * 60 * 1000,
+    w: 312, l: 48, comments: 142,
+    voted: null
+  },
+  {
+    id: 'du2',
+    author: 'Priya Sharma',
+    initials: 'PS',
+    college: 'LSR',
+    collegeColor: '#7b1fa2',
+    year: '2nd yr · English',
+    text: "Placement season is doing something weird to people. Everyone's suddenly in three case comp clubs and four consulting bootcamps. Calm down, it is October.",
+    time: '4h ago',
+    postedAt: Date.now() - 4 * 60 * 60 * 1000,
+    w: 89, l: 12, comments: 67,
+    voted: null
+  },
+  {
+    id: 'du3',
+    author: 'Arjun Kapoor',
+    initials: 'AK',
+    college: 'SRCC',
+    collegeColor: '#c84b2f',
+    year: '3rd yr · Commerce',
+    text: "The DU admin portal has been down since Tuesday. Exams are in 3 weeks. Form submissions pending. Truly running on vibes and faith at this point.",
+    time: '6h ago',
+    postedAt: Date.now() - 6 * 60 * 60 * 1000,
+    w: 547, l: 12, comments: 203,
+    voted: null
+  },
+  {
+    id: 'du4',
+    author: 'Sanya Gupta',
+    initials: 'SG',
+    college: 'Miranda House',
+    collegeColor: '#9c27b0',
+    year: '1st yr · History',
+    text: "First semester recap: attended 60% of lectures, joined 4 societies, dropped 2 societies, went to Kamla Nagar exactly 31 times, and somehow still don't know the fastest metro route.",
+    time: '1d ago',
+    postedAt: Date.now() - 26 * 60 * 60 * 1000,
+    w: 421, l: 18, comments: 88,
+    voted: null
+  },
+  {
+    id: 'du5',
+    author: 'Nikhil Jain',
+    initials: 'NJ',
+    college: 'St. Stephen\'s',
+    collegeColor: '#5d4037',
+    year: '4th yr · Physics',
+    text: "Controversial opinion: DU library at 11pm before end-sems hits differently than any cafe. Quiet, focused, slightly dramatic. Recommend.",
+    time: '3h ago',
+    postedAt: Date.now() - 3 * 60 * 60 * 1000,
+    w: 198, l: 71, comments: 212,
+    voted: null
+  },
 ];
 
-const EXPLORE_TILES = [
-  { label:"Community", title:"Surveys", count:"12 active", color:"#c84b2f" },
-  { label:"Knowledge", title:"About DU", count:"Colleges, courses, history", color:"#1a3a5c" },
-  { label:"Culture", title:"Fest Season", count:"48 fests listed", color:"#2a5c45" },
-  { label:"Build", title:"Tech Forums", count:"3.2k members", color:"#3a3a6b" },
-  { label:"Style", title:"Fashion Forums", count:"1.4k posts", color:"#6b2a4a" },
-  { label:"Play", title:"Sports Forums", count:"Trials, teams, scores", color:"#2a4a6b" },
-  { label:"Future", title:"AI Discussions", count:"Weekly threads", color:"#5c4a2a" },
-  { label:"Debate", title:"Campus Opinion", count:"Hot takes welcome", color:"#6b3a2a" },
+const COLLEGE_POSTS = [
+  {
+    id: 'col1',
+    author: 'SRCC Society Cell',
+    initials: 'SC',
+    college: 'SRCC',
+    collegeColor: '#c84b2f',
+    year: 'Official · Society',
+    text: "EconFest registrations are now open. This year we have a live case competition, panel with 3 policy economists, and an after-event at the college lawn. Free for SRCC students, paid for others. Link in bio.",
+    time: '5h ago',
+    postedAt: Date.now() - 5 * 60 * 60 * 1000,
+    w: 167, l: 9, comments: 34,
+    voted: null,
+    isOfficial: true
+  },
+  {
+    id: 'col2',
+    author: 'Divya Batra',
+    initials: 'DB',
+    college: 'SRCC',
+    collegeColor: '#c84b2f',
+    year: '2nd yr · Statistics',
+    text: "Anyone have Prof. Sharma's Macroeconomics notes from last year? The ones on the Phillips curve unit specifically. Will trade my Microeconomics notes.",
+    time: '3h ago',
+    postedAt: Date.now() - 3.5 * 60 * 60 * 1000,
+    w: 23, l: 2, comments: 18,
+    voted: null
+  },
+  {
+    id: 'col3',
+    author: 'Rahul Verma',
+    initials: 'RV',
+    college: 'SRCC',
+    collegeColor: '#c84b2f',
+    year: '3rd yr · Economics',
+    text: "The canteen samosa situation has been deteriorating since September and I think we should collectively address this at the next student union meeting.",
+    time: '7h ago',
+    postedAt: Date.now() - 7 * 60 * 60 * 1000,
+    w: 289, l: 44, comments: 302,
+    voted: null
+  },
+  {
+    id: 'col4',
+    author: 'Mira Chopra',
+    initials: 'MC',
+    college: 'SRCC',
+    collegeColor: '#c84b2f',
+    year: '1st yr · Commerce',
+    text: "Freshers - the library opens at 8am but the good spots go by 8:15. Corner table near window is the only acceptable study spot. Don't argue.",
+    time: '1d ago',
+    postedAt: Date.now() - 25 * 60 * 60 * 1000,
+    w: 134, l: 21, comments: 56,
+    voted: null
+  },
+];
+
+const COMPETITION_POSTS = [
+  {
+    id: 'comp1',
+    type: 'event',
+    eventType: 'Case Competition',
+    eventName: 'Zeitgeist - Business Case Finals',
+    eventDate: 'Nov 18–19',
+    eventDetails: ['SRCC Auditorium', 'Open to all DU colleges', 'Cash prize 80k'],
+    author: 'Zeitgeist Cell',
+    initials: 'ZC',
+    college: 'SRCC',
+    collegeColor: '#c84b2f',
+    year: 'Official',
+    text: "Final round registrations close Nov 12. Teams of 2–3. Problem statement on market entry strategy for an undisclosed FMCG brand. Register via link before spots fill.",
+    time: '2h ago',
+    postedAt: Date.now() - 2 * 60 * 60 * 1000,
+    w: 231, l: 7, comments: 45,
+    voted: null,
+    isEvent: true
+  },
+  {
+    id: 'comp2',
+    type: 'event',
+    eventType: 'Cultural Fest',
+    eventName: 'Antaragni 2025 - IIT Kanpur',
+    eventDate: 'Oct 24–27',
+    eventDetails: ['IIT Kanpur Campus', 'DU contingent going', '12 events open'],
+    author: 'DU Cultural Council',
+    initials: 'DC',
+    college: 'Hindu College',
+    collegeColor: '#1e4f8c',
+    year: 'Official',
+    text: "DU contingent is being organized. If your society wants to participate in literary, fine arts, or performing categories - mail the council before Oct 18. Accommodation and travel partially subsidized.",
+    time: '8h ago',
+    postedAt: Date.now() - 8 * 60 * 60 * 1000,
+    w: 189, l: 3, comments: 62,
+    voted: null,
+    isEvent: true
+  },
+  {
+    id: 'comp3',
+    type: 'event',
+    eventType: 'Quiz',
+    eventName: 'Miranda House Open Quiz',
+    eventDate: 'Nov 8',
+    eventDetails: ['Miranda Seminar Hall', 'Open registration', 'Teams of 4'],
+    author: 'Quiz Club MH',
+    initials: 'QC',
+    college: 'Miranda House',
+    collegeColor: '#9c27b0',
+    year: 'Official',
+    text: "Annual open quiz. Format: Written prelims, buzzer finals. 8 teams qualify. General quizzing - no specific category. Last year's finalists included teams from Stephens, Hindu, and Ramjas.",
+    time: '1d ago',
+    postedAt: Date.now() - 30 * 60 * 60 * 1000,
+    w: 98, l: 5, comments: 29,
+    voted: null,
+    isEvent: true
+  },
+  {
+    id: 'comp4',
+    author: 'Kabir Nanda',
+    initials: 'KN',
+    college: 'Hansraj',
+    collegeColor: '#0097a7',
+    year: '2nd yr · Computer Science',
+    text: "Anyone else notice that DU's representation at national level quizzes has been dropping consistently? We have 90+ colleges and somehow IIT Delhi squads are more organized. What is happening.",
+    time: '5h ago',
+    postedAt: Date.now() - 5.5 * 60 * 60 * 1000,
+    w: 112, l: 67, comments: 189,
+    voted: null
+  },
 ];
 
 const TRENDING = [
-  { topic:"#EndSemVibes", count:"2.1k posts" },
-  { topic:"#PGHunt2026", count:"890 posts" },
-  { topic:"#InternSeason", count:"1.4k posts" },
-  { topic:"#FestRecruits", count:"560 posts" },
-  { topic:"#NorthSouth", count:"340 posts" },
+  { tag: '#EconFest2025', posts: '234 posts' },
+  { tag: '#EndSemPanic', posts: '891 posts' },
+  { tag: '#DUAdminPortal', posts: '1.2k posts' },
+  { tag: '#Antaragni', posts: '456 posts' },
+  { tag: '#NorthCampus', posts: '312 posts' },
 ];
 
-function relativeTime(ts) {
-  if (!ts) return "now";
+const TOP_COLLEGES = [
+  { name: 'SRCC', posts: 84, color: '#c84b2f' },
+  { name: 'Hindu', posts: 67, color: '#1e4f8c' },
+  { name: 'Miranda', posts: 58, color: '#9c27b0' },
+  { name: 'LSR', posts: 49, color: '#7b1fa2' },
+  { name: 'Stephens', posts: 41, color: '#5d4037' },
+];
+
+// Retrieve user data
+const saved = localStorage.getItem('unrest_user');
+let userCollege = 'SRCC';
+let userCollegeColor = '#c84b2f';
+let userCollegeId = 'srcc';
+let userName = 'Riya K.';
+let userInitials = 'RK';
+
+if (saved) {
+  try {
+    const d = JSON.parse(saved);
+    if (d.name) {
+      userName = d.name;
+      userInitials = d.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    }
+    if (d.collegeId) {
+      const col = COLLEGES.find(c => c.id === d.collegeId);
+      if (col) {
+        userCollege = col.name;
+        userCollegeColor = col.color;
+        userCollegeId = col.id;
+      }
+    }
+  } catch(e) {}
+}
+
+// Update UI with user data
+document.getElementById('user-avatar').textContent = userInitials;
+document.getElementById('user-avatar').style.background = userCollegeColor;
+document.getElementById('user-college-badge').textContent = userCollege;
+document.getElementById('compose-avatar').textContent = userInitials;
+document.getElementById('compose-avatar').style.background = userCollegeColor;
+document.getElementById('sidebar-college-name').textContent = userCollege;
+document.getElementById('college-section-label').textContent = userCollege;
+
+// Render trending
+document.getElementById('trending-list').innerHTML = TRENDING.map(t => `
+  <div class="trending-item">
+    <div class="trending-rank">Trending at DU</div>
+    <div class="trending-text">${t.tag}</div>
+    <div class="trending-meta">${t.posts}</div>
+  </div>
+`).join('');
+
+// Render top colleges
+document.getElementById('top-colleges-list').innerHTML = TOP_COLLEGES.map(c => `
+  <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border)">
+    <div style="width:6px;height:6px;border-radius:50%;background:${c.color};flex-shrink:0"></div>
+    <span style="font-size:0.8rem;font-weight:500;color:var(--ink2);flex:1">${c.name}</span>
+    <span style="font-size:0.72rem;color:var(--ink3)">${c.posts} posts</span>
+  </div>
+`).join('');
+
+// RATIO LOGIC
+function isRatioed(post) {
+  if (post.comments <= post.w) return false;
+  const ageMs = Date.now() - post.postedAt;
+  const twoHours = 2 * 60 * 60 * 1000;
+  if (ageMs >= twoHours) return true;
+  if (post.w >= 5) return true;
+  return false;
+}
+
+function ratioText(post) {
+  const ratio = (post.comments / Math.max(post.w, 1)).toFixed(1);
+  return `Ratio alert - ${post.comments} comments vs ${post.w} Ws (${ratio}x)`;
+}
+
+function renderPost(p) {
+  const ratioed = isRatioed(p);
+  const totalVotes = p.w + p.l;
+  const wPct = totalVotes > 0 ? Math.round((p.w / totalVotes) * 100) : 0;
+
+  const collegeTagHtml = p.isOfficial
+    ? `<div class="college-tag" style="background:${p.collegeColor}18;color:${p.collegeColor};border:0.5px solid ${p.collegeColor}30">${p.college} · Official</div>`
+    : `<div class="college-tag" style="background:${p.collegeColor}12;color:${p.collegeColor};border:0.5px solid ${p.collegeColor}25">${p.college}</div>`;
+
+  const eventCardHtml = p.isEvent ? `
+    <div class="event-card">
+      <div class="event-header">
+        <div>
+          <div class="event-type">${p.eventType}</div>
+          <div class="event-name">${p.eventName}</div>
+        </div>
+        <div class="event-date">${p.eventDate}</div>
+      </div>
+      <div class="event-details">
+        ${p.eventDetails.map(d => `<div class="event-detail"><div class="event-dot"></div>${d}</div>`).join('')}
+      </div>
+      <button class="event-register">Register now</button>
+    </div>
+  ` : '';
+
+  const ratioBannerHtml = `
+    <div class="ratio-banner ${ratioed ? 'visible' : ''}" id="ratio-${p.id}">
+      <div class="ratio-label">Ratio</div>
+      <span>${ratioText(p)}</span>
+    </div>
+  `;
+
+  const wActive = p.voted === 'w' ? 'w-active' : '';
+  const lActive = p.voted === 'l' ? 'l-active' : '';
+
+  return `
+    <div class="post" id="post-${p.id}" style="animation-delay:${Math.random()*0.2}s">
+      <div class="post-header">
+        <div class="post-avatar" style="background:${p.collegeColor}">${p.initials}</div>
+        <div class="post-meta">
+          <div class="post-name">${p.author}</div>
+          <div class="post-college-line"><strong>${p.college}</strong> · ${p.year}</div>
+        </div>
+        <div class="post-time">${p.time}</div>
+      </div>
+      ${collegeTagHtml}
+      ${eventCardHtml}
+      <div class="post-text">${p.text}</div>
+      ${ratioBannerHtml}
+      <div class="post-actions">
+        <button class="vote-btn w-btn ${wActive}" id="w-${p.id}" onclick="vote('${p.id}','w')">
+          W <span id="wcount-${p.id}">${p.w}</span>
+        </button>
+        <div class="vote-divider"></div>
+        <button class="vote-btn l-btn ${lActive}" id="l-${p.id}" onclick="vote('${p.id}','l')">
+          <span id="lcount-${p.id}">${p.l}</span> L
+        </button>
+        <span class="vote-ratio" id="ratio-pct-${p.id}">${wPct}% W</span>
+        <button class="action-btn" onclick="openComments('${p.id}')">
+          <span id="ccount-${p.id}">${p.comments}</span> comments
+        </button>
+        <button class="action-btn" style="margin-left:auto" onclick="sharePost('${p.id}')">share</button>
+      </div>
+    </div>
+  `;
+}
+
+// Post store for vote state
+const postStore = {};
+DU_POSTS.forEach(p => postStore[p.id] = p);
+COLLEGE_POSTS.forEach(p => postStore[p.id] = p);
+COMPETITION_POSTS.forEach(p => postStore[p.id] = p);
+
+function renderFeed(containerId, posts) {
+  const container = document.getElementById(containerId);
+  const header = container.querySelector('.section-header');
+  const postsHtml = posts.map(renderPost).join('');
+  // Clear old posts, keep header
+  container.innerHTML = '';
+  container.appendChild(header);
+  header.insertAdjacentHTML('afterend', postsHtml);
+}
+
+renderFeed('feed-du', DU_POSTS);
+renderFeed('feed-college', COLLEGE_POSTS);
+renderFeed('feed-competitions', COMPETITION_POSTS);
+
+// VOTE
+function vote(postId, type) {
+  const p = postStore[postId];
+  if (!p) return;
+
+  if (p.voted === type) {
+    // Undo
+    p[type]--;
+    p.voted = null;
+  } else {
+    if (p.voted) p[p.voted]--;
+    p[type]++;
+    p.voted = type;
+  }
+
+  // Update UI
+  document.getElementById('wcount-' + postId).textContent = p.w;
+  document.getElementById('lcount-' + postId).textContent = p.l;
+
+  const wBtn = document.getElementById('w-' + postId);
+  const lBtn = document.getElementById('l-' + postId);
+  wBtn.className = 'vote-btn w-btn' + (p.voted === 'w' ? ' w-active' : '');
+  lBtn.className = 'vote-btn l-btn' + (p.voted === 'l' ? ' l-active' : '');
+
+  const total = p.w + p.l;
+  const wPct = total > 0 ? Math.round((p.w / total) * 100) : 0;
+  document.getElementById('ratio-pct-' + postId).textContent = wPct + '% W';
+
+  // Check ratio
+  const banner = document.getElementById('ratio-' + postId);
+  if (banner) {
+    if (isRatioed(p)) {
+      banner.innerHTML = `<div class="ratio-label">Ratio</div><span>${ratioText(p)}</span>`;
+      banner.classList.add('visible');
+    } else {
+      banner.classList.remove('visible');
+    }
+  }
+
+  // Micro bounce
+  const btn = document.getElementById((type === 'w' ? 'w-' : 'l-') + postId);
+  btn.style.transform = 'scale(1.12)';
+  setTimeout(() => btn.style.transform = '', 150);
+}
+
+function openComments(postId) {
+  // Placeholder - future: inline comments expand
+  const p = postStore[postId];
+  if (p) {
+    p.comments++;
+    document.getElementById('ccount-' + postId).textContent = p.comments;
+    // Re-check ratio
+    const banner = document.getElementById('ratio-' + postId);
+    if (banner && isRatioed(p)) {
+      banner.innerHTML = `<div class="ratio-label">Ratio</div><span>${ratioText(p)}</span>`;
+      banner.classList.add('visible');
+    }
+  }
+}
+
+function sharePost(postId) {
+  navigator.clipboard.writeText(window.location.href + '#post-' + postId)
+    .catch(() => {});
+}
+
+// TAB SWITCHING
+let activeTab = 'du';
+function switchTab(tab) {
+  activeTab = tab;
+  ['du','college','competitions'].forEach(t => {
+    document.getElementById('feed-' + t).style.display = t === tab ? 'block' : 'none';
+  });
+
+  // Desktop tabs
+  document.querySelectorAll('#main-tabs .nav-tab').forEach((btn, i) => {
+    const tabs = ['du','college','competitions'];
+    btn.classList.toggle('active', tabs[i] === tab);
+  });
+
+  // Mobile tabs
+  document.querySelectorAll('#mobile-tabs .mobile-tab').forEach((btn, i) => {
+    const tabs = ['du','college','competitions'];
+    btn.classList.toggle('active', tabs[i] === tab);
+  });
+
+  // Compose placeholder
+  const placeholders = {
+    du: "What's happening at DU?",
+    college: `Post to ${userCollege}...`,
+    competitions: "Share a competition or event..."
+  };
+  document.getElementById('compose-input').placeholder = placeholders[tab] || "What's on your mind?";
+}
+
+// COMPOSE
+function expandCompose() {
+  document.getElementById('compose-footer').style.display = 'flex';
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+  document.getElementById('compose-charcount').textContent = el.value.length + ' / 240';
+}
+
+document.getElementById('compose-input').addEventListener('input', function() {
+  if (this.value.length > 240) this.value = this.value.slice(0, 240);
+});
+
+document.addEventListener('click', function(e) {
+  const compose = document.getElementById('compose-area');
+  if (!compose.contains(e.target)) {
+    if (!document.getElementById('compose-input').value) {
+      document.getElementById('compose-footer').style.display = 'none';
+    }
+  }
+});
+
+function submitPost() {
+  const input = document.getElementById('compose-input');
+  const text = input.value.trim();
+  if (!text) return;
+
   const now = Date.now();
-  const t = ts.toMillis ? ts.toMillis() : ts;
-  const diff = Math.floor((now - t) / 1000);
-  if (diff < 60) return `${diff}s`;
-  if (diff < 3600) return `${Math.floor(diff/60)}m`;
-  if (diff < 86400) return `${Math.floor(diff/3600)}h`;
-  return `${Math.floor(diff/86400)}d`;
+  const newPost = {
+    id: 'user-' + now,
+    author: userName,
+    initials: userInitials,
+    college: userCollege,
+    collegeColor: userCollegeColor,
+    year: '· You',
+    text: text,
+    time: 'Just now',
+    postedAt: now,
+    w: 0, l: 0, comments: 0,
+    voted: null
+  };
+
+  postStore[newPost.id] = newPost;
+
+  const feedId = activeTab === 'du' ? 'feed-du' : activeTab === 'college' ? 'feed-college' : 'feed-competitions';
+  const feed = document.getElementById(feedId);
+  const header = feed.querySelector('.section-header');
+  header.insertAdjacentHTML('afterend', renderPost(newPost));
+
+  input.value = '';
+  input.style.height = '';
+  document.getElementById('compose-footer').style.display = 'none';
+  document.getElementById('compose-charcount').textContent = '0 / 240';
+
+  // Scroll to new post
+  const newEl = document.getElementById('post-' + newPost.id);
+  if (newEl) newEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
-
-function initials(name) {
-  return name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
-}
-
-function avatarColor(college) {
-  return COLLEGE_COLORS[college] || "#4a4740";
-}
-
-// --- PostCard ---
-function PostCard({ post, onVote, onSave, onComment, currentCollege }) {
-  const [showComments, setShowComments] = useState(false);
-  const [commentText, setCommentText] = useState("");
-  const [voting, setVoting] = useState(false);
-
-  async function handleVote(type) {
-    if (voting) return;
-    setVoting(true);
-    await onVote(post.id, type);
-    setVoting(false);
-  }
-
-  async function submitComment(e) {
-    e.preventDefault();
-    if (!commentText.trim()) return;
-    await onComment(post.id, commentText.trim());
-    setCommentText("");
-  }
-
-  return (
-    <div className="post-card">
-      <div className="post-card-header">
-        <div className="post-avatar" style={{background:avatarColor(post.college)}}>
-          {initials(post.author)}
-        </div>
-        <div className="post-meta">
-          <div>
-            <span className="post-author">{post.author}</span>
-            <span className="post-college-badge">{post.college}</span>
-          </div>
-          <div className="post-time">{relativeTime(post.createdAt)}</div>
-        </div>
-      </div>
-      <div className="post-text">{post.text}</div>
-      <div className="post-actions">
-        <button
-          className={`action-btn w-btn${post.myVote==="w"?" voted":""}`}
-          onClick={()=>handleVote("w")}
-        >
-          <span className="action-label">W</span>
-          <span>{post.w||0}</span>
-        </button>
-        <button
-          className={`action-btn l-btn${post.myVote==="l"?" voted":""}`}
-          onClick={()=>handleVote("l")}
-        >
-          <span className="action-label">L</span>
-          <span>{post.l||0}</span>
-        </button>
-        <button
-          className="action-btn"
-          onClick={()=>setShowComments(s=>!s)}
-        >
-          <span>Reply</span>
-          {post.comments?.length ? <span style={{fontSize:"0.7rem",color:"var(--ink3)"}}>{post.comments.length}</span> : null}
-        </button>
-        <div className="action-divider"/>
-        <button
-          className={`action-btn save-btn${post.saved?" saved":""}`}
-          onClick={()=>onSave(post.id)}
-        >
-          {post.saved ? "Saved" : "Save"}
-        </button>
-      </div>
-      {showComments && (
-        <div className="comments-section">
-          {(post.comments||[]).map((c,i)=>(
-            <div className="comment-row" key={i}>
-              <div className="comment-avatar" style={{background:avatarColor(c.college)}}>
-                {initials(c.author)}
-              </div>
-              <div className="comment-body">
-                <span className="comment-author">{c.author} </span>
-                <span className="comment-text">{c.text}</span>
-              </div>
-            </div>
-          ))}
-          <div className="comment-input-row">
-            <input
-              className="comment-field"
-              placeholder="Reply..."
-              value={commentText}
-              onChange={e=>setCommentText(e.target.value)}
-              onKeyDown={e=>e.key==="Enter"&&submitComment(e)}
-            />
-            <button className="comment-submit" onClick={submitComment}>Post</button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// --- Composer ---
-function Composer({ onPost, college, setCollege }) {
-  const [text, setText] = useState("");
-  const [posting, setPosting] = useState(false);
-  const MAX = 280;
-
-  async function handlePost() {
-    if (!text.trim() || posting) return;
-    setPosting(true);
-    await onPost(text.trim(), college);
-    setText("");
-    setPosting(false);
-  }
-
-  return (
-    <div className="composer">
-      <div className="composer-top">
-        <div className="avatar-sm">{initials("You")}</div>
-        <textarea
-          className="composer-field"
-          placeholder="What's happening at DU?"
-          value={text}
-          onChange={e=>setText(e.target.value.slice(0,MAX))}
-          rows={3}
-        />
-      </div>
-      <div className="composer-bottom">
-        <div className="composer-meta">
-          <select
-            className="college-select"
-            value={college}
-            onChange={e=>setCollege(e.target.value)}
-          >
-            {COLLEGES.map(c=><option key={c} value={c}>{c}</option>)}
-          </select>
-          <span className="char-count">{MAX-text.length}</span>
-        </div>
-        <button className="post-btn" onClick={handlePost} disabled={!text.trim()||posting}>
-          {posting?"Posting...":"Post"}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// --- Banner ---
-function Banner() {
-  const [idx, setIdx] = useState(0);
-  useEffect(()=>{
-    const t = setInterval(()=>setIdx(i=>(i+1)%BANNERS.length),4000);
-    return ()=>clearInterval(t);
-  },[]);
-  return (
-    <div className="banner">
-      <div className="banner-label">Live</div>
-      <div className="banner-text" style={{transition:"opacity 0.4s"}}>
-        {BANNERS[idx]}
-      </div>
-    </div>
-  );
-}
-
-// --- Explore ---
-function Explore() {
-  return (
-    <div className="explore-grid">
-      {EXPLORE_TILES.map(t=>(
-        <div className="explore-tile" key={t.title}>
-          <div className="explore-tile-label">{t.label}</div>
-          <div className="explore-tile-title">{t.title}</div>
-          <div className="explore-tile-count">{t.count}</div>
-          <div className="explore-tile-accent" style={{background:t.color}}/>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// --- Main App ---
-function App() {
-  const [tab, setTab] = useState("DU");
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [fbReady, setFbReady] = useState(false);
-  const [college, setCollege] = useState("Hindu College");
-  const unsubRef = useRef(null);
-
-  // Init Firebase
-  useEffect(()=>{
-    initFirebase().then(ok=>{
-      setFbReady(ok);
-      if (!ok) setLoading(false);
-    });
-    return ()=>{ if(unsubRef.current) unsubRef.current(); };
-  },[]);
-
-  // Subscribe to Firestore
-  useEffect(()=>{
-    if (!fbReady || !db || !firestoreModule) return;
-    const { collection, query, orderBy, onSnapshot, limit } = firestoreModule;
-    const q = query(collection(db,"posts"), orderBy("createdAt","desc"), limit(40));
-    unsubRef.current = onSnapshot(q, snap=>{
-      const data = snap.docs.map(d=>({id:d.id,...d.data()}));
-      setPosts(data);
-      setLoading(false);
-    }, err=>{
-      console.error("Firestore error:", err);
-      setLoading(false);
-    });
-    return ()=>{ if(unsubRef.current) unsubRef.current(); };
-  },[fbReady]);
-
-  async function handlePost(text, col) {
-    if (!db || !firestoreModule) return;
-    const { collection, addDoc, serverTimestamp } = firestoreModule;
-    await addDoc(collection(db,"posts"),{
-      author: "Anonymous",
-      college: col,
-      text,
-      w: 0,
-      l: 0,
-      comments: [],
-      createdAt: serverTimestamp()
-    });
-  }
-
-  async function handleVote(id, type) {
-    if (!db || !firestoreModule) return;
-    const { doc, updateDoc, increment } = firestoreModule;
-    await updateDoc(doc(db,"posts",id),{[type]: increment(1)});
-  }
-
-  function handleSave(id) {
-    setPosts(ps=>ps.map(p=>p.id===id?{...p,saved:!p.saved}:p));
-  }
-
-  async function handleComment(id, text) {
-    if (!db || !firestoreModule) return;
-    const { doc, updateDoc, arrayUnion } = firestoreModule;
-    await updateDoc(doc(db,"posts",id),{
-      comments: arrayUnion({ author:"Anonymous", college, text })
-    });
-  }
-
-  const tabs = ["DU","College","Explore"];
-
-  return (
-    <div className="shell">
-      {/* Sidebar */}
-      <div className="sidebar">
-        <div className="logo">
-          Un<span>rest</span>
-          <sub>Delhi University Network</sub>
-        </div>
-        <div className="nav-section">Discover</div>
-        {tabs.map(t=>(
-          <div
-            key={t}
-            className={`nav-item${tab===t?" active":""}`}
-            onClick={()=>setTab(t)}
-          >
-            <div className="nav-dot"/>
-            {t}
-          </div>
-        ))}
-        <div className="nav-section">Network</div>
-        {["Societies","Mentors","Events"].map(t=>(
-          <div key={t} className="nav-item">
-            <div className="nav-dot"/>
-            {t}
-          </div>
-        ))}
-        <div className="sidebar-footer">
-          unrestdu.in<br/>
-          DU's verified student network
-        </div>
-      </div>
-
-      {/* Main */}
-      <div className="main">
-        <div className="feed-header">
-          {tabs.map(t=>(
-            <div
-              key={t}
-              className={`tab${tab===t?" active":""}`}
-              onClick={()=>setTab(t)}
-            >
-              {t}
-            </div>
-          ))}
-        </div>
-
-        {tab === "Explore" ? (
-          <Explore/>
-        ) : (
-          <>
-            <div style={{height:"20px"}}/>
-            <Banner/>
-            <Composer onPost={handlePost} college={college} setCollege={setCollege}/>
-            {loading && <div className="loading-bar"/>}
-            <div className="feed">
-              {!loading && posts.length === 0 && (
-                <div className="feed-empty">
-                  <strong>Nothing yet.</strong>
-                  Be the first to post.
-                </div>
-              )}
-              {posts.map(p=>(
-                <PostCard
-                  key={p.id}
-                  post={p}
-                  onVote={handleVote}
-                  onSave={handleSave}
-                  onComment={handleComment}
-                  currentCollege={college}
-                />
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Aside */}
-      <div className="aside">
-        <div className="aside-section">
-          <div className="aside-label">Trending at DU</div>
-          {TRENDING.map((t,i)=>(
-            <div className="trending-item" key={t.topic}>
-              <div className="trending-num">{i+1}</div>
-              <div className="trending-topic">{t.topic}</div>
-              <div className="trending-count">{t.count}</div>
-            </div>
-          ))}
-        </div>
-        <div className="aside-section">
-          <div className="aside-label">Colleges</div>
-          {COLLEGES.slice(0,8).map(c=>(
-            <span
-              key={c}
-              className="college-pill"
-              onClick={()=>setCollege(c)}
-            >{c}</span>
-          ))}
-        </div>
-        <div style={{fontSize:"0.72rem",color:"var(--ink3)",lineHeight:1.8}}>
-          Privacy · Terms · unrestdu.in
-        </div>
-      </div>
-    </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
 </html>
