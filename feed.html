@@ -1,1194 +1,1060 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unrest - Feed</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-<style>
+import { useState, useRef, useEffect } from "react";
+
+const CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
+    --paper: #f2efe8;
+    --white: #ffffff;
     --ink: #0e0d0b;
     --ink2: #3d3b35;
     --ink3: #7a776e;
-    --paper: #f5f2eb;
-    --cream: #ede9df;
-    --white: #ffffff;
+    --ink4: #b0ada6;
+    --border: rgba(14,13,11,0.1);
+    --border2: rgba(14,13,11,0.055);
     --accent: #c84b2f;
-    --accent2: #e8a020;
     --green: #2a6b4a;
     --blue: #1e4f8c;
-    --border: rgba(14,13,11,0.10);
-    --border-strong: rgba(14,13,11,0.18);
     --serif: 'Instrument Serif', Georgia, serif;
     --sans: 'DM Sans', system-ui, sans-serif;
-    --nav-h: 56px;
-    --sidebar-w: 260px;
   }
+  body { font-family: var(--sans); background: var(--paper); color: var(--ink); }
+  button { font-family: var(--sans); cursor: pointer; }
+  input, textarea, select { font-family: var(--sans); }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(-8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  @keyframes dot-pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+`;
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: var(--sans);
-    background: var(--paper);
-    color: var(--ink);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* NAV */
-  .nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    height: var(--nav-h);
-    background: rgba(245,242,235,0.92);
-    backdrop-filter: blur(16px);
-    border-bottom: 0.5px solid var(--border);
-    display: flex; align-items: center;
-    padding: 0 1.5rem;
-    gap: 1.5rem;
-  }
-  .nav-logo {
-    font-family: var(--serif);
-    font-size: 1.35rem;
-    color: var(--ink);
-    text-decoration: none;
-    letter-spacing: -0.02em;
-    flex-shrink: 0;
-  }
-  .nav-logo em { font-style: italic; color: var(--accent); }
-
-  .nav-tabs {
-    display: flex;
-    gap: 2px;
-    background: var(--cream);
-    border: 0.5px solid var(--border);
-    border-radius: 100px;
-    padding: 3px;
-    margin-left: auto;
-  }
-  .nav-tab {
-    padding: 6px 18px;
-    border-radius: 100px;
-    border: none;
-    background: transparent;
-    font-family: var(--sans);
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--ink3);
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-  .nav-tab.active {
-    background: var(--white);
-    color: var(--ink);
-    font-weight: 600;
-    box-shadow: 0 1px 4px rgba(14,13,11,0.08);
-  }
-  .nav-tab:hover:not(.active) { color: var(--ink2); }
-
-  .nav-right {
-    display: flex; align-items: center; gap: 10px;
-    flex-shrink: 0;
-  }
-  .nav-avatar {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.65rem; font-weight: 700; color: #fff;
-    cursor: pointer;
-    border: 2px solid var(--white);
-  }
-  .nav-college-badge {
-    font-size: 0.68rem; font-weight: 600;
-    padding: 4px 10px;
-    background: var(--cream);
-    border: 0.5px solid var(--border-strong);
-    border-radius: 100px;
-    color: var(--ink2);
-  }
-
-  /* LAYOUT */
-  .layout {
-    display: grid;
-    grid-template-columns: var(--sidebar-w) 1fr 220px;
-    gap: 0;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding-top: calc(var(--nav-h) + 2rem);
-    padding-bottom: 4rem;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-
-  @media (max-width: 1024px) {
-    .layout { grid-template-columns: var(--sidebar-w) 1fr; }
-    .right-sidebar { display: none; }
-  }
-  @media (max-width: 720px) {
-    .layout { grid-template-columns: 1fr; padding-left: 1rem; padding-right: 1rem; }
-    .left-sidebar { display: none; }
-    .nav-tabs { display: none; }
-  }
-
-  /* SIDEBARS */
-  .left-sidebar {
-    padding-right: 2rem;
-    padding-top: 0.5rem;
-  }
-  .sidebar-section { margin-bottom: 2rem; }
-  .sidebar-label {
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink3);
-    margin-bottom: 0.6rem;
-  }
-  .sidebar-college {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    background: var(--white);
-    border: 0.5px solid var(--border);
-    margin-bottom: 0.5rem;
-  }
-  .sc-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .sc-name { font-size: 0.82rem; font-weight: 600; color: var(--ink); }
-  .sc-count { font-size: 0.68rem; color: var(--ink3); margin-left: auto; }
-
-  .sidebar-stat {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 6px 0;
-    border-bottom: 0.5px solid var(--border);
-    font-size: 0.8rem;
-  }
-  .sidebar-stat:last-child { border-bottom: none; }
-  .sidebar-stat-val { font-weight: 600; color: var(--ink); }
-  .sidebar-stat-label { color: var(--ink3); }
-
-  .right-sidebar {
-    padding-left: 2rem;
-    padding-top: 0.5rem;
-  }
-  .trending-item {
-    padding: 10px 0;
-    border-bottom: 0.5px solid var(--border);
-  }
-  .trending-item:last-child { border-bottom: none; }
-  .trending-rank {
-    font-size: 0.6rem;
-    font-weight: 700;
-    color: var(--ink3);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-  .trending-text {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--ink);
-    margin-top: 2px;
-    line-height: 1.3;
-  }
-  .trending-meta { font-size: 0.68rem; color: var(--ink3); margin-top: 2px; }
-
-  /* FEED */
-  .feed-col {
-    border-left: 0.5px solid var(--border);
-    border-right: 0.5px solid var(--border);
-    min-height: 100vh;
-    padding: 0 1.5rem;
-  }
-
-  .compose-bar {
-    display: flex; gap: 10px; align-items: flex-start;
-    padding-bottom: 1.25rem;
-    border-bottom: 0.5px solid var(--border);
-    margin-bottom: 0;
-  }
-  .compose-avatar {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.62rem; font-weight: 700; color: #fff;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-  .compose-field {
-    flex: 1;
-    border: none;
-    background: none;
-    font-family: var(--sans);
-    font-size: 0.95rem;
-    color: var(--ink);
-    resize: none;
-    outline: none;
-    line-height: 1.5;
-    padding: 6px 0;
-  }
-  .compose-field::placeholder { color: var(--ink3); }
-  .compose-actions {
-    display: flex; justify-content: flex-end; gap: 8px;
-    padding-top: 0.75rem;
-    border-top: 0.5px solid var(--border);
-  }
-  .compose-submit {
-    background: var(--ink);
-    color: var(--paper);
-    border: none;
-    border-radius: 100px;
-    padding: 8px 20px;
-    font-family: var(--sans);
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
-  }
-  .compose-submit:hover { background: var(--accent); }
-  .compose-submit:active { transform: scale(0.97); }
-
-  /* POSTS */
-  .post {
-    padding: 1.25rem 0;
-    border-bottom: 0.5px solid var(--border);
-    position: relative;
-  }
-  .post:hover { background: transparent; }
-
-  .post-header {
-    display: flex; align-items: flex-start; gap: 10px;
-    margin-bottom: 0.6rem;
-  }
-  .post-avatar {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.62rem; font-weight: 700; color: #fff;
-    flex-shrink: 0;
-  }
-  .post-meta { flex: 1; }
-  .post-name {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--ink);
-    line-height: 1.2;
-  }
-  .post-college-line {
-    font-size: 0.72rem;
-    color: var(--ink3);
-    margin-top: 1px;
-  }
-  .post-college-line strong {
-    color: var(--ink2);
-    font-weight: 500;
-  }
-  .post-time {
-    font-size: 0.7rem;
-    color: var(--ink3);
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .post-text {
-    font-size: 0.92rem;
-    color: var(--ink2);
-    line-height: 1.65;
-    margin-bottom: 0.9rem;
-    padding-left: 46px;
-  }
-  .post-text a { color: var(--accent); text-decoration: none; }
-
-  /* RATIO BANNER */
-  .ratio-banner {
-    margin-left: 46px;
-    margin-bottom: 0.75rem;
-    padding: 8px 14px;
-    background: rgba(200,75,47,0.06);
-    border: 0.5px solid rgba(200,75,47,0.2);
-    border-left: 2.5px solid var(--accent);
-    border-radius: 0 8px 8px 0;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: 0.01em;
-    display: none;
-    align-items: center;
-    gap: 8px;
-  }
-  .ratio-banner.visible { display: flex; }
-  .ratio-label { font-weight: 700; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; }
-
-  /* ACTIONS */
-  .post-actions {
-    display: flex; align-items: center; gap: 0;
-    padding-left: 46px;
-  }
-  .action-btn {
-    display: flex; align-items: center; gap: 5px;
-    padding: 5px 10px;
-    border: none;
-    background: none;
-    font-family: var(--sans);
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: var(--ink3);
-    cursor: pointer;
-    border-radius: 8px;
-    transition: color 0.15s, background 0.15s;
-    user-select: none;
-  }
-  .action-btn:hover { background: var(--cream); color: var(--ink2); }
-
-  .vote-btn {
-    display: flex; align-items: center; gap: 5px;
-    padding: 5px 12px;
-    border: 0.5px solid var(--border-strong);
-    background: var(--white);
-    font-family: var(--sans);
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--ink2);
-    cursor: pointer;
-    transition: all 0.15s;
-    user-select: none;
-  }
-  .vote-btn:hover { border-color: var(--ink); color: var(--ink); }
-  .vote-btn.w-btn { border-radius: 8px 0 0 8px; border-right: none; }
-  .vote-btn.l-btn { border-radius: 0 8px 8px 0; }
-  .vote-btn.w-active { background: var(--green); border-color: var(--green); color: #fff; }
-  .vote-btn.l-active { background: var(--accent); border-color: var(--accent); color: #fff; }
-
-  .vote-divider {
-    width: 0.5px;
-    height: 20px;
-    background: var(--border-strong);
-    flex-shrink: 0;
-  }
-
-  .vote-ratio {
-    font-size: 0.68rem;
-    font-weight: 700;
-    color: var(--ink3);
-    padding: 0 6px;
-    letter-spacing: 0.02em;
-  }
-
-  .comment-count {
-    font-size: 0.68rem;
-    color: var(--ink3);
-    padding: 0 6px;
-  }
-
-  /* COLLEGE TAG */
-  .college-tag {
-    display: inline-block;
-    font-size: 0.62rem;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 100px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.5rem;
-    margin-left: 46px;
-  }
-
-  /* EVENT CARD */
-  .event-card {
-    margin-left: 46px;
-    margin-bottom: 0.75rem;
-    border: 0.5px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--white);
-  }
-  .event-header {
-    padding: 14px 16px 10px;
-    border-bottom: 0.5px solid var(--border);
-    display: flex; justify-content: space-between; align-items: flex-start;
-  }
-  .event-type {
-    font-size: 0.62rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink3);
-    margin-bottom: 4px;
-  }
-  .event-name {
-    font-family: var(--serif);
-    font-size: 1.05rem;
-    color: var(--ink);
-    line-height: 1.2;
-  }
-  .event-date {
-    font-size: 0.68rem;
-    font-weight: 600;
-    color: var(--accent);
-    padding: 4px 10px;
-    background: rgba(200,75,47,0.08);
-    border: 0.5px solid rgba(200,75,47,0.15);
-    border-radius: 100px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .event-details {
-    padding: 10px 16px;
-    font-size: 0.78rem;
-    color: var(--ink3);
-    display: flex; gap: 16px;
-  }
-  .event-detail { display: flex; align-items: center; gap: 5px; }
-  .event-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--ink3); }
-  .event-register {
-    display: block;
-    padding: 8px 16px;
-    background: var(--ink);
-    color: var(--paper);
-    border: none;
-    font-family: var(--sans);
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-    transition: background 0.2s;
-  }
-  .event-register:hover { background: var(--accent); }
-
-  /* SECTION HEADER */
-  .section-header {
-    display: flex; align-items: center;
-    padding: 1rem 0 0.75rem;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink3);
-    border-bottom: 0.5px solid var(--border);
-    margin-bottom: 0;
-    gap: 8px;
-  }
-  .section-header-line { flex: 1; height: 0.5px; background: var(--border); }
-
-  /* MOBILE TAB BAR */
-  .mobile-tabs {
-    display: none;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    z-index: 200;
-    background: rgba(245,242,235,0.96);
-    backdrop-filter: blur(16px);
-    border-top: 0.5px solid var(--border);
-    padding: 6px 1rem 8px;
-    justify-content: space-around;
-  }
-  .mobile-tab {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 3px;
-    padding: 6px 16px;
-    border-radius: 10px;
-    border: none;
-    background: none;
-    font-family: var(--sans);
-    font-size: 0.62rem;
-    font-weight: 600;
-    color: var(--ink3);
-    cursor: pointer;
-    transition: color 0.15s;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-  .mobile-tab.active { color: var(--accent); }
-  .mobile-tab-icon {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-  }
-  @media (max-width: 720px) {
-    .mobile-tabs { display: flex; }
-    body { padding-bottom: 64px; }
-  }
-
-  /* ANIMATIONS */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .post { animation: fadeUp 0.35s ease both; }
-
-  /* COMPOSE expanded */
-  .compose-wrap {
-    padding: 1rem 0 0;
-    margin-bottom: 0;
-  }
-  .compose-expanded {
-    display: none;
-  }
-  .compose-field:focus ~ .compose-expanded,
-  .compose-wrap:focus-within .compose-expanded {
-    display: flex;
-  }
-</style>
-</head>
-<body>
-
-<nav class="nav">
-  <a href="#" class="nav-logo">Un<em>rest</em></a>
-
-  <div class="nav-tabs" id="main-tabs">
-    <button class="nav-tab active" onclick="switchTab('du')">DU</button>
-    <button class="nav-tab" onclick="switchTab('college')">College</button>
-    <button class="nav-tab" onclick="switchTab('competitions')">Competitions & Events</button>
-  </div>
-
-  <div class="nav-right">
-    <span class="nav-college-badge" id="user-college-badge">SRCC</span>
-    <div class="nav-avatar" id="user-avatar">RK</div>
-  </div>
-</nav>
-
-<div class="layout">
-
-  <!-- LEFT SIDEBAR -->
-  <div class="left-sidebar">
-    <div class="sidebar-section">
-      <div class="sidebar-label">Your college</div>
-      <div class="sidebar-college">
-        <div class="sc-dot" style="background:#c84b2f"></div>
-        <div>
-          <div class="sc-name" id="sidebar-college-name">SRCC</div>
-        </div>
-        <div class="sc-count" id="sidebar-college-count">347 members</div>
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-label">Activity</div>
-      <div class="sidebar-stat"><span class="sidebar-stat-label">Posts today</span><span class="sidebar-stat-val">84</span></div>
-      <div class="sidebar-stat"><span class="sidebar-stat-label">Active now</span><span class="sidebar-stat-val">23</span></div>
-      <div class="sidebar-stat"><span class="sidebar-stat-label">DU-wide</span><span class="sidebar-stat-val">1,247</span></div>
-      <div class="sidebar-stat"><span class="sidebar-stat-label">Your echoes</span><span class="sidebar-stat-val">3</span></div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-label">Quick links</div>
-      <div style="display:flex;flex-direction:column;gap:4px;">
-        <button onclick="switchTab('du')" style="text-align:left;background:none;border:none;font-family:var(--sans);font-size:0.82rem;color:var(--ink2);padding:6px 8px;border-radius:8px;cursor:pointer;font-weight:500;transition:background 0.15s;" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='none'">DU feed</button>
-        <button onclick="switchTab('college')" style="text-align:left;background:none;border:none;font-family:var(--sans);font-size:0.82rem;color:var(--ink2);padding:6px 8px;border-radius:8px;cursor:pointer;font-weight:500;transition:background 0.15s;" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='none'">My college</button>
-        <button onclick="switchTab('competitions')" style="text-align:left;background:none;border:none;font-family:var(--sans);font-size:0.82rem;color:var(--ink2);padding:6px 8px;border-radius:8px;cursor:pointer;font-weight:500;transition:background 0.15s;" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='none'">Competitions & Events</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MAIN FEED -->
-  <div class="feed-col">
-
-    <!-- COMPOSE -->
-    <div class="compose-wrap" id="compose-area">
-      <div class="compose-bar">
-        <div class="compose-avatar" id="compose-avatar">RK</div>
-        <textarea
-          class="compose-field"
-          id="compose-input"
-          rows="2"
-          placeholder="What's happening at DU?"
-          onfocus="expandCompose()"
-          oninput="autoResize(this)"
-        ></textarea>
-      </div>
-      <div class="compose-actions" id="compose-footer" style="display:none">
-        <span style="font-size:0.72rem;color:var(--ink3);align-self:center;" id="compose-charcount">0 / 240</span>
-        <button class="compose-submit" onclick="submitPost()">Post</button>
-      </div>
-    </div>
-
-    <!-- FEED SECTIONS -->
-    <div id="feed-du" class="feed-section">
-      <div class="section-header"><span>DU</span><div class="section-header-line"></div></div>
-    </div>
-
-    <div id="feed-college" class="feed-section" style="display:none">
-      <div class="section-header"><span id="college-section-label">SRCC</span><div class="section-header-line"></div></div>
-    </div>
-
-    <div id="feed-competitions" class="feed-section" style="display:none">
-      <div class="section-header"><span>Competitions & Events</span><div class="section-header-line"></div></div>
-    </div>
-
-  </div>
-
-  <!-- RIGHT SIDEBAR -->
-  <div class="right-sidebar">
-    <div class="sidebar-section">
-      <div class="sidebar-label">Trending</div>
-      <div id="trending-list"></div>
-    </div>
-
-    <div class="sidebar-section" style="margin-top:1.5rem">
-      <div class="sidebar-label">Top colleges today</div>
-      <div id="top-colleges-list"></div>
-    </div>
-  </div>
-
-</div>
-
-<!-- MOBILE TABS -->
-<div class="mobile-tabs" id="mobile-tabs">
-  <button class="mobile-tab active" onclick="switchTab('du')">
-    <div class="mobile-tab-icon"></div>
-    DU
-  </button>
-  <button class="mobile-tab" onclick="switchTab('college')">
-    <div class="mobile-tab-icon"></div>
-    College
-  </button>
-  <button class="mobile-tab" onclick="switchTab('competitions')">
-    <div class="mobile-tab-icon"></div>
-    Events
-  </button>
-</div>
-
-<script>
 const COLLEGES = [
-  { id:'srcc', name:'SRCC', color:'#c84b2f' },
-  { id:'hindu', name:'Hindu College', color:'#1e4f8c' },
-  { id:'miranda', name:'Miranda House', color:'#9c27b0' },
-  { id:'stephens', name:"St. Stephen's", color:'#5d4037' },
-  { id:'hansraj', name:'Hansraj', color:'#0097a7' },
-  { id:'lsr', name:'LSR', color:'#7b1fa2' },
-  { id:'kirorimal', name:'Kirori Mal', color:'#e65100' },
-  { id:'ramjas', name:'Ramjas', color:'#2e7d32' },
-  { id:'gargi', name:'Gargi', color:'#c2185b' },
-  { id:'venky', name:'Sri Venky', color:'#6d4c41' },
+  "SRCC","Hindu College","Miranda House","St. Stephen's","Lady Shri Ram","Hansraj College",
+  "Ramjas College","Kirori Mal","Gargi College","IP College","Dyal Singh","SGTB Khalsa",
+  "Sri Venkateswara","Maitreyi College","Daulat Ram","Jesus & Mary","PGDAV","DCAC","SSCBS"
 ];
 
-// Seed data - realistic DU posts
-const DU_POSTS = [
-  {
-    id: 'du1',
-    author: 'Rohan Mehta',
-    initials: 'RM',
-    college: 'Hindu College',
-    collegeColor: '#1e4f8c',
-    year: '3rd yr · Economics',
-    text: "North Campus is genuinely unbeatable in winters. The chai stalls, the cold fog, the DTC chaos - people who say South Campus is better have never experienced this.",
-    time: '2h ago',
-    postedAt: Date.now() - 2.5 * 60 * 60 * 1000,
-    w: 312, l: 48, comments: 142,
-    voted: null
-  },
-  {
-    id: 'du2',
-    author: 'Priya Sharma',
-    initials: 'PS',
-    college: 'LSR',
-    collegeColor: '#7b1fa2',
-    year: '2nd yr · English',
-    text: "Placement season is doing something weird to people. Everyone's suddenly in three case comp clubs and four consulting bootcamps. Calm down, it is October.",
-    time: '4h ago',
-    postedAt: Date.now() - 4 * 60 * 60 * 1000,
-    w: 89, l: 12, comments: 67,
-    voted: null
-  },
-  {
-    id: 'du3',
-    author: 'Arjun Kapoor',
-    initials: 'AK',
-    college: 'SRCC',
-    collegeColor: '#c84b2f',
-    year: '3rd yr · Commerce',
-    text: "The DU admin portal has been down since Tuesday. Exams are in 3 weeks. Form submissions pending. Truly running on vibes and faith at this point.",
-    time: '6h ago',
-    postedAt: Date.now() - 6 * 60 * 60 * 1000,
-    w: 547, l: 12, comments: 203,
-    voted: null
-  },
-  {
-    id: 'du4',
-    author: 'Sanya Gupta',
-    initials: 'SG',
-    college: 'Miranda House',
-    collegeColor: '#9c27b0',
-    year: '1st yr · History',
-    text: "First semester recap: attended 60% of lectures, joined 4 societies, dropped 2 societies, went to Kamla Nagar exactly 31 times, and somehow still don't know the fastest metro route.",
-    time: '1d ago',
-    postedAt: Date.now() - 26 * 60 * 60 * 1000,
-    w: 421, l: 18, comments: 88,
-    voted: null
-  },
-  {
-    id: 'du5',
-    author: 'Nikhil Jain',
-    initials: 'NJ',
-    college: 'St. Stephen\'s',
-    collegeColor: '#5d4037',
-    year: '4th yr · Physics',
-    text: "Controversial opinion: DU library at 11pm before end-sems hits differently than any cafe. Quiet, focused, slightly dramatic. Recommend.",
-    time: '3h ago',
-    postedAt: Date.now() - 3 * 60 * 60 * 1000,
-    w: 198, l: 71, comments: 212,
-    voted: null
-  },
-];
+const COL_COLOR = {
+  "SRCC":"#c84b2f","Hindu College":"#1e4f8c","Miranda House":"#7b1fa2",
+  "St. Stephen's":"#5d4037","Lady Shri Ram":"#7b1fa2","Hansraj College":"#0097a7",
+  "Kirori Mal":"#e65100","Gargi College":"#c2185b","IP College":"#00838f",
+  "Ramjas College":"#2e7d32","Dyal Singh":"#455a64","SGTB Khalsa":"#f57c00",
+  "Sri Venkateswara":"#6d4c41","SSCBS":"#283593","PGDAV":"#00695c"
+};
 
-const COLLEGE_POSTS = [
-  {
-    id: 'col1',
-    author: 'SRCC Society Cell',
-    initials: 'SC',
-    college: 'SRCC',
-    collegeColor: '#c84b2f',
-    year: 'Official · Society',
-    text: "EconFest registrations are now open. This year we have a live case competition, panel with 3 policy economists, and an after-event at the college lawn. Free for SRCC students, paid for others. Link in bio.",
-    time: '5h ago',
-    postedAt: Date.now() - 5 * 60 * 60 * 1000,
-    w: 167, l: 9, comments: 34,
-    voted: null,
-    isOfficial: true
-  },
-  {
-    id: 'col2',
-    author: 'Divya Batra',
-    initials: 'DB',
-    college: 'SRCC',
-    collegeColor: '#c84b2f',
-    year: '2nd yr · Statistics',
-    text: "Anyone have Prof. Sharma's Macroeconomics notes from last year? The ones on the Phillips curve unit specifically. Will trade my Microeconomics notes.",
-    time: '3h ago',
-    postedAt: Date.now() - 3.5 * 60 * 60 * 1000,
-    w: 23, l: 2, comments: 18,
-    voted: null
-  },
-  {
-    id: 'col3',
-    author: 'Rahul Verma',
-    initials: 'RV',
-    college: 'SRCC',
-    collegeColor: '#c84b2f',
-    year: '3rd yr · Economics',
-    text: "The canteen samosa situation has been deteriorating since September and I think we should collectively address this at the next student union meeting.",
-    time: '7h ago',
-    postedAt: Date.now() - 7 * 60 * 60 * 1000,
-    w: 289, l: 44, comments: 302,
-    voted: null
-  },
-  {
-    id: 'col4',
-    author: 'Mira Chopra',
-    initials: 'MC',
-    college: 'SRCC',
-    collegeColor: '#c84b2f',
-    year: '1st yr · Commerce',
-    text: "Freshers - the library opens at 8am but the good spots go by 8:15. Corner table near window is the only acceptable study spot. Don't argue.",
-    time: '1d ago',
-    postedAt: Date.now() - 25 * 60 * 60 * 1000,
-    w: 134, l: 21, comments: 56,
-    voted: null
-  },
-];
-
-const COMPETITION_POSTS = [
-  {
-    id: 'comp1',
-    type: 'event',
-    eventType: 'Case Competition',
-    eventName: 'Zeitgeist - Business Case Finals',
-    eventDate: 'Nov 18–19',
-    eventDetails: ['SRCC Auditorium', 'Open to all DU colleges', 'Cash prize 80k'],
-    author: 'Zeitgeist Cell',
-    initials: 'ZC',
-    college: 'SRCC',
-    collegeColor: '#c84b2f',
-    year: 'Official',
-    text: "Final round registrations close Nov 12. Teams of 2–3. Problem statement on market entry strategy for an undisclosed FMCG brand. Register via link before spots fill.",
-    time: '2h ago',
-    postedAt: Date.now() - 2 * 60 * 60 * 1000,
-    w: 231, l: 7, comments: 45,
-    voted: null,
-    isEvent: true
-  },
-  {
-    id: 'comp2',
-    type: 'event',
-    eventType: 'Cultural Fest',
-    eventName: 'Antaragni 2025 - IIT Kanpur',
-    eventDate: 'Oct 24–27',
-    eventDetails: ['IIT Kanpur Campus', 'DU contingent going', '12 events open'],
-    author: 'DU Cultural Council',
-    initials: 'DC',
-    college: 'Hindu College',
-    collegeColor: '#1e4f8c',
-    year: 'Official',
-    text: "DU contingent is being organized. If your society wants to participate in literary, fine arts, or performing categories - mail the council before Oct 18. Accommodation and travel partially subsidized.",
-    time: '8h ago',
-    postedAt: Date.now() - 8 * 60 * 60 * 1000,
-    w: 189, l: 3, comments: 62,
-    voted: null,
-    isEvent: true
-  },
-  {
-    id: 'comp3',
-    type: 'event',
-    eventType: 'Quiz',
-    eventName: 'Miranda House Open Quiz',
-    eventDate: 'Nov 8',
-    eventDetails: ['Miranda Seminar Hall', 'Open registration', 'Teams of 4'],
-    author: 'Quiz Club MH',
-    initials: 'QC',
-    college: 'Miranda House',
-    collegeColor: '#9c27b0',
-    year: 'Official',
-    text: "Annual open quiz. Format: Written prelims, buzzer finals. 8 teams qualify. General quizzing - no specific category. Last year's finalists included teams from Stephens, Hindu, and Ramjas.",
-    time: '1d ago',
-    postedAt: Date.now() - 30 * 60 * 60 * 1000,
-    w: 98, l: 5, comments: 29,
-    voted: null,
-    isEvent: true
-  },
-  {
-    id: 'comp4',
-    author: 'Kabir Nanda',
-    initials: 'KN',
-    college: 'Hansraj',
-    collegeColor: '#0097a7',
-    year: '2nd yr · Computer Science',
-    text: "Anyone else notice that DU's representation at national level quizzes has been dropping consistently? We have 90+ colleges and somehow IIT Delhi squads are more organized. What is happening.",
-    time: '5h ago',
-    postedAt: Date.now() - 5.5 * 60 * 60 * 1000,
-    w: 112, l: 67, comments: 189,
-    voted: null
-  },
-];
-
-const TRENDING = [
-  { tag: '#EconFest2025', posts: '234 posts' },
-  { tag: '#EndSemPanic', posts: '891 posts' },
-  { tag: '#DUAdminPortal', posts: '1.2k posts' },
-  { tag: '#Antaragni', posts: '456 posts' },
-  { tag: '#NorthCampus', posts: '312 posts' },
-];
-
-const TOP_COLLEGES = [
-  { name: 'SRCC', posts: 84, color: '#c84b2f' },
-  { name: 'Hindu', posts: 67, color: '#1e4f8c' },
-  { name: 'Miranda', posts: 58, color: '#9c27b0' },
-  { name: 'LSR', posts: 49, color: '#7b1fa2' },
-  { name: 'Stephens', posts: 41, color: '#5d4037' },
-];
-
-// Retrieve user data
-const saved = localStorage.getItem('unrest_user');
-let userCollege = 'SRCC';
-let userCollegeColor = '#c84b2f';
-let userCollegeId = 'srcc';
-let userName = 'Riya K.';
-let userInitials = 'RK';
-
-if (saved) {
-  try {
-    const d = JSON.parse(saved);
-    if (d.name) {
-      userName = d.name;
-      userInitials = d.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
-    }
-    if (d.collegeId) {
-      const col = COLLEGES.find(c => c.id === d.collegeId);
-      if (col) {
-        userCollege = col.name;
-        userCollegeColor = col.color;
-        userCollegeId = col.id;
-      }
-    }
-  } catch(e) {}
+function colAbbr(n){
+  const m={"Lady Shri Ram":"LSR","Hindu College":"Hindu College","Miranda House":"Miranda",
+    "St. Stephen's":"Stephen's","Hansraj College":"Hansraj","Kirori Mal":"Kirori Mal",
+    "SGTB Khalsa":"SGTB Khalsa","Sri Venkateswara":"Venkateswara"};
+  return m[n]||n;
 }
 
-// Update UI with user data
-document.getElementById('user-avatar').textContent = userInitials;
-document.getElementById('user-avatar').style.background = userCollegeColor;
-document.getElementById('user-college-badge').textContent = userCollege;
-document.getElementById('compose-avatar').textContent = userInitials;
-document.getElementById('compose-avatar').style.background = userCollegeColor;
-document.getElementById('sidebar-college-name').textContent = userCollege;
-document.getElementById('college-section-label').textContent = userCollege;
+const ALL_USERS = [
+  {handle:"@rohan.mehta",name:"Rohan Mehta",college:"Hindu College"},
+  {handle:"@priya.sharma",name:"Priya Sharma",college:"Lady Shri Ram"},
+  {handle:"@aditya.b",name:"Aditya Bose",college:"SRCC"},
+  {handle:"@nandini.r",name:"Nandini Roy",college:"Miranda House"},
+  {handle:"@arjun.k",name:"Arjun Khanna",college:"SSCBS"},
+  {handle:"@zara.q",name:"Zara Qureshi",college:"Lady Shri Ram"},
+  {handle:"@kabir.d",name:"Kabir Dixit",college:"Kirori Mal"},
+  {handle:"@isha.g",name:"Isha Gupta",college:"Miranda House"},
+  {handle:"@tanvi.m",name:"Tanvi Mehta",college:"IP College"},
+  {handle:"@dev.p",name:"Dev Patel",college:"Hansraj College"},
+];
 
-// Render trending
-document.getElementById('trending-list').innerHTML = TRENDING.map(t => `
-  <div class="trending-item">
-    <div class="trending-rank">Trending at DU</div>
-    <div class="trending-text">${t.tag}</div>
-    <div class="trending-meta">${t.posts}</div>
-  </div>
-`).join('');
+const INITIAL_POSTS = [
+  {
+    id:1, pinned:true,
+    author:{name:"Rohan Mehta",handle:"@rohan.mehta",college:"Hindu College",year:"3rd yr",dept:"Economics",
+      initials:"RM",verified:true,society:null,followers:412,mutuals:["Priya S.","Kabir D.","Isha G."]},
+    text:"North Campus is genuinely unbeatable in winters. The chai stalls, the cold fog, the DTC chaos — people who say South Campus is better have never experienced this.",
+    tags:["NorthCampus","DULife"],w:312,l:48,
+    comments:[
+      {id:101,author:"Kabir D.",college:"Kirori Mal",initials:"KD",
+        text:"Correct take. The Kamla Nagar chai scene alone wins it.",likes:67,time:"1h ago",
+        replies:[{id:1011,author:"Rohan Mehta",initials:"RM",text:"Exactly. There is no counter-argument.",likes:31,time:"45m ago"}]},
+      {id:102,author:"Sneha V.",college:"Gargi College",initials:"SV",
+        text:"South Campus student here. I concede the chai argument.",likes:44,time:"2h ago",replies:[]},
+      {id:103,author:"Isha G.",college:"Miranda House",initials:"IG",
+        text:"The fog on Ridge Road at 8am is something else entirely.",likes:28,time:"3h ago",replies:[]}
+    ],
+    saves:89,shares:34,time:"2h ago",feed:"du",
+    poll:{question:"North or South Campus?",options:[{id:"a",text:"North Campus",votes:312},{id:"b",text:"South Campus",votes:91}]}
+  },
+  {
+    id:2,pinned:false,
+    author:{name:"Priya Sharma",handle:"@priya.sharma",college:"Lady Shri Ram",year:"2nd yr",dept:"English",
+      initials:"PS",verified:false,society:"Literary Society",followers:156,mutuals:["Nandini R."]},
+    text:"Placement season is doing something weird to people. Everyone is suddenly in three case comp clubs and four consulting bootcamps. Calm down, it is October.",
+    tags:["PlacementSeason","Consulting"],w:89,l:12,
+    comments:[
+      {id:201,author:"Aditya B.",college:"SRCC",initials:"AB",
+        text:"The person who joined a consulting club in first year is now founding their fourth startup. We are all fine.",likes:94,time:"30m ago",
+        replies:[{id:2011,author:"Priya Sharma",initials:"PS",text:"Founding, not running. Classic.",likes:41,time:"15m ago"}]},
+      {id:202,author:"Mihir A.",college:"SRCC",initials:"MA",
+        text:"Case comps are just sports for people who wear formals.",likes:78,time:"1h ago",replies:[]},
+      {id:203,author:"Tanvi M.",college:"IP College",initials:"TM",
+        text:"First year here. Should I be panicking? Asking for a friend.",likes:53,time:"2h ago",replies:[]}
+    ],
+    saves:112,shares:47,time:"4h ago",feed:"college"
+  },
+  {
+    id:3,pinned:false,
+    author:{name:"Aditya Bose",handle:"@aditya.b",college:"SRCC",year:"3rd yr",dept:"B.Com (H)",
+      initials:"AB",verified:true,society:"Finance Society",followers:340,mutuals:["Rohan M.","Kabir D.","Dev P.","Isha G."]},
+    text:"EconFest registrations open. Case competitions, policy debates, a panel from RBI. Free for all DU students. Forms close Friday.",
+    tags:["EconFest","SRCC","Economics"],w:203,l:8,
+    comments:[
+      {id:301,author:"Dev P.",college:"Hansraj College",initials:"DP",
+        text:"Sending to the econ department group now.",likes:18,time:"1h ago",replies:[]},
+      {id:302,author:"Isha G.",college:"Miranda House",initials:"IG",
+        text:"Is the RBI panel recorded? Asking for people with a clash.",likes:12,time:"2h ago",
+        replies:[{id:3021,author:"Aditya Bose",initials:"AB",text:"Yes, recording will be shared.",likes:8,time:"1.5h ago"}]}
+    ],
+    saves:67,shares:29,time:"5h ago",feed:"du"
+  },
+  {
+    id:4,pinned:false,
+    author:{name:"Nandini Roy",handle:"@nandini.r",college:"Miranda House",year:"2nd yr",dept:"History",
+      initials:"NR",verified:false,society:null,followers:89,mutuals:[]},
+    text:"The reading room at Central Library at 11pm is either the most productive place on campus or a collective coping mechanism. After two weeks I cannot tell the difference.",
+    tags:["DULife","Library"],w:274,l:19,
+    comments:[
+      {id:401,author:"Kabir D.",college:"Kirori Mal",initials:"KD",
+        text:"Failed stats. Proceeded to read 80 pages of Camus instead of studying. The reading room does this to you.",likes:87,time:"2h ago",
+        replies:[{id:4011,author:"Nandini Roy",initials:"NR",text:"This is exactly what I meant.",likes:39,time:"1.5h ago"}]},
+      {id:402,author:"Isha G.",college:"Miranda House",initials:"IG",
+        text:"The 11pm regulars have an unspoken agreement. No eye contact, no questions.",likes:61,time:"3h ago",replies:[]}
+    ],
+    saves:134,shares:52,time:"8h ago",feed:"college",
+    poll:{question:"11pm Central Library — why are you really there?",options:[{id:"a",text:"Genuinely productive",votes:47},{id:"b",text:"Collective coping",votes:189},{id:"c",text:"Avoiding my room",votes:98}]}
+  },
+  {
+    id:5,pinned:false,
+    author:{name:"Zara Qureshi",handle:"@zara.q",college:"Lady Shri Ram",year:"2nd yr",dept:"Sociology",
+      initials:"ZQ",verified:false,society:"Photography Club",followers:178,mutuals:["Priya S."]},
+    text:"Photowalk this Sunday. Chandni Chowk and Jama Masjid at dawn. Meeting at Chawri Bazar metro exit, 5:30am. Any camera is fine. Fourteen people in so far.",
+    tags:["Photowalk","Delhi"],w:198,l:9,
+    comments:[
+      {id:501,author:"Tanvi M.",college:"IP College",initials:"TM",
+        text:"I have a film camera from my grandfather. Is that acceptable.",likes:29,time:"1h ago",
+        replies:[{id:5011,author:"Zara Qureshi",initials:"ZQ",text:"Film is the correct choice, actually.",likes:34,time:"45m ago"}]},
+      {id:502,author:"Dev P.",college:"Hansraj College",initials:"DP",
+        text:"5:30am. Respect. I will try.",likes:17,time:"3h ago",replies:[]}
+    ],
+    saves:91,shares:44,time:"1d ago",feed:"du"
+  }
+];
 
-// Render top colleges
-document.getElementById('top-colleges-list').innerHTML = TOP_COLLEGES.map(c => `
-  <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border)">
-    <div style="width:6px;height:6px;border-radius:50%;background:${c.color};flex-shrink:0"></div>
-    <span style="font-size:0.8rem;font-weight:500;color:var(--ink2);flex:1">${c.name}</span>
-    <span style="font-size:0.72rem;color:var(--ink3)">${c.posts} posts</span>
-  </div>
-`).join('');
+const CURRENT_MONTH=5; // May
 
-// RATIO LOGIC
-function isRatioed(post) {
-  if (post.comments <= post.w) return false;
-  const ageMs = Date.now() - post.postedAt;
-  const twoHours = 2 * 60 * 60 * 1000;
-  if (ageMs >= twoHours) return true;
-  if (post.w >= 5) return true;
-  return false;
+const BANNERS=[
+  {
+    id:"flathunt",
+    tag:"housing",
+    headline:"flat hunting\nseason is here",
+    bg:"#d4f5c4",ink:"#1a3a12",accent:"#2d7a1f",
+  },
+  {
+    id:"pghunt",
+    tag:"housing",
+    headline:"PG hunting\nstarts now",
+    bg:"#ffecd2",ink:"#3d1a00",accent:"#c45000",
+  },
+  {
+    id:"endsem",
+    tag:"academics",
+    headline:"end semester\nexams incoming",
+    bg:"#fff0c2",ink:"#3d2800",accent:"#c47a00",
+  },
+];
+
+function Avatar({initials,college,size=36}){
+  const bg=COL_COLOR[college]||"#455a64";
+  return(
+    <div style={{width:size,height:size,borderRadius:"50%",background:bg,flexShrink:0,
+      display:"flex",alignItems:"center",justifyContent:"center",
+      fontSize:size*0.3,fontWeight:600,color:"#fff",letterSpacing:"0.03em"}}>
+      {initials}
+    </div>
+  );
 }
 
-function ratioText(post) {
-  const ratio = (post.comments / Math.max(post.w, 1)).toFixed(1);
-  return `Ratio alert - ${post.comments} comments vs ${post.w} Ws (${ratio}x)`;
+function Pill({name,color}){
+  const bg=color||COL_COLOR[name]||"#455a64";
+  return(
+    <span style={{fontSize:"0.58rem",fontWeight:600,letterSpacing:"0.07em",textTransform:"uppercase",
+      background:`${bg}18`,color:bg,border:`1px solid ${bg}28`,borderRadius:3,padding:"2px 6px"}}>
+      {colAbbr(name)}
+    </span>
+  );
 }
 
-function renderPost(p) {
-  const ratioed = isRatioed(p);
-  const totalVotes = p.w + p.l;
-  const wPct = totalVotes > 0 ? Math.round((p.w / totalVotes) * 100) : 0;
-
-  const collegeTagHtml = p.isOfficial
-    ? `<div class="college-tag" style="background:${p.collegeColor}18;color:${p.collegeColor};border:0.5px solid ${p.collegeColor}30">${p.college} · Official</div>`
-    : `<div class="college-tag" style="background:${p.collegeColor}12;color:${p.collegeColor};border:0.5px solid ${p.collegeColor}25">${p.college}</div>`;
-
-  const eventCardHtml = p.isEvent ? `
-    <div class="event-card">
-      <div class="event-header">
-        <div>
-          <div class="event-type">${p.eventType}</div>
-          <div class="event-name">${p.eventName}</div>
+function MentionInput({value,onChange,placeholder,multiline=false}){
+  const [sug,setSug]=useState([]);const [show,setShow]=useState(false);
+  const [ms,setMs]=useState(-1);const ref=useRef();
+  function onInput(e){
+    const v=e.target.value;onChange(v);
+    const cur=e.target.selectionStart;
+    const m=v.slice(0,cur).match(/@(\w*)$/);
+    if(m){
+      setMs(cur-m[0].length);
+      const q=m[1].toLowerCase();
+      const f=ALL_USERS.filter(u=>u.name.toLowerCase().includes(q)||u.handle.slice(1).includes(q)).slice(0,5);
+      setSug(f);setShow(f.length>0);
+    }else setShow(false);
+  }
+  function pick(u){
+    const bef=value.slice(0,ms);const aft=value.slice(ref.current.selectionStart);
+    onChange(bef+u.handle+" "+aft);setShow(false);ref.current.focus();
+  }
+  const shared={width:"100%",padding:"8px 11px",border:"1px solid var(--border)",
+    borderRadius:6,fontSize:"0.85rem",color:"var(--ink)",background:"var(--white)",
+    outline:"none",lineHeight:1.5,resize:multiline?"vertical":"none",fontFamily:"var(--sans)"};
+  return(
+    <div style={{position:"relative",flex:1}}>
+      {multiline
+        ?<textarea ref={ref} value={value} onChange={onInput} placeholder={placeholder} rows={3} style={shared}/>
+        :<input ref={ref} value={value} onChange={onInput} placeholder={placeholder} style={shared}/>}
+      {show&&(
+        <div style={{position:"absolute",top:"100%",left:0,right:0,background:"var(--white)",
+          border:"1px solid var(--border)",borderRadius:6,zIndex:300,marginTop:2,
+          boxShadow:"0 6px 20px rgba(14,13,11,0.12)",overflow:"hidden"}}>
+          {sug.map(u=>(
+            <div key={u.handle} onClick={()=>pick(u)}
+              style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",cursor:"pointer"}}
+              onMouseEnter={e=>e.currentTarget.style.background="var(--paper)"}
+              onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+              <Avatar initials={u.name.slice(0,2).toUpperCase()} college={u.college} size={22}/>
+              <div>
+                <div style={{fontSize:"0.75rem",fontWeight:600,color:"var(--ink)"}}>{u.name}</div>
+                <div style={{fontSize:"0.62rem",color:"var(--ink3)"}}>{u.handle} · {u.college}</div>
+              </div>
+            </div>
+          ))}
         </div>
-        <div class="event-date">${p.eventDate}</div>
-      </div>
-      <div class="event-details">
-        ${p.eventDetails.map(d => `<div class="event-detail"><div class="event-dot"></div>${d}</div>`).join('')}
-      </div>
-      <button class="event-register">Register now</button>
+      )}
     </div>
-  ` : '';
+  );
+}
 
-  const ratioBannerHtml = `
-    <div class="ratio-banner ${ratioed ? 'visible' : ''}" id="ratio-${p.id}">
-      <div class="ratio-label">Ratio</div>
-      <span>${ratioText(p)}</span>
+function WLBar({w,l,postId,onVote,voted}){
+  const total=w+l;const pct=total>0?Math.round((w+(voted==="w"?1:0))/(total+1)*100):50;
+  const wFinal=w+(voted==="w"?1:0);const lFinal=l+(voted==="l"?1:0);
+  const totalFinal=wFinal+lFinal;
+  return(
+    <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+      <button onClick={()=>onVote(postId,"w")}
+        style={{display:"flex",alignItems:"center",gap:7,padding:"5px 13px",
+          background:voted==="w"?"var(--ink)":"transparent",
+          border:"1px solid",borderColor:voted==="w"?"var(--ink)":"var(--border)",
+          borderRadius:5,fontSize:"0.78rem",fontWeight:600,
+          color:voted==="w"?"#fff":"var(--ink2)",transition:"all 0.15s",lineHeight:1}}>
+        <span style={{fontSize:"0.7rem",fontWeight:700,letterSpacing:"0.06em"}}>W</span>
+        {wFinal}
+      </button>
+      <button onClick={()=>onVote(postId,"l")}
+        style={{display:"flex",alignItems:"center",gap:7,padding:"5px 13px",
+          background:voted==="l"?"var(--accent)":"transparent",
+          border:"1px solid",borderColor:voted==="l"?"var(--accent)":"var(--border)",
+          borderRadius:5,fontSize:"0.78rem",fontWeight:600,
+          color:voted==="l"?"#fff":"var(--ink2)",transition:"all 0.15s",lineHeight:1}}>
+        <span style={{fontSize:"0.7rem",fontWeight:700,letterSpacing:"0.06em"}}>L</span>
+        {lFinal}
+      </button>
+      <span style={{fontSize:"0.72rem",color:"var(--ink3)",fontWeight:500}}>
+        {pct}% W
+      </span>
+      <span style={{fontSize:"0.72rem",color:"var(--ink4)"}}>
+        {totalFinal} votes
+      </span>
     </div>
-  `;
+  );
+}
 
-  const wActive = p.voted === 'w' ? 'w-active' : '';
-  const lActive = p.voted === 'l' ? 'l-active' : '';
-
-  return `
-    <div class="post" id="post-${p.id}" style="animation-delay:${Math.random()*0.2}s">
-      <div class="post-header">
-        <div class="post-avatar" style="background:${p.collegeColor}">${p.initials}</div>
-        <div class="post-meta">
-          <div class="post-name">${p.author}</div>
-          <div class="post-college-line"><strong>${p.college}</strong> · ${p.year}</div>
+function CommentRow({c}){
+  const [repliesOpen,setRepliesOpen]=useState(false);
+  const [replyOpen,setReplyOpen]=useState(false);
+  const [replyText,setReplyText]=useState("");
+  const [localReplies,setLocalReplies]=useState(c.replies||[]);
+  const bc=COL_COLOR[c.college]||"#ccc";
+  return(
+    <div style={{borderLeft:`2px solid ${bc}25`,paddingLeft:10,marginBottom:10}}>
+      <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3,flexWrap:"wrap"}}>
+        <Avatar initials={c.initials} college={c.college} size={20}/>
+        <span style={{fontSize:"0.76rem",fontWeight:600,color:"var(--ink)"}}>{c.author}</span>
+        {c.college&&<Pill name={c.college}/>}
+        <span style={{fontSize:"0.63rem",color:"var(--ink4)",marginLeft:"auto"}}>{c.time}</span>
+        <span style={{fontSize:"0.63rem",color:"var(--ink3)",marginLeft:6}}>{c.likes} likes</span>
+      </div>
+      <p style={{fontSize:"0.82rem",color:"var(--ink2)",lineHeight:1.55,marginLeft:26,marginBottom:4}}>
+        {c.text}
+      </p>
+      <div style={{marginLeft:26,display:"flex",gap:10}}>
+        {localReplies.length>0&&(
+          <button onClick={()=>setRepliesOpen(!repliesOpen)}
+            style={{background:"none",border:"none",fontSize:"0.67rem",color:"var(--ink3)",
+              fontWeight:500,padding:0}}>
+            {repliesOpen?"Hide":"Show"} {localReplies.length} {localReplies.length===1?"reply":"replies"}
+          </button>
+        )}
+        <button onClick={()=>setReplyOpen(!replyOpen)}
+          style={{background:"none",border:"none",fontSize:"0.67rem",
+            color:"var(--ink3)",fontWeight:500,padding:0}}>
+          Reply
+        </button>
+      </div>
+      {replyOpen&&(
+        <div style={{marginLeft:26,marginTop:6,display:"flex",gap:6}}>
+          <MentionInput value={replyText} onChange={setReplyText}
+            placeholder={`Reply to ${c.author}...`}/>
+          <button onClick={()=>{
+              if(!replyText.trim())return;
+              setLocalReplies(r=>[...r,{id:Date.now(),author:"You",initials:"MP",
+                text:replyText,likes:0,time:"just now"}]);
+              setReplyText("");setReplyOpen(false);setRepliesOpen(true);
+            }}
+            style={{padding:"8px 13px",background:"var(--ink)",color:"#fff",border:"none",
+              borderRadius:5,fontSize:"0.76rem",fontWeight:600,flexShrink:0}}>
+            Post
+          </button>
         </div>
-        <div class="post-time">${p.time}</div>
+      )}
+      {repliesOpen&&localReplies.map(r=>(
+        <div key={r.id} style={{marginLeft:26,marginTop:6,
+          borderLeft:"1.5px solid var(--border)",paddingLeft:8}}>
+          <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:2}}>
+            <Avatar initials={r.initials} college="" size={18}/>
+            <span style={{fontSize:"0.7rem",fontWeight:600,color:"var(--ink)"}}>{r.author}</span>
+            <span style={{fontSize:"0.6rem",color:"var(--ink4)",marginLeft:"auto"}}>{r.time}</span>
+            <span style={{fontSize:"0.6rem",color:"var(--ink3)",marginLeft:5}}>{r.likes} likes</span>
+          </div>
+          <p style={{fontSize:"0.77rem",color:"var(--ink2)",lineHeight:1.45,marginLeft:23}}>{r.text}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Poll({poll,postId}){
+  const [voted,setVoted]=useState(null);
+  const [opts,setOpts]=useState(poll.options);
+  const total=opts.reduce((s,o)=>s+o.votes,0)+(voted?1:0);
+
+  function vote(id){
+    if(voted)return;
+    setOpts(p=>p.map(o=>o.id===id?{...o,votes:o.votes+1}:o));
+    setVoted(id);
+  }
+
+  return(
+    <div style={{marginBottom:12,padding:"12px 14px",
+      border:"1px solid var(--border)",borderRadius:7,background:"var(--white)"}}>
+      <div style={{fontSize:"0.8rem",fontWeight:600,color:"var(--ink)",
+        marginBottom:10,lineHeight:1.4}}>
+        {poll.question}
       </div>
-      ${collegeTagHtml}
-      ${eventCardHtml}
-      <div class="post-text">${p.text}</div>
-      ${ratioBannerHtml}
-      <div class="post-actions">
-        <button class="vote-btn w-btn ${wActive}" id="w-${p.id}" onclick="vote('${p.id}','w')">
-          W <span id="wcount-${p.id}">${p.w}</span>
-        </button>
-        <div class="vote-divider"></div>
-        <button class="vote-btn l-btn ${lActive}" id="l-${p.id}" onclick="vote('${p.id}','l')">
-          <span id="lcount-${p.id}">${p.l}</span> L
-        </button>
-        <span class="vote-ratio" id="ratio-pct-${p.id}">${wPct}% W</span>
-        <button class="action-btn" onclick="openComments('${p.id}')">
-          <span id="ccount-${p.id}">${p.comments}</span> comments
-        </button>
-        <button class="action-btn" style="margin-left:auto" onclick="sharePost('${p.id}')">share</button>
+      <div style={{display:"flex",flexDirection:"column",gap:6}}>
+        {opts.map(o=>{
+          const pct=total>0?Math.round((o.votes+(voted===o.id?1:0))/total*100):0;
+          const isVoted=voted===o.id;
+          return(
+            <div key={o.id} onClick={()=>vote(o.id)}
+              style={{position:"relative",borderRadius:5,overflow:"hidden",
+                border:`1px solid ${isVoted?"var(--ink)":"var(--border)"}`,
+                cursor:voted?"default":"pointer",
+                transition:"border-color 0.15s"}}>
+              {/* fill bar */}
+              {voted&&(
+                <div style={{position:"absolute",inset:0,left:0,top:0,bottom:0,
+                  width:`${pct}%`,background:isVoted?"rgba(14,13,11,0.08)":"rgba(14,13,11,0.04)",
+                  transition:"width 0.4s ease",borderRadius:4}}/>
+              )}
+              <div style={{position:"relative",display:"flex",
+                alignItems:"center",justifyContent:"space-between",
+                padding:"8px 11px"}}>
+                <span style={{fontSize:"0.82rem",
+                  color:isVoted?"var(--ink)":"var(--ink2)",
+                  fontWeight:isVoted?600:400}}>
+                  {o.text}
+                </span>
+                {voted&&(
+                  <span style={{fontSize:"0.72rem",fontWeight:600,
+                    color:isVoted?"var(--ink)":"var(--ink3)",flexShrink:0,marginLeft:8}}>
+                    {pct}%
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{fontSize:"0.62rem",color:"var(--ink4)",marginTop:8}}>
+        {total} vote{total!==1?"s":""}{voted?" · Results shown":""}
       </div>
     </div>
-  `;
+  );
 }
 
-// Post store for vote state
-const postStore = {};
-DU_POSTS.forEach(p => postStore[p.id] = p);
-COLLEGE_POSTS.forEach(p => postStore[p.id] = p);
-COMPETITION_POSTS.forEach(p => postStore[p.id] = p);
+function PostCard({post,voted,onVote,saved,onSave,followed,onFollow,onQuote,notify}){
+  const [commOpen,setCommOpen]=useState(false);
+  const [localComm,setLocalComm]=useState(post.comments);
+  const [commText,setCommText]=useState("");
+  const [showInput,setShowInput]=useState(false);
 
-function renderFeed(containerId, posts) {
-  const container = document.getElementById(containerId);
-  const header = container.querySelector('.section-header');
-  const postsHtml = posts.map(renderPost).join('');
-  // Clear old posts, keep header
-  container.innerHTML = '';
-  container.appendChild(header);
-  header.insertAdjacentHTML('afterend', postsHtml);
-}
-
-renderFeed('feed-du', DU_POSTS);
-renderFeed('feed-college', COLLEGE_POSTS);
-renderFeed('feed-competitions', COMPETITION_POSTS);
-
-// VOTE
-function vote(postId, type) {
-  const p = postStore[postId];
-  if (!p) return;
-
-  if (p.voted === type) {
-    // Undo
-    p[type]--;
-    p.voted = null;
-  } else {
-    if (p.voted) p[p.voted]--;
-    p[type]++;
-    p.voted = type;
+  function submitComment(){
+    if(!commText.trim())return;
+    setLocalComm(p=>[...p,{id:Date.now(),author:"You",college:"Kirori Mal",
+      initials:"MP",text:commText,likes:0,time:"just now",replies:[]}]);
+    setCommText("");setShowInput(false);setCommOpen(true);notify("Comment posted");
   }
 
-  // Update UI
-  document.getElementById('wcount-' + postId).textContent = p.w;
-  document.getElementById('lcount-' + postId).textContent = p.l;
+  return(
+    <article style={{borderBottom:"1px solid var(--border)",padding:"22px 0",
+      animation:"fadeIn 0.3s ease both"}}>
+      {post.pinned&&(
+        <div style={{fontSize:"0.58rem",fontWeight:600,letterSpacing:"0.08em",
+          textTransform:"uppercase",color:"var(--ink4)",marginBottom:8}}>
+          Pinned by college mod
+        </div>
+      )}
+      {post.quotedBy&&(
+        <div style={{fontSize:"0.68rem",color:"var(--blue)",fontWeight:500,marginBottom:8}}>
+          Quoted by {post.quotedBy}
+        </div>
+      )}
 
-  const wBtn = document.getElementById('w-' + postId);
-  const lBtn = document.getElementById('l-' + postId);
-  wBtn.className = 'vote-btn w-btn' + (p.voted === 'w' ? ' w-active' : '');
-  lBtn.className = 'vote-btn l-btn' + (p.voted === 'l' ? ' l-active' : '');
+      {/* header */}
+      <div style={{display:"flex",gap:11,alignItems:"flex-start",marginBottom:12}}>
+        <Avatar initials={post.author.initials} college={post.author.college} size={38}/>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:8}}>
+            <div>
+              <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginBottom:2}}>
+                <span style={{fontSize:"0.9rem",fontWeight:600,color:"var(--ink)"}}>{post.author.name}</span>
+                {post.author.verified&&(
+                  <span style={{fontSize:"0.56rem",fontWeight:700,letterSpacing:"0.07em",
+                    textTransform:"uppercase",background:"rgba(42,107,74,0.09)",color:"var(--green)",
+                    border:"1px solid rgba(42,107,74,0.18)",borderRadius:3,padding:"1px 5px"}}>
+                    Verified
+                  </span>
+                )}
+                {post.author.society&&(
+                  <span style={{fontSize:"0.56rem",fontWeight:700,letterSpacing:"0.07em",
+                    textTransform:"uppercase",background:"rgba(30,79,140,0.08)",color:"var(--blue)",
+                    border:"1px solid rgba(30,79,140,0.16)",borderRadius:3,padding:"1px 5px"}}>
+                    {post.author.society}
+                  </span>
+                )}
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+                <Pill name={post.author.college}/>
+                <span style={{fontSize:"0.72rem",color:"var(--ink3)"}}>
+                  {post.author.year} · {post.author.dept}
+                </span>
+                <span style={{fontSize:"0.68rem",color:"var(--ink4)"}}>· {post.time}</span>
+              </div>
+              {post.author.mutuals.length>0&&(
+                <div style={{fontSize:"0.63rem",color:"var(--ink4)",marginTop:2}}>
+                  {post.author.mutuals.slice(0,2).join(", ")}
+                  {post.author.mutuals.length>2?` +${post.author.mutuals.length-2} more`:""} follow them
+                </div>
+              )}
+            </div>
+            <button onClick={()=>{onFollow(post.author.handle);
+                notify(followed?`Unfollowed ${post.author.handle}`:`Following ${post.author.handle}`);}}
+              style={{flexShrink:0,padding:"4px 11px",
+                background:"transparent",border:"1px solid var(--border)",borderRadius:5,
+                fontSize:"0.7rem",fontWeight:500,
+                color:followed?"var(--ink4)":"var(--ink2)",transition:"all 0.15s"}}>
+              {followed?"Following":"Follow"}
+            </button>
+          </div>
+        </div>
+      </div>
 
-  const total = p.w + p.l;
-  const wPct = total > 0 ? Math.round((p.w / total) * 100) : 0;
-  document.getElementById('ratio-pct-' + postId).textContent = wPct + '% W';
+      {/* body — indented to align with text after avatar */}
+      <div style={{paddingLeft:49}}>
+        <p style={{fontSize:"0.92rem",color:"var(--ink)",lineHeight:1.68,marginBottom:9}}>
+          {post.text}
+        </p>
 
-  // Check ratio
-  const banner = document.getElementById('ratio-' + postId);
-  if (banner) {
-    if (isRatioed(p)) {
-      banner.innerHTML = `<div class="ratio-label">Ratio</div><span>${ratioText(p)}</span>`;
-      banner.classList.add('visible');
-    } else {
-      banner.classList.remove('visible');
-    }
+        {post.tags.length>0&&(
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10}}>
+            {post.tags.map(t=>(
+              <span key={t} style={{fontSize:"0.68rem",color:"var(--ink3)",fontWeight:500}}>
+                #{t}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {post.poll&&<Poll poll={post.poll} postId={post.id}/>}
+
+        {post.originalQuote&&(
+          <div style={{marginBottom:12,padding:"10px 12px",
+            border:"1px solid var(--border)",borderRadius:6,background:"var(--paper)"}}>
+            <div style={{fontSize:"0.62rem",fontWeight:600,color:"var(--ink3)",
+              marginBottom:4,textTransform:"uppercase",letterSpacing:"0.07em"}}>
+              Quoting {post.originalQuote.author}
+            </div>
+            <p style={{fontSize:"0.8rem",color:"var(--ink2)",lineHeight:1.5}}>
+              {post.originalQuote.text}{post.originalQuote.text.length>=80?"...":""}
+            </p>
+          </div>
+        )}
+
+        {/* actions */}
+        <div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap",marginBottom:0}}>
+          <WLBar w={post.w} l={post.l} postId={post.id} onVote={onVote} voted={voted}/>
+          <span style={{fontSize:"0.7rem",color:"var(--ink4)"}}>·</span>
+          <button onClick={()=>setCommOpen(!commOpen)}
+            style={{background:"none",border:"none",fontSize:"0.72rem",
+              color:"var(--ink3)",fontWeight:500,padding:0}}>
+            {localComm.length} comment{localComm.length!==1?"s":""}
+          </button>
+          <button onClick={()=>onQuote(post)}
+            style={{background:"none",border:"none",fontSize:"0.72rem",
+              color:"var(--ink3)",fontWeight:500,padding:0}}>
+            Quote repost
+          </button>
+          <button onClick={()=>{onSave(post.id);
+              notify(saved?"Removed from saved":"Saved to collection");}}
+            style={{background:"none",border:"none",fontSize:"0.72rem",
+              color:saved?"var(--blue)":"var(--ink3)",
+              fontWeight:saved?600:500,padding:0}}>
+            {saved?"Saved":"Save"}
+          </button>
+          <span style={{marginLeft:"auto",fontSize:"0.7rem",color:"var(--ink4)",
+            cursor:"pointer",fontWeight:400}}>share</span>
+        </div>
+
+        {/* comments area */}
+        {commOpen&&(
+          <div style={{marginTop:14}}>
+            <div style={{display:"flex",gap:8,marginBottom:12}}>
+              <MentionInput value={commText} onChange={setCommText}
+                placeholder="Add a comment... (@mention someone)"/>
+              <button onClick={submitComment}
+                style={{padding:"8px 13px",background:"var(--ink)",color:"#fff",border:"none",
+                  borderRadius:5,fontSize:"0.76rem",fontWeight:600,flexShrink:0}}>
+                Post
+              </button>
+            </div>
+            {localComm.map(c=><CommentRow key={c.id} c={c}/>)}
+          </div>
+        )}
+      </div>
+    </article>
+  );
+}
+
+function QuoteModal({post,onClose,onSubmit}){
+  const [text,setText]=useState("");
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(10,9,8,0.82)",
+      display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:"1rem"}}>
+      <div style={{background:"var(--white)",borderRadius:10,padding:"24px",
+        width:"100%",maxWidth:480,boxShadow:"0 16px 48px rgba(0,0,0,0.22)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <span style={{fontFamily:"var(--serif)",fontSize:"1.5rem",color:"var(--ink)"}}>Quote repost</span>
+          <button onClick={onClose} style={{background:"none",border:"none",
+            fontSize:"1.2rem",color:"var(--ink3)",cursor:"pointer",lineHeight:1}}>×</button>
+        </div>
+        <MentionInput value={text} onChange={setText} multiline
+          placeholder="Add your take... (@mention someone)"/>
+        <div style={{marginTop:10,padding:"10px 12px",border:"1px solid var(--border)",
+          borderRadius:6,background:"var(--paper)"}}>
+          <div style={{fontSize:"0.62rem",fontWeight:600,color:"var(--ink3)",
+            marginBottom:4,textTransform:"uppercase",letterSpacing:"0.07em"}}>
+            {post.author.handle}
+          </div>
+          <p style={{fontSize:"0.8rem",color:"var(--ink2)",lineHeight:1.5}}>
+            {post.text.slice(0,100)}{post.text.length>100?"...":""}
+          </p>
+        </div>
+        <button onClick={()=>{if(text.trim())onSubmit(text);}}
+          style={{marginTop:12,width:"100%",padding:"10px",background:"var(--ink)",color:"#fff",
+            border:"none",borderRadius:5,fontSize:"0.86rem",fontWeight:600}}>
+          Post
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function BannerSlideshow(){
+  const [idx,setIdx]=useState(0);
+  const [fade,setFade]=useState(true);
+
+  useEffect(()=>{
+    const t=setInterval(()=>{
+      setFade(false);
+      setTimeout(()=>{setIdx(i=>(i+1)%BANNERS.length);setFade(true);},300);
+    },3000);
+    return()=>clearInterval(t);
+  },[]);
+
+  const b=BANNERS[idx];
+
+  return(
+    <div style={{marginBottom:20,borderRadius:10,overflow:"hidden",
+      background:b.bg,position:"relative",height:130,
+      opacity:fade?1:0,transition:"opacity 0.3s ease",cursor:"pointer"}}>
+
+      {/* layer 1 — large filled circle far right */}
+      <div style={{position:"absolute",right:-45,top:"50%",transform:"translateY(-50%)",
+        width:160,height:160,borderRadius:"50%",
+        background:`${b.accent}1a`,pointerEvents:"none"}}/>
+      {/* layer 2 — medium circle overlapping */}
+      <div style={{position:"absolute",right:30,top:-50,
+        width:110,height:110,borderRadius:"50%",
+        background:`${b.accent}12`,pointerEvents:"none"}}/>
+      {/* layer 3 — small tight circle bottom right */}
+      <div style={{position:"absolute",right:60,bottom:-20,
+        width:70,height:70,borderRadius:"50%",
+        background:`${b.accent}18`,pointerEvents:"none"}}/>
+      {/* layer 4 — left accent bar */}
+      <div style={{position:"absolute",top:0,bottom:0,left:0,
+        width:4,background:b.accent,opacity:0.35,pointerEvents:"none"}}/>
+      {/* layer 5 — top edge line */}
+      <div style={{position:"absolute",top:0,left:0,right:0,
+        height:2,background:b.accent,opacity:0.18,pointerEvents:"none"}}/>
+      {/* layer 6 — diagonal stripe bottom-right decorative */}
+      <div style={{position:"absolute",right:0,bottom:0,width:90,height:90,
+        pointerEvents:"none",overflow:"hidden",borderRadius:"0 0 10px 0"}}>
+        {[0,1,2,3,4].map(i=>(
+          <div key={i} style={{position:"absolute",
+            left:`${i*18-10}px`,top:0,bottom:0,width:1,
+            background:b.accent,opacity:0.08,
+            transform:"rotate(35deg)",transformOrigin:"top center"}}/>
+        ))}
+      </div>
+
+      <div style={{position:"relative",zIndex:1,
+        height:"100%",display:"flex",flexDirection:"column",
+        justifyContent:"space-between",padding:"14px 16px 12px"}}>
+
+        <div style={{fontFamily:"var(--serif)",
+          fontSize:"1.8rem",fontStyle:"italic",
+          color:b.ink,lineHeight:1.07,letterSpacing:"-0.025em",
+          whiteSpace:"pre-line",flex:1,display:"flex",alignItems:"flex-start"}}>
+          {b.headline}
+        </div>
+
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:8}}>
+          <div style={{display:"flex",gap:4,alignItems:"center"}}>
+            {BANNERS.map((_,i)=>(
+              <div key={i}
+                onClick={e=>{e.stopPropagation();setFade(false);
+                  setTimeout(()=>{setIdx(i);setFade(true);},300);}}
+                style={{width:i===idx?14:4,height:3,borderRadius:2,
+                  background:i===idx?b.accent:`${b.accent}38`,
+                  transition:"all 0.3s ease",cursor:"pointer"}}/>
+            ))}
+          </div>
+          <span style={{fontSize:"0.58rem",fontWeight:700,letterSpacing:"0.08em",
+            textTransform:"uppercase",color:b.accent,
+            background:`${b.accent}20`,borderRadius:4,padding:"2px 7px"}}>
+            {b.tag}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function UnrestFeed(){
+  const [posts,setPosts]=useState(INITIAL_POSTS);
+  const [tab,setTab]=useState("du");
+  const [voted,setVoted]=useState({});
+  const [savedPosts,setSavedPosts]=useState(new Set());
+  const [followedUsers,setFollowedUsers]=useState(new Set());
+  const [quoteModal,setQuoteModal]=useState(null);
+  const [toast,setToast]=useState(null);
+  const [searchQ,setSearchQ]=useState("");
+  const [searchCollege,setSearchCollege]=useState("");
+  const [newPostText,setNewPostText]=useState("");
+  const [pollMode,setPollMode]=useState(false);
+  const [pollOpts,setPollOpts]=useState(["",""]);
+
+  function notify(msg){setToast(msg);setTimeout(()=>setToast(null),2800);}
+  function handleVote(id,type){
+    setVoted(p=>p[id]===type?{...p,[id]:null}:{...p,[id]:type});
+    if(type==="w")notify("W noted");
+  }
+  function handleSave(id){setSavedPosts(p=>{const n=new Set(p);n.has(id)?n.delete(id):n.add(id);return n;});}
+  function handleFollow(handle){setFollowedUsers(p=>{const n=new Set(p);n.has(handle)?n.delete(handle):n.add(handle);return n;});}
+  function handleQuoteSubmit(original,text){
+    setPosts(p=>[{id:Date.now(),pinned:false,
+      author:{name:"MP",handle:"@mp",college:"Kirori Mal",year:"2nd yr",dept:"Economics",
+        initials:"MP",verified:false,society:null,followers:0,mutuals:[]},
+      text,tags:[],w:0,l:0,comments:[],saves:0,shares:0,time:"just now",
+      feed:original.feed||"du",
+      originalQuote:{author:original.author.handle,text:original.text.slice(0,80)},
+    },...p]);
+    setQuoteModal(null);notify("Quote reposted");
+  }
+  function submitPost(){
+    if(!newPostText.trim())return;
+    const f=(tab==="college")?"college":"du";
+    const validOpts=pollOpts.filter(o=>o.trim());
+    const poll=pollMode&&validOpts.length>=2
+      ?{question:newPostText.trim(),options:validOpts.map((t,i)=>({id:String.fromCharCode(97+i),text:t,votes:0}))}
+      :null;
+    setPosts(p=>[{id:Date.now(),pinned:false,
+      author:{name:"MP",handle:"@mp",college:"Kirori Mal",year:"2nd yr",dept:"Economics",
+        initials:"MP",verified:false,society:null,followers:347,mutuals:[]},
+      text:poll?`Poll: ${newPostText}`:newPostText,
+      tags:[],w:0,l:0,comments:[],saves:0,shares:0,time:"just now",feed:f,poll
+    },...p]);
+    setNewPostText("");setPollMode(false);setPollOpts(["",""]);
+    notify(`Posted to ${f==="college"?"College":"DU"} feed`);
   }
 
-  // Micro bounce
-  const btn = document.getElementById((type === 'w' ? 'w-' : 'l-') + postId);
-  btn.style.transform = 'scale(1.12)';
-  setTimeout(() => btn.style.transform = '', 150);
-}
+  const TABS=[
+    {id:"du",label:"DU"},{id:"college",label:"College"},
+    {id:"events",label:"Explore"},
+    {id:"following",label:"Following"},{id:"saved",label:"Saved"}
+  ];
 
-function openComments(postId) {
-  // Placeholder - future: inline comments expand
-  const p = postStore[postId];
-  if (p) {
-    p.comments++;
-    document.getElementById('ccount-' + postId).textContent = p.comments;
-    // Re-check ratio
-    const banner = document.getElementById('ratio-' + postId);
-    if (banner && isRatioed(p)) {
-      banner.innerHTML = `<div class="ratio-label">Ratio</div><span>${ratioText(p)}</span>`;
-      banner.classList.add('visible');
-    }
-  }
-}
-
-function sharePost(postId) {
-  navigator.clipboard.writeText(window.location.href + '#post-' + postId)
-    .catch(() => {});
-}
-
-// TAB SWITCHING
-let activeTab = 'du';
-function switchTab(tab) {
-  activeTab = tab;
-  ['du','college','competitions'].forEach(t => {
-    document.getElementById('feed-' + t).style.display = t === tab ? 'block' : 'none';
+  const visible=posts.filter(p=>{
+    if(searchQ&&!p.text.toLowerCase().includes(searchQ.toLowerCase())&&
+       !p.author.name.toLowerCase().includes(searchQ.toLowerCase())&&
+       !p.tags.join(" ").toLowerCase().includes(searchQ.toLowerCase()))return false;
+    if(searchCollege&&p.author.college!==searchCollege)return false;
+    if(tab==="du")return p.feed==="du";
+    if(tab==="college")return p.feed==="college";
+    if(tab==="following")return followedUsers.has(p.author.handle);
+    if(tab==="saved")return savedPosts.has(p.id);
+    return true;
   });
 
-  // Desktop tabs
-  document.querySelectorAll('#main-tabs .nav-tab').forEach((btn, i) => {
-    const tabs = ['du','college','competitions'];
-    btn.classList.toggle('active', tabs[i] === tab);
-  });
+  return(
+    <div style={{fontFamily:"var(--sans)",background:"var(--paper)",minHeight:"100vh"}}>
+      <style>{CSS}</style>
 
-  // Mobile tabs
-  document.querySelectorAll('#mobile-tabs .mobile-tab').forEach((btn, i) => {
-    const tabs = ['du','college','competitions'];
-    btn.classList.toggle('active', tabs[i] === tab);
-  });
+      {toast&&(
+        <div style={{position:"fixed",top:14,left:"50%",transform:"translateX(-50%)",
+          background:"var(--ink)",color:"#fff",padding:"7px 16px",borderRadius:5,
+          fontSize:"0.76rem",fontWeight:500,zIndex:9999,whiteSpace:"nowrap",
+          boxShadow:"0 4px 16px rgba(0,0,0,0.18)",animation:"toastIn 0.22s ease"}}>
+          {toast}
+        </div>
+      )}
 
-  // Compose placeholder
-  const placeholders = {
-    du: "What's happening at DU?",
-    college: `Post to ${userCollege}...`,
-    competitions: "Share a competition or event..."
-  };
-  document.getElementById('compose-input').placeholder = placeholders[tab] || "What's on your mind?";
+      {quoteModal&&(
+        <QuoteModal post={quoteModal} onClose={()=>setQuoteModal(null)}
+          onSubmit={t=>handleQuoteSubmit(quoteModal,t)}/>
+      )}
+
+      {/* NAV */}
+      <nav style={{background:"rgba(242,239,232,0.96)",borderBottom:"1px solid var(--border)",
+        padding:"0 2rem",position:"sticky",top:0,zIndex:100,backdropFilter:"blur(10px)"}}>
+        <div style={{maxWidth:1100,margin:"0 auto",display:"flex",alignItems:"center",height:52,gap:0}}>
+          <a style={{fontFamily:"var(--serif)",fontSize:"1.5rem",color:"var(--ink)",
+            textDecoration:"none",letterSpacing:"-0.02em",marginRight:28,flexShrink:0,cursor:"pointer"}}>
+            Un<em style={{fontStyle:"italic",color:"var(--accent)"}}>rest</em>
+          </a>
+
+          <div style={{display:"flex",alignItems:"center",background:"rgba(14,13,11,0.07)",
+            borderRadius:100,padding:"3px",gap:1}}>
+            {TABS.slice(0,3).map(t=>(
+              <button key={t.id} onClick={()=>setTab(t.id)}
+                style={{padding:"5px 15px",borderRadius:100,border:"none",
+                  background:tab===t.id?"var(--white)":"transparent",
+                  fontSize:"0.76rem",fontWeight:tab===t.id?600:400,
+                  color:tab===t.id?"var(--ink)":"var(--ink3)",
+                  transition:"all 0.15s",
+                  boxShadow:tab===t.id?"0 1px 3px rgba(0,0,0,0.09)":"none"}}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:8}}>
+            <div style={{display:"flex",alignItems:"center",gap:7,padding:"4px 10px 4px 5px",
+              border:"1px solid var(--border)",borderRadius:5,background:"var(--white)"}}>
+              <div style={{width:24,height:24,borderRadius:"50%",background:"#c84b2f",
+                display:"flex",alignItems:"center",justifyContent:"center",
+                fontSize:"0.58rem",fontWeight:700,color:"#fff"}}>MP</div>
+              <span style={{fontSize:"0.78rem",fontWeight:500,color:"var(--ink2)"}}>Kirori Mal</span>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* 3-COL LAYOUT */}
+      <div style={{maxWidth:1100,margin:"0 auto",display:"grid",
+        gridTemplateColumns:"220px 1fr 210px",minHeight:"calc(100vh - 52px)"}}>
+
+        {/* LEFT SIDEBAR */}
+        <aside style={{padding:"24px 20px 24px 0",borderRight:"1px solid var(--border)"}}>
+          <div style={{marginBottom:24}}>
+            <div style={{fontSize:"0.58rem",fontWeight:700,letterSpacing:"0.1em",
+              textTransform:"uppercase",color:"var(--ink4)",marginBottom:10}}>
+              Your college
+            </div>
+            <div style={{background:"var(--white)",border:"1px solid var(--border)",
+              borderRadius:7,padding:"9px 11px",display:"flex",alignItems:"center",gap:8}}>
+              <div style={{width:7,height:7,borderRadius:"50%",background:"var(--accent)",
+                animation:"dot-pulse 2s infinite",flexShrink:0}}/>
+              <span style={{fontSize:"0.85rem",fontWeight:600,color:"var(--ink)",flex:1}}>Kirori Mal</span>
+              <span style={{fontSize:"0.72rem",color:"var(--ink3)"}}>347 members</span>
+            </div>
+          </div>
+
+          <div style={{marginBottom:24}}>
+            <div style={{fontSize:"0.58rem",fontWeight:700,letterSpacing:"0.1em",
+              textTransform:"uppercase",color:"var(--ink4)",marginBottom:10}}>
+              Activity
+            </div>
+            {[["Posts today","84"],["Active now","23"],["DU-wide","1,247"],["Your echoes","3"]].map(([l,v])=>(
+              <div key={l} style={{display:"flex",justifyContent:"space-between",
+                padding:"6px 0",borderBottom:"1px solid var(--border2)"}}>
+                <span style={{fontSize:"0.78rem",color:"var(--ink2)"}}>{l}</span>
+                <span style={{fontSize:"0.78rem",fontWeight:600,color:"var(--ink)"}}>{v}</span>
+              </div>
+            ))}
+          </div>
+
+          <div style={{marginBottom:24}}>
+            <div style={{fontSize:"0.58rem",fontWeight:700,letterSpacing:"0.1em",
+              textTransform:"uppercase",color:"var(--ink4)",marginBottom:10}}>
+              Quick links
+            </div>
+            {TABS.map(t=>(
+              <div key={t.id} onClick={()=>setTab(t.id)}
+                style={{fontSize:"0.82rem",padding:"6px 0 6px 8px",
+                  color:tab===t.id?"var(--accent)":"var(--ink2)",
+                  fontWeight:tab===t.id?600:400,cursor:"pointer",
+                  borderLeft:tab===t.id?"2px solid var(--accent)":"2px solid transparent",
+                  marginLeft:-8,transition:"all 0.12s",
+                  display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <span>{t.label}</span>
+                {t.id==="following"&&followedUsers.size>0&&(
+                  <span style={{fontSize:"0.62rem",background:"var(--accent)",
+                    color:"#fff",borderRadius:10,padding:"1px 5px",fontWeight:700}}>
+                    {followedUsers.size}
+                  </span>
+                )}
+                {t.id==="saved"&&savedPosts.size>0&&(
+                  <span style={{fontSize:"0.62rem",background:"var(--blue)",
+                    color:"#fff",borderRadius:10,padding:"1px 5px",fontWeight:700}}>
+                    {savedPosts.size}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {followedUsers.size>0&&(
+            <div>
+              <div style={{fontSize:"0.58rem",fontWeight:700,letterSpacing:"0.1em",
+                textTransform:"uppercase",color:"var(--ink4)",marginBottom:10}}>
+                Following
+              </div>
+              {[...followedUsers].slice(0,5).map(h=>{
+                const u=ALL_USERS.find(x=>x.handle===h);
+                if(!u)return null;
+                return(
+                  <div key={h} style={{display:"flex",alignItems:"center",gap:7,
+                    padding:"6px 0",borderBottom:"1px solid var(--border2)"}}>
+                    <Avatar initials={u.name.slice(0,2).toUpperCase()} college={u.college} size={24}/>
+                    <div style={{minWidth:0}}>
+                      <div style={{fontSize:"0.73rem",fontWeight:600,color:"var(--ink)",
+                        overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{u.name}</div>
+                      <div style={{fontSize:"0.6rem",color:"var(--ink3)"}}>{u.college}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </aside>
+
+        {/* MAIN FEED */}
+        <main style={{padding:"24px 28px",minWidth:0}}>
+
+          {/* compose */}
+          <div style={{background:"var(--white)",border:"1px solid var(--border)",
+            borderRadius:8,padding:"12px 14px",marginBottom:22}}>
+            <div style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+              <div style={{width:34,height:34,borderRadius:"50%",background:"#c84b2f",
+                display:"flex",alignItems:"center",justifyContent:"center",
+                fontSize:"0.62rem",fontWeight:700,color:"#fff",flexShrink:0}}>MP</div>
+              <div style={{flex:1}}>
+                <MentionInput value={newPostText} onChange={setNewPostText}
+                  placeholder={pollMode?"Add context for your poll...":"What's happening at DU?"}/>
+              </div>
+            </div>
+
+            {pollMode&&(
+              <div style={{marginTop:10,marginLeft:44,
+                border:"1px solid var(--border)",borderRadius:6,overflow:"hidden"}}>
+                {pollOpts.map((o,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",
+                    borderBottom:i<pollOpts.length-1?"1px solid var(--border2)":"none"}}>
+                    <input value={o} onChange={e=>setPollOpts(p=>p.map((v,j)=>j===i?e.target.value:v))}
+                      placeholder={`Option ${i+1}`}
+                      style={{flex:1,padding:"8px 11px",border:"none",outline:"none",
+                        fontSize:"0.82rem",color:"var(--ink)",fontFamily:"var(--sans)",
+                        background:"transparent"}}/>
+                    {pollOpts.length>2&&(
+                      <button onClick={()=>setPollOpts(p=>p.filter((_,j)=>j!==i))}
+                        style={{background:"none",border:"none",color:"var(--ink4)",
+                          padding:"0 10px",cursor:"pointer",fontSize:"1rem",lineHeight:1}}>×</button>
+                    )}
+                  </div>
+                ))}
+                {pollOpts.length<4&&(
+                  <button onClick={()=>setPollOpts(p=>[...p,""])}
+                    style={{width:"100%",padding:"7px",background:"var(--paper)",border:"none",
+                      fontSize:"0.72rem",color:"var(--ink3)",fontWeight:500,cursor:"pointer",
+                      borderTop:"1px solid var(--border2)"}}>
+                    + Add option
+                  </button>
+                )}
+              </div>
+            )}
+
+            <div style={{display:"flex",alignItems:"center",
+              justifyContent:"space-between",marginTop:10,marginLeft:44}}>
+              <button onClick={()=>{setPollMode(!pollMode);setPollOpts(["",""])}}
+                style={{background:"none",border:`1px solid ${pollMode?"var(--accent)":"var(--border)"}`,
+                  borderRadius:5,padding:"4px 10px",fontSize:"0.7rem",fontWeight:600,
+                  color:pollMode?"var(--accent)":"var(--ink3)",cursor:"pointer"}}>
+                {pollMode?"Remove poll":"Add poll"}
+              </button>
+              <button onClick={submitPost}
+                style={{padding:"5px 14px",background:"var(--ink)",color:"#fff",
+                  border:"none",borderRadius:5,fontSize:"0.76rem",fontWeight:600}}>
+                Post
+              </button>
+            </div>
+          </div>
+
+          {/* search */}
+          <div style={{display:"flex",gap:8,marginBottom:18}}>
+            <div style={{flex:1,display:"flex",alignItems:"center",gap:8,
+              background:"var(--white)",border:"1px solid var(--border)",
+              borderRadius:6,padding:"7px 11px"}}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="var(--ink4)" strokeWidth="2.2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input value={searchQ} onChange={e=>setSearchQ(e.target.value)}
+                placeholder="Search posts, tags, people..."
+                style={{border:"none",outline:"none",fontSize:"0.82rem",
+                  background:"transparent",color:"var(--ink)",flex:1,fontFamily:"var(--sans)"}}/>
+              {searchQ&&<button onClick={()=>setSearchQ("")}
+                style={{background:"none",border:"none",color:"var(--ink4)",cursor:"pointer",
+                  fontSize:"0.9rem",lineHeight:1}}>×</button>}
+            </div>
+            <select value={searchCollege} onChange={e=>setSearchCollege(e.target.value)}
+              style={{padding:"7px 10px",border:"1px solid var(--border)",borderRadius:6,
+                fontSize:"0.78rem",color:"var(--ink2)",background:"var(--white)",
+                outline:"none",cursor:"pointer",fontFamily:"var(--sans)"}}>
+              <option value="">All colleges</option>
+              {COLLEGES.map(c=><option key={c}>{c}</option>)}
+            </select>
+          </div>
+
+          {/* banner slideshow */}
+          {!searchQ&&!searchCollege&&<BannerSlideshow/>}
+
+          {/* empty states */}
+          {tab==="following"&&followedUsers.size===0&&!searchQ&&(
+            <div style={{textAlign:"center",padding:"3rem 0"}}>
+              <div style={{fontFamily:"var(--serif)",fontSize:"1.3rem",
+                color:"var(--ink2)",marginBottom:6}}>No one followed yet</div>
+              <div style={{fontSize:"0.82rem",color:"var(--ink3)"}}>
+                Follow people from any post to see their updates here.
+              </div>
+            </div>
+          )}
+          {tab==="saved"&&savedPosts.size===0&&!searchQ&&(
+            <div style={{textAlign:"center",padding:"3rem 0"}}>
+              <div style={{fontFamily:"var(--serif)",fontSize:"1.3rem",
+                color:"var(--ink2)",marginBottom:6}}>Nothing saved</div>
+              <div style={{fontSize:"0.82rem",color:"var(--ink3)"}}>
+                Save posts from the feed to collect them here.
+              </div>
+            </div>
+          )}
+
+          {visible.map(p=>(
+            <PostCard key={p.id} post={p}
+              voted={voted[p.id]||null} onVote={handleVote}
+              saved={savedPosts.has(p.id)} onSave={handleSave}
+              followed={followedUsers.has(p.author.handle)} onFollow={handleFollow}
+              onQuote={setQuoteModal} notify={notify}/>
+          ))}
+
+          {visible.length===0&&(searchQ||searchCollege)&&(
+            <div style={{textAlign:"center",padding:"2rem",color:"var(--ink3)",fontSize:"0.85rem"}}>
+              No posts match your search.
+            </div>
+          )}
+        </main>
+
+        {/* RIGHT SIDEBAR */}
+        <aside style={{padding:"24px 0 24px 20px",borderLeft:"1px solid var(--border)"}}>
+          <div style={{marginBottom:24}}>
+            <div style={{fontSize:"0.58rem",fontWeight:700,letterSpacing:"0.1em",
+              textTransform:"uppercase",color:"var(--ink4)",marginBottom:12}}>
+              Trending at DU
+            </div>
+            {[["NorthCampus","312 posts"],["PlacementSeason","247 posts"],
+              ["EconFest","189 posts"],["DULife","156 posts"],["CentralLibrary","98 posts"]
+            ].map(([tag,n],i)=>(
+              <div key={tag}
+                onClick={()=>setSearchQ(tag)}
+                style={{padding:"7px 0",borderBottom:"1px solid var(--border2)",cursor:"pointer"}}
+                onMouseEnter={e=>e.currentTarget.style.opacity="0.7"}
+                onMouseLeave={e=>e.currentTarget.style.opacity="1"}>
+                <div style={{fontSize:"0.62rem",color:"var(--ink4)",marginBottom:1}}>{i+1}</div>
+                <div style={{fontSize:"0.8rem",fontWeight:600,color:"var(--ink)"}}>#{tag}</div>
+                <div style={{fontSize:"0.64rem",color:"var(--ink3)"}}>{n}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{marginBottom:24}}>
+            <div style={{fontSize:"0.58rem",fontWeight:700,letterSpacing:"0.1em",
+              textTransform:"uppercase",color:"var(--ink4)",marginBottom:12}}>
+              Who to follow
+            </div>
+            {ALL_USERS.slice(0,5).map(u=>(
+              <div key={u.handle} style={{display:"flex",alignItems:"center",gap:7,
+                padding:"7px 0",borderBottom:"1px solid var(--border2)"}}>
+                <Avatar initials={u.name.slice(0,2).toUpperCase()} college={u.college} size={26}/>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:"0.74rem",fontWeight:600,color:"var(--ink)",
+                    overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{u.name}</div>
+                  <div style={{fontSize:"0.61rem",color:"var(--ink3)"}}>{u.college}</div>
+                </div>
+                <button onClick={()=>{handleFollow(u.handle);
+                    notify(followedUsers.has(u.handle)?
+                      `Unfollowed ${u.handle}`:`Following ${u.handle}`);}}
+                  style={{fontSize:"0.66rem",fontWeight:500,padding:"3px 8px",
+                    border:"1px solid var(--border)",borderRadius:4,
+                    background:"transparent",color:followedUsers.has(u.handle)?"var(--ink4)":"var(--ink2)",
+                    flexShrink:0,transition:"all 0.15s"}}>
+                  {followedUsers.has(u.handle)?"Following":"Follow"}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div style={{fontSize:"0.61rem",color:"var(--ink4)",lineHeight:1.75}}>
+            <div>Unrest · Built for DU students</div>
+            <div>Launching 11 June 2026</div>
+            <div style={{marginTop:4,display:"flex",gap:8}}>
+              <span style={{cursor:"pointer",textDecoration:"underline"}}>Privacy</span>
+              <span style={{cursor:"pointer",textDecoration:"underline"}}>Terms</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
 }
-
-// COMPOSE
-function expandCompose() {
-  document.getElementById('compose-footer').style.display = 'flex';
-}
-
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = el.scrollHeight + 'px';
-  document.getElementById('compose-charcount').textContent = el.value.length + ' / 240';
-}
-
-document.getElementById('compose-input').addEventListener('input', function() {
-  if (this.value.length > 240) this.value = this.value.slice(0, 240);
-});
-
-document.addEventListener('click', function(e) {
-  const compose = document.getElementById('compose-area');
-  if (!compose.contains(e.target)) {
-    if (!document.getElementById('compose-input').value) {
-      document.getElementById('compose-footer').style.display = 'none';
-    }
-  }
-});
-
-function submitPost() {
-  const input = document.getElementById('compose-input');
-  const text = input.value.trim();
-  if (!text) return;
-
-  const now = Date.now();
-  const newPost = {
-    id: 'user-' + now,
-    author: userName,
-    initials: userInitials,
-    college: userCollege,
-    collegeColor: userCollegeColor,
-    year: '· You',
-    text: text,
-    time: 'Just now',
-    postedAt: now,
-    w: 0, l: 0, comments: 0,
-    voted: null
-  };
-
-  postStore[newPost.id] = newPost;
-
-  const feedId = activeTab === 'du' ? 'feed-du' : activeTab === 'college' ? 'feed-college' : 'feed-competitions';
-  const feed = document.getElementById(feedId);
-  const header = feed.querySelector('.section-header');
-  header.insertAdjacentHTML('afterend', renderPost(newPost));
-
-  input.value = '';
-  input.style.height = '';
-  document.getElementById('compose-footer').style.display = 'none';
-  document.getElementById('compose-charcount').textContent = '0 / 240';
-
-  // Scroll to new post
-  const newEl = document.getElementById('post-' + newPost.id);
-  if (newEl) newEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-</script>
-</body>
-</html>
