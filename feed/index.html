@@ -26,23 +26,23 @@
 
 <script type="text/babel">
 
-const { useState, useEffect, useRef } = React;
+const { useState } = React;
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
 *{
   box-sizing:border-box;
 }
 
 :root{
-  --paper:#f2efe8;
+  --paper:#f3f0ea;
   --white:#ffffff;
-  --ink:#0e0d0b;
-  --ink2:#3d3b35;
-  --ink3:#7a776e;
-  --ink4:#b0ada6;
-  --border:rgba(14,13,11,0.1);
+  --ink:#111111;
+  --ink2:#444;
+  --ink3:#777;
+  --ink4:#aaa39a;
+  --border:rgba(0,0,0,0.07);
   --accent:#c84b2f;
   --serif:'Instrument Serif', serif;
   --sans:'DM Sans', sans-serif;
@@ -54,13 +54,17 @@ body{
   font-family:var(--sans);
 }
 
-button,input,select{
+button,input{
   font-family:var(--sans);
 }
 
-@keyframes pulse{
-  0%,100%{opacity:1}
-  50%{opacity:0.5}
+::-webkit-scrollbar{
+  width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+  background:rgba(0,0,0,0.12);
+  border-radius:999px;
 }
 `;
 
@@ -83,7 +87,7 @@ const POSTS = [
     name:"Rohan Mehta",
     college:"Hindu College",
     initials:"RM",
-    text:"North Campus is genuinely unbeatable in winters. The chai stalls, the cold fog, the DTC chaos.",
+    text:"North Campus is genuinely unbeatable in winters. The chai stalls, the cold fog, the DTC chaos — people who say South Campus is better have never experienced this.",
     time:"2h ago"
   },
   {
@@ -96,33 +100,53 @@ const POSTS = [
   }
 ];
 
+function Avatar({ initials }){
+  return(
+    <div style={{
+      width:"40px",
+      height:"40px",
+      borderRadius:"50%",
+      background:"var(--accent)",
+      color:"#fff",
+      display:"flex",
+      alignItems:"center",
+      justifyContent:"center",
+      fontSize:"0.72rem",
+      fontWeight:"700",
+      flexShrink:0
+    }}>
+      {initials}
+    </div>
+  )
+}
+
 function Banner(){
   return(
     <div style={{
-      background:"#fff0c2",
-      borderRadius:"12px",
-      height:"130px",
+      background:"#f8e8b5",
+      borderRadius:"16px",
+      padding:"24px",
+      height:"140px",
       position:"relative",
       overflow:"hidden",
-      marginBottom:"22px",
-      padding:"18px"
+      marginBottom:"24px"
     }}>
       <div style={{
         position:"absolute",
-        right:"-20px",
-        top:"-20px",
-        width:"120px",
-        height:"120px",
+        right:"-30px",
+        top:"-30px",
+        width:"160px",
+        height:"160px",
         borderRadius:"50%",
         background:"rgba(196,122,0,0.08)"
       }}/>
 
       <div style={{
         fontFamily:"var(--serif)",
-        fontSize:"2rem",
-        lineHeight:"1.05",
-        color:"#3d2800",
-        fontStyle:"italic"
+        fontSize:"2.2rem",
+        lineHeight:"1",
+        fontStyle:"italic",
+        color:"#3d2800"
       }}>
         end semester
         <br/>
@@ -131,8 +155,8 @@ function Banner(){
 
       <div style={{
         position:"absolute",
-        bottom:"16px",
-        right:"16px",
+        bottom:"18px",
+        right:"18px",
         fontSize:"0.65rem",
         letterSpacing:"0.08em",
         textTransform:"uppercase",
@@ -145,61 +169,46 @@ function Banner(){
   )
 }
 
-function Avatar({ initials }){
-  return(
-    <div style={{
-      width:"38px",
-      height:"38px",
-      borderRadius:"50%",
-      background:"#c84b2f",
-      color:"#fff",
-      display:"flex",
-      alignItems:"center",
-      justifyContent:"center",
-      fontWeight:"700",
-      fontSize:"0.72rem",
-      flexShrink:0
-    }}>
-      {initials}
-    </div>
-  )
-}
-
 function PostCard({ post }){
   return(
     <div style={{
-      padding:"22px 0",
-      borderBottom:"1px solid var(--border)"
+      background:"#f7f4ee",
+      border:"1px solid rgba(0,0,0,0.05)",
+      borderRadius:"16px",
+      padding:"22px",
+      marginBottom:"16px"
     }}>
       <div style={{
         display:"flex",
-        gap:"12px"
+        gap:"14px"
       }}>
+
         <Avatar initials={post.initials}/>
 
         <div style={{flex:1}}>
+
           <div style={{
             display:"flex",
             alignItems:"center",
             gap:"8px",
-            marginBottom:"3px"
+            marginBottom:"6px"
           }}>
             <span style={{
-              fontWeight:"600",
-              fontSize:"0.92rem"
+              fontWeight:"700",
+              fontSize:"1rem"
             }}>
               {post.name}
             </span>
 
             <span style={{
-              fontSize:"0.65rem",
+              fontSize:"0.72rem",
               color:"var(--ink3)"
             }}>
               {post.college}
             </span>
 
             <span style={{
-              fontSize:"0.65rem",
+              fontSize:"0.72rem",
               color:"var(--ink4)"
             }}>
               · {post.time}
@@ -208,8 +217,8 @@ function PostCard({ post }){
 
           <p style={{
             margin:0,
-            fontSize:"0.92rem",
-            lineHeight:"1.7",
+            fontSize:"1rem",
+            lineHeight:"1.8",
             color:"var(--ink)"
           }}>
             {post.text}
@@ -218,16 +227,18 @@ function PostCard({ post }){
           <div style={{
             display:"flex",
             gap:"18px",
-            marginTop:"12px",
-            fontSize:"0.75rem",
-            color:"var(--ink3)"
+            marginTop:"16px",
+            color:"var(--ink3)",
+            fontSize:"0.78rem"
           }}>
             <span>W</span>
             <span>L</span>
             <span>comments</span>
             <span>save</span>
           </div>
+
         </div>
+
       </div>
     </div>
   )
@@ -239,36 +250,36 @@ function ExploreTiles(){
       display:"grid",
       gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",
       gap:"14px",
-      marginBottom:"26px"
+      marginBottom:"24px"
     }}>
       {EXPLORE_TILES.map(tile=>(
         <div
           key={tile}
           style={{
-            background:"var(--white)",
+            background:"#fff",
             border:"1px solid var(--border)",
-            borderRadius:"10px",
+            borderRadius:"14px",
             padding:"18px",
-            minHeight:"110px",
+            minHeight:"120px",
             position:"relative",
             overflow:"hidden",
-            cursor:"pointer",
-            transition:"0.2s"
+            cursor:"pointer"
           }}
         >
+
           <div style={{
             position:"absolute",
             right:"-25px",
             top:"-25px",
-            width:"80px",
-            height:"80px",
+            width:"90px",
+            height:"90px",
             borderRadius:"50%",
             background:"rgba(200,75,47,0.05)"
           }}/>
 
           <div style={{
             fontFamily:"var(--serif)",
-            fontSize:"1.35rem",
+            fontSize:"1.5rem",
             lineHeight:"1.1"
           }}>
             {tile}
@@ -276,7 +287,7 @@ function ExploreTiles(){
 
           <div style={{
             position:"absolute",
-            bottom:"14px",
+            bottom:"16px",
             left:"18px",
             fontSize:"0.62rem",
             letterSpacing:"0.08em",
@@ -286,6 +297,7 @@ function ExploreTiles(){
           }}>
             Explore
           </div>
+
         </div>
       ))}
     </div>
@@ -303,34 +315,32 @@ function App(){
   ];
 
   return(
-    <div style={{
-      minHeight:"100vh",
-      background:"var(--paper)",
-      fontFamily:"var(--sans)"
-    }}>
+    <div>
 
       <style>{CSS}</style>
 
       {/* NAVBAR */}
+
       <nav style={{
-        height:"56px",
-        borderBottom:"1px solid var(--border)",
+        height:"64px",
         display:"flex",
         alignItems:"center",
-        padding:"0 28px",
-        background:"rgba(242,239,232,0.96)",
+        padding:"0 30px",
+        borderBottom:"1px solid var(--border)",
+        background:"rgba(243,240,234,0.95)",
+        backdropFilter:"blur(10px)",
         position:"sticky",
         top:0,
         zIndex:100
       }}>
 
         <a
-          href="../index.html"
+          href="/"
           style={{
             textDecoration:"none",
             color:"var(--ink)",
             fontFamily:"var(--serif)",
-            fontSize:"1.7rem",
+            fontSize:"1.9rem",
             marginRight:"28px"
           }}
         >
@@ -343,9 +353,9 @@ function App(){
         <div style={{
           display:"flex",
           gap:"4px",
-          background:"rgba(14,13,11,0.06)",
-          borderRadius:"999px",
-          padding:"3px"
+          background:"rgba(0,0,0,0.05)",
+          padding:"4px",
+          borderRadius:"999px"
         }}>
           {TABS.map(t=>(
             <button
@@ -354,11 +364,10 @@ function App(){
               style={{
                 border:"none",
                 borderRadius:"999px",
-                padding:"7px 16px",
+                padding:"8px 18px",
                 background:tab===t.id ? "#fff" : "transparent",
                 color:tab===t.id ? "var(--ink)" : "var(--ink3)",
-                fontSize:"0.76rem",
-                fontWeight:tab===t.id ? "600" : "500",
+                fontWeight:tab===t.id ? "700" : "500",
                 cursor:"pointer"
               }}
             >
@@ -371,9 +380,9 @@ function App(){
           <div style={{
             background:"#fff",
             border:"1px solid var(--border)",
-            borderRadius:"6px",
-            padding:"6px 10px",
-            fontSize:"0.78rem"
+            borderRadius:"8px",
+            padding:"7px 12px",
+            fontSize:"0.8rem"
           }}>
             Kirori Mal
           </div>
@@ -381,22 +390,25 @@ function App(){
 
       </nav>
 
-      {/* MAIN GRID */}
+      {/* MAIN */}
+
       <div style={{
-        maxWidth:"1200px",
+        maxWidth:"1380px",
         margin:"0 auto",
         display:"grid",
-        gridTemplateColumns:"240px minmax(0,1fr) 240px",
-        height:"calc(100vh - 56px)"
+        gridTemplateColumns:"260px minmax(720px,1fr) 260px",
+        height:"calc(100vh - 64px)"
       }}>
 
         {/* LEFT SIDEBAR */}
+
         <aside style={{
           padding:"24px 20px",
           borderRight:"1px solid var(--border)",
+          background:"rgba(255,255,255,0.28)",
           position:"sticky",
-          top:"56px",
-          height:"calc(100vh - 56px)",
+          top:"64px",
+          height:"calc(100vh - 64px)",
           overflow:"hidden"
         }}>
 
@@ -414,73 +426,171 @@ function App(){
           <div style={{
             background:"#fff",
             border:"1px solid var(--border)",
-            borderRadius:"8px",
-            padding:"12px",
+            borderRadius:"10px",
+            padding:"14px",
             display:"flex",
+            justifyContent:"space-between",
             alignItems:"center",
-            gap:"10px"
+            marginBottom:"28px"
           }}>
+
             <div style={{
-              width:"8px",
-              height:"8px",
-              borderRadius:"50%",
-              background:"var(--accent)",
-              animation:"pulse 2s infinite"
-            }}/>
+              display:"flex",
+              alignItems:"center",
+              gap:"10px"
+            }}>
+              <div style={{
+                width:"8px",
+                height:"8px",
+                borderRadius:"50%",
+                background:"var(--accent)"
+              }}/>
+
+              <span style={{
+                fontSize:"0.88rem",
+                fontWeight:"700"
+              }}>
+                Kirori Mal
+              </span>
+            </div>
 
             <span style={{
-              fontSize:"0.84rem",
-              fontWeight:"600"
+              fontSize:"0.72rem",
+              color:"var(--ink3)"
             }}>
-              Kirori Mal
+              347 members
             </span>
+
           </div>
+
+          <div style={{
+            fontSize:"0.6rem",
+            textTransform:"uppercase",
+            letterSpacing:"0.1em",
+            color:"var(--ink4)",
+            marginBottom:"14px",
+            fontWeight:"700"
+          }}>
+            Activity
+          </div>
+
+          {[
+            ["Posts today","84"],
+            ["Active now","23"],
+            ["DU-wide","1,247"],
+            ["Your echoes","3"]
+          ].map(item=>(
+            <div style={{
+              display:"flex",
+              justifyContent:"space-between",
+              padding:"10px 0",
+              borderBottom:"1px solid rgba(0,0,0,0.05)"
+            }}>
+              <span style={{fontSize:"0.84rem"}}>
+                {item[0]}
+              </span>
+
+              <span style={{
+                fontSize:"0.84rem",
+                fontWeight:"700"
+              }}>
+                {item[1]}
+              </span>
+            </div>
+          ))}
+
+          <div style={{
+            marginTop:"28px",
+            fontSize:"0.6rem",
+            textTransform:"uppercase",
+            letterSpacing:"0.1em",
+            color:"var(--ink4)",
+            marginBottom:"14px",
+            fontWeight:"700"
+          }}>
+            Quick Links
+          </div>
+
+          {[
+            "DU",
+            "College",
+            "Explore",
+            "Following",
+            "Saved"
+          ].map(link=>(
+            <div style={{
+              padding:"9px 0",
+              fontSize:"0.92rem",
+              cursor:"pointer",
+              color:link==="DU" ? "var(--accent)" : "var(--ink)"
+            }}>
+              {link}
+            </div>
+          ))}
 
         </aside>
 
         {/* FEED */}
+
         <main style={{
-          padding:"24px 30px",
+          padding:"28px",
           overflowY:"auto",
-          height:"calc(100vh - 56px)"
+          height:"calc(100vh - 64px)"
         }}>
 
           <div style={{
             background:"#fff",
             border:"1px solid var(--border)",
-            borderRadius:"10px",
-            padding:"14px",
-            marginBottom:"20px"
+            borderRadius:"14px",
+            padding:"16px",
+            marginBottom:"22px"
           }}>
-            <input
-              placeholder="What's happening at DU?"
-              style={{
-                width:"100%",
-                border:"none",
-                outline:"none",
-                fontSize:"0.95rem",
-                background:"transparent"
-              }}
-            />
+
+            <div style={{
+              display:"flex",
+              gap:"14px",
+              alignItems:"center"
+            }}>
+
+              <Avatar initials="MP"/>
+
+              <input
+                placeholder="What's happening at DU?"
+                style={{
+                  flex:1,
+                  border:"1px solid rgba(0,0,0,0.08)",
+                  borderRadius:"10px",
+                  padding:"14px",
+                  background:"#fafafa",
+                  fontSize:"0.95rem",
+                  outline:"none"
+                }}
+              />
+
+            </div>
+
           </div>
 
           <Banner/>
 
-          {tab==="explore" && <ExploreTiles/>}
-
-          {POSTS.map(post=>(
-            <PostCard key={post.id} post={post}/>
-          ))}
+          {tab==="explore"
+            ? <ExploreTiles/>
+            : POSTS.map(post=>(
+                <PostCard key={post.id} post={post}/>
+              ))
+          }
 
         </main>
 
         {/* RIGHT SIDEBAR */}
+
         <aside style={{
           padding:"24px 20px",
           borderLeft:"1px solid var(--border)",
+          background:"rgba(255,255,255,0.28)",
           position:"sticky",
-          top:"56px",
-          height:"calc(100vh - 56px)",
+          top:"64px",
+          height:"calc(100vh - 64px)",
           overflow:"hidden"
         }}>
 
@@ -489,34 +599,112 @@ function App(){
             textTransform:"uppercase",
             letterSpacing:"0.1em",
             color:"var(--ink4)",
-            marginBottom:"12px",
+            marginBottom:"14px",
             fontWeight:"700"
           }}>
             Trending at DU
           </div>
 
-          {["#NorthCampus","#PlacementSeason","#DULife","#CaseComps"].map(tag=>(
-            <div
-              key={tag}
-              style={{
-                padding:"10px 0",
-                borderBottom:"1px solid rgba(0,0,0,0.05)"
-              }}
-            >
+          {[
+            ["#NorthCampus","312 posts"],
+            ["#PlacementSeason","247 posts"],
+            ["#EconFest","189 posts"],
+            ["#DULife","156 posts"],
+            ["#CentralLibrary","98 posts"]
+          ].map((tag,i)=>(
+            <div style={{
+              padding:"12px 0",
+              borderBottom:"1px solid rgba(0,0,0,0.05)"
+            }}>
+
               <div style={{
-                fontSize:"0.82rem",
-                fontWeight:"600"
+                fontSize:"0.68rem",
+                color:"var(--ink4)",
+                marginBottom:"4px"
               }}>
-                {tag}
+                {i+1}
               </div>
 
               <div style={{
-                fontSize:"0.66rem",
+                fontWeight:"700",
+                fontSize:"0.96rem"
+              }}>
+                {tag[0]}
+              </div>
+
+              <div style={{
+                fontSize:"0.75rem",
                 color:"var(--ink3)",
                 marginTop:"2px"
               }}>
-                trending discussion
+                {tag[1]}
               </div>
+
+            </div>
+          ))}
+
+          <div style={{
+            marginTop:"28px",
+            fontSize:"0.6rem",
+            textTransform:"uppercase",
+            letterSpacing:"0.1em",
+            color:"var(--ink4)",
+            marginBottom:"14px",
+            fontWeight:"700"
+          }}>
+            Who to Follow
+          </div>
+
+          {[
+            ["Rohan Mehta","Hindu College","RM"],
+            ["Priya Sharma","Lady Shri Ram","PS"],
+            ["Aditya Bose","SRCC","AB"],
+            ["Nandini Roy","Miranda House","NR"]
+          ].map(user=>(
+            <div style={{
+              display:"flex",
+              alignItems:"center",
+              justifyContent:"space-between",
+              marginBottom:"16px"
+            }}>
+
+              <div style={{
+                display:"flex",
+                alignItems:"center",
+                gap:"10px"
+              }}>
+
+                <Avatar initials={user[2]}/>
+
+                <div>
+                  <div style={{
+                    fontSize:"0.84rem",
+                    fontWeight:"700"
+                  }}>
+                    {user[0]}
+                  </div>
+
+                  <div style={{
+                    fontSize:"0.68rem",
+                    color:"var(--ink3)"
+                  }}>
+                    {user[1]}
+                  </div>
+                </div>
+
+              </div>
+
+              <button style={{
+                border:"1px solid var(--border)",
+                background:"#fff",
+                borderRadius:"6px",
+                padding:"6px 10px",
+                fontSize:"0.7rem",
+                cursor:"pointer"
+              }}>
+                Follow
+              </button>
+
             </div>
           ))}
 
