@@ -314,7 +314,7 @@ function ComposeBox({user, onPost}) {
     setLoading(true);
     try {
       const college = collegeFromEmail(user.email);
-      await addDoc(collection(db, "echoes"), {
+      await addDoc(collection(db, "posts"), {
         author: user.displayName,
         email: user.email,
         college,
@@ -400,12 +400,12 @@ export default function UnrestFeed() {
     // 1. Approved posts from everyone
     // 2. Own pending posts (so poster can see them immediately)
     const approvedQ = query(
-      collection(db, "echoes"),
+      collection(db, "posts"),
       where("status", "==", "approved"),
       orderBy("createdAt", "desc")
     );
     const myPendingQ = query(
-      collection(db, "echoes"),
+      collection(db, "posts"),
       where("uid", "==", user.uid),
       where("status", "==", "pending"),
       orderBy("createdAt", "desc")
@@ -446,7 +446,7 @@ export default function UnrestFeed() {
     if (voted[id] === type) return; // prevent double vote
     setVoted(p => ({...p, [id]: type}));
     try {
-      await updateDoc(doc(db, "echoes", id), {
+      await updateDoc(doc(db, "posts", id), {
         [type]: increment(1)
       });
       notify(type === "w" ? "W noted 🔥" : "L noted");
