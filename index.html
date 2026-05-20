@@ -306,7 +306,7 @@
   .confetti-piece { position: absolute; width: 8px; height: 8px; border-radius: 2px; animation: confettiFall linear forwards; }
   @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
 
-  /* PHONE PREVIEW — dual */
+  /* PHONE PREVIEW - dual */
   .preview { padding: 4rem 2rem 5rem; display: flex; justify-content: center; overflow: hidden; gap: 0; }
   .phone-frame { width: 280px; flex-shrink: 0; background: var(--ink); border-radius: 36px; padding: 12px; box-shadow: 0 32px 64px rgba(14,13,11,0.2); transform: rotate(-2deg); transition: transform 0.4s; }
   .phone-frame:hover { transform: rotate(0deg) scale(1.02); }
@@ -342,7 +342,7 @@
   .product-price { font-size: 0.65rem; font-weight: 700; color: var(--accent); margin-top: 2px; }
   .product-college { font-size: 0.52rem; color: var(--ink3); }
 
-  /* SPORTS PHONE — white theme, matches phone1 */
+  /* SPORTS PHONE - white theme, matches phone1 */
   .phone-frame2 { width: 260px; flex-shrink: 0; background: var(--ink); border-radius: 36px; padding: 12px; box-shadow: 0 24px 48px rgba(14,13,11,0.18); transform: rotate(2deg) translateY(30px); transition: transform 0.4s; margin-left: -30px; }
   .phone-frame2:hover { transform: rotate(0deg) translateY(0) scale(1.02); }
   .phone-screen2 { background: var(--paper); border-radius: 26px; overflow: hidden; height: 520px; display: flex; flex-direction: column; }
@@ -1097,7 +1097,7 @@
         <div class="sport-card orange">
           <div class="sc-top">
             <div class="sc-icon">⚽</div>
-            <div class="sc-title">Turf Sunday — 5-a-side Football</div>
+            <div class="sc-title">Turf Sunday - 5-a-side Football</div>
             <div class="sc-badge">Today</div>
           </div>
           <div class="sc-body">JNU Ground · 7:00 AM · ₹80/head · 12 spots left. Bring your own boots, water provided.</div>
@@ -1110,7 +1110,7 @@
         <div class="sport-card green">
           <div class="sc-top">
             <div class="sc-icon">🏃</div>
-            <div class="sc-title">DU Bhaag Club — Morning Run</div>
+            <div class="sc-title">DU Bhaag Club - Morning Run</div>
             <div class="sc-badge">Sat 6am</div>
           </div>
           <div class="sc-body">Lodhi Garden loop, ~6km. All paces welcome. Post-run chai at the stalls after!</div>
@@ -1123,7 +1123,7 @@
         <div class="sport-card blue">
           <div class="sc-top">
             <div class="sc-icon">🏸</div>
-            <div class="sc-title">Badminton Doubles — Hindu College</div>
+            <div class="sc-title">Badminton Doubles - Hindu College</div>
             <div class="sc-badge">Sun 8am</div>
           </div>
           <div class="sc-body">Hindu Sports Complex · Find a partner or come solo, we'll pair you up. Rackets available.</div>
@@ -1136,7 +1136,7 @@
         <div class="sport-card yellow">
           <div class="sc-top">
             <div class="sc-icon">🏏</div>
-            <div class="sc-title">DU Cricket League — Week 4</div>
+            <div class="sc-title">DU Cricket League - Week 4</div>
             <div class="sc-badge">Ongoing</div>
           </div>
           <div class="sc-body">SRCC vs Hansraj · University Ground · Score updates live on Unrest feed.</div>
@@ -1482,7 +1482,7 @@
   window.query = query; window.where = where; window.onSnapshot = onSnapshot;
   window.updateDoc = updateDoc; window.doc = doc; window.deleteDoc = deleteDoc;
 
-  // Live waitlist count — 247 base + real Firestore submissions
+  // Live waitlist count - 247 base + real Firestore submissions
   onSnapshot(collection(window.db, "waitlist"), (snapshot) => {
     const live = 247 + snapshot.size;
     document.getElementById('pulse-count').textContent = live;
@@ -1981,7 +1981,7 @@ updatePulseBar();
 
 <script>
 // --- DYNAMIC PROMO STRIP ---
-// --- DYNAMIC PROMO STRIP — rotates every 3.5s, random start ---
+// --- DYNAMIC PROMO STRIP - rotates every 3.5s, random start ---
 (function() {
   const PROMOS = [
     " <strong>Sports Sunday</strong> ·  DU Bhaag Club ·  Fest season",
