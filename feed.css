@@ -394,50 +394,29 @@ export default function UnrestFeed() {
   useEffect(() => {
     if (!user) return;
 
-    const college = collegeFromEmail(user.email);
-
-    // Listen to:
-    // 1. Approved posts from everyone
-    // 2. Own pending posts (so poster can see them immediately)
-    const approvedQ = query(
+    // Single query — no composite index needed during dev
+    // Client-side filter: approved (public) + own pending + legacy docs
+    const q = query(
       collection(db, "posts"),
-      where("status", "==", "approved"),
-      orderBy("createdAt", "desc")
-    );
-    const myPendingQ = query(
-      collection(db, "posts"),
-      where("uid", "==", user.uid),
-      where("status", "==", "pending"),
       orderBy("createdAt", "desc")
     );
 
-    let approvedDocs = [];
-    let myPendingDocs = [];
-
-    function merge() {
-      // Merge, deduplicate, sort newest first
-      const map = new Map();
-      [...myPendingDocs, ...approvedDocs].forEach(d => map.set(d.id, d));
-      const merged = [...map.values()].sort((a,b) => {
-        const ta = a.createdAt?.toMillis() ?? 0;
-        const tb = b.createdAt?.toMillis() ?? 0;
-        return tb - ta;
-      });
-      setPosts(merged);
+    const unsub = onSnapshot(q, snap => {
+      const all = snap.docs.map(d => ({id:d.id, ...d.data()}));
+      const filtered = all.filter(p =>
+        p.status === "approved" ||
+        !p.uid ||
+        p.uid === "legacy" ||
+        p.uid === user.uid
+      );
+      setPosts(filtered);
       setFeedLoading(false);
-    }
-
-    const unsub1 = onSnapshot(approvedQ, snap => {
-      approvedDocs = snap.docs.map(d => ({id:d.id, ...d.data()}));
-      merge();
+    }, err => {
+      console.error("Feed error:", err.message);
+      setFeedLoading(false);
     });
 
-    const unsub2 = onSnapshot(myPendingQ, snap => {
-      myPendingDocs = snap.docs.map(d => ({id:d.id, ...d.data()}));
-      merge();
-    });
-
-    return () => { unsub1(); unsub2(); };
+    return () => unsub();
   }, [user]);
 
   function notify(msg) { setToast(msg); setTimeout(() => setToast(null), 2800); }
