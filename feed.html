@@ -43,6 +43,10 @@
     window.__firebase = {
       db: getFirestore(app),
       auth: getAuth(app),
+      storage: getStorage(app),       
+      storageRef: ref,                
+      uploadBytes: uploadBytes,  
+      getDownloadURL: getDownloadURL,
       googleProvider: Object.assign(new GoogleAuthProvider(), { hd: undefined }),
       collection, addDoc, onSnapshot, query, orderBy, where,
       updateDoc, doc, increment, serverTimestamp,
