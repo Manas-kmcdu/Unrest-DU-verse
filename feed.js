@@ -107,39 +107,45 @@ function AuthGate({ onAuth }) {
   const [proofFile, setProofFile] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  async function handleLogin() {
-    setLoading(true);
+  async function handleManualSubmit() {
+    if (!manualName.trim() || !manualCollege || !manualYear) {
+      setError("Please fill all required fields.");
+      return;
+    }
+    if (!proofFile) {
+      setError("Please attach proof of affiliation (ID card or fee slip).");
+      return;
+    }
+    setSubmitLoading(true);
     setError("");
     try {
-      const provider = fb().googleProvider;
-      let result;
-      try {
-        result = await signInWithPopup(fb().auth, provider);
-      } catch(popupErr) {
-        // COOP blocks popup detection — fall back to redirect flow
-        if (popupErr.code === "auth/popup-blocked" ||
-            popupErr.code === "auth/popup-closed-by-user" ||
-            popupErr.message?.includes("Cross-Origin") ||
-            popupErr.message?.includes("window.closed")) {
-          await fb().signInWithRedirect(fb().auth, provider);
-          return; // page reloads, getRedirectResult picks it up
-        }
-        throw popupErr;
-      }
-      const email = result.user.email;
-      const isDU = email.endsWith(".du.ac.in") || email.endsWith("@du.ac.in");
-      if (isDU) {
-        onAuth(result.user);
-      } else {
-        setPendingUser({ email, displayName: result.user.displayName });
-        await signOut(fb().auth);
-        setStep("manual-form");
-        setManualName(result.user.displayName || "");
-        setLoading(false);
-      }
-    } catch (e) {
-      setError(e.message);
-      setLoading(false);
+      // 1. Generate unique key token path to protect concurrent records
+      const uniquePathName = `${Date.now()}_${proofFile.name}`;
+      const bucketDestination = fb().storageRef(fb().storage, `manual_proofs/${uniquePathName}`);
+      
+      // 2. Stream raw binary directly to global storage stack bucket
+      const uploadTaskSnapshot = await fb().uploadBytes(bucketDestination, proofFile);
+      
+      // 3. Resolve clean download string reference token
+      const authenticatedProofUrl = await fb().getDownloadURL(uploadTaskSnapshot.ref);
+
+      // 4. Record downscaled dataset payload index into main FireStore index cluster
+      await addDoc(collection(fb().db, "manual_verifications"), {
+        email: pendingUser?.email || "",
+        displayName: manualName.trim(),
+        college: manualCollege,
+        year: manualYear,
+        note: manualNote.trim(),
+        proofUrl: authenticatedProofUrl, // Safe, scalable link reference
+        status: "pending",
+        submittedAt: serverTimestamp()
+      });
+      setStep("manual-sent");
+    } catch(e) {
+      setError("Submission failed: " + e.message);
+    } finally {
+      setStep("manual-sent");
+      setSubmitLoading(false);
     }
   }
 
