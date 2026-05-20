@@ -66,12 +66,8 @@ function colAbbr(n){
   return m[n]||n;
 }
 
-// Parse college from .du.ac.in email subdomain
-// priya@srcc.du.ac.in → "SRCC"
-// Falls back to checking display name or returning raw subdomain
 function collegeFromEmail(email) {
   if (!email) return "Delhi University";
-  // Must be a .du.ac.in address
   if (!email.endsWith(".du.ac.in") && !email.endsWith("@du.ac.in")) return "Delhi University";
   const subdomain = email.split("@")[1]?.split(".")[0] ?? "";
   const match = COLLEGES.find(c => c.toLowerCase().replace(/[^a-z]/g,"").includes(subdomain.toLowerCase()));
@@ -107,48 +103,6 @@ function AuthGate({ onAuth }) {
   const [proofFile, setProofFile] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  async function handleManualSubmit() {
-    if (!manualName.trim() || !manualCollege || !manualYear) {
-      setError("Please fill all required fields.");
-      return;
-    }
-    if (!proofFile) {
-      setError("Please attach proof of affiliation (ID card or fee slip).");
-      return;
-    }
-    setSubmitLoading(true);
-    setError("");
-    try {
-      // 1. Generate unique key token path to protect concurrent records
-      const uniquePathName = `${Date.now()}_${proofFile.name}`;
-      const bucketDestination = fb().storageRef(fb().storage, `manual_proofs/${uniquePathName}`);
-      
-      // 2. Stream raw binary directly to global storage stack bucket
-      const uploadTaskSnapshot = await fb().uploadBytes(bucketDestination, proofFile);
-      
-      // 3. Resolve clean download string reference token
-      const authenticatedProofUrl = await fb().getDownloadURL(uploadTaskSnapshot.ref);
-
-      // 4. Record downscaled dataset payload index into main FireStore index cluster
-      await addDoc(collection(fb().db, "manual_verifications"), {
-        email: pendingUser?.email || "",
-        displayName: manualName.trim(),
-        college: manualCollege,
-        year: manualYear,
-        note: manualNote.trim(),
-        proofUrl: authenticatedProofUrl, // Safe, scalable link reference
-        status: "pending",
-        submittedAt: serverTimestamp()
-      });
-      setStep("manual-sent");
-    } catch(e) {
-      setError("Submission failed: " + e.message);
-    } finally {
-      setStep("manual-sent");
-      setSubmitLoading(false);
-    }
-  }
-
   // Pick up redirect result after page reload
   useEffect(() => {
     fb().getRedirectResult(fb().auth).then(result => {
@@ -166,6 +120,41 @@ function AuthGate({ onAuth }) {
     }).catch(() => {});
   }, []);
 
+  async function handleLogin() {
+    setLoading(true);
+    setError("");
+    try {
+      const provider = fb().googleProvider;
+      let result;
+      try {
+        result = await signInWithPopup(fb().auth, provider);
+      } catch(popupErr) {
+        if (popupErr.code === "auth/popup-blocked" ||
+            popupErr.code === "auth/popup-closed-by-user" ||
+            popupErr.message?.includes("Cross-Origin") ||
+            popupErr.message?.includes("window.closed")) {
+          await fb().signInWithRedirect(fb().auth, provider);
+          return;
+        }
+        throw popupErr;
+      }
+      const email = result.user.email;
+      const isDU = email.endsWith(".du.ac.in") || email.endsWith("@du.ac.in");
+      if (isDU) {
+        onAuth(result.user);
+      } else {
+        setPendingUser({ email, displayName: result.user.displayName });
+        await signOut(fb().auth);
+        setStep("manual-form");
+        setManualName(result.user.displayName || "");
+        setLoading(false);
+      }
+    } catch (e) {
+      setError(e.message);
+      setLoading(false);
+    }
+  }
+
   async function handleManualSubmit() {
     if (!manualName.trim() || !manualCollege || !manualYear) {
       setError("Please fill all required fields.");
@@ -178,25 +167,21 @@ function AuthGate({ onAuth }) {
     setSubmitLoading(true);
     setError("");
     try {
-      // Convert file to base64 for storage
-      const base64 = await new Promise((res, rej) => {
-        const reader = new FileReader();
-        reader.onload = () => res(reader.result);
-        reader.onerror = rej;
-        reader.readAsDataURL(proofFile);
-      });
+      const uniquePathName = `${Date.now()}_${proofFile.name}`;
+      const bucketDestination = fb().storageRef(fb().storage, `manual_proofs/${uniquePathName}`);
+      
+      const uploadTaskSnapshot = await fb().uploadBytes(bucketDestination, proofFile);
+      const authenticatedProofUrl = await fb().getDownloadURL(uploadTaskSnapshot.ref);
 
-      await fb().addDoc(fb().collection(fb().db, "manual_verifications"), {
+      await addDoc(collection(fb().db, "manual_verifications"), {
         email: pendingUser?.email || "",
         displayName: manualName.trim(),
         college: manualCollege,
         year: manualYear,
         note: manualNote.trim(),
-        proofFileName: proofFile.name,
-        proofFileType: proofFile.type,
-        proofBase64: base64,
+        proofUrl: authenticatedProofUrl,
         status: "pending",
-        submittedAt: fb().serverTimestamp()
+        submittedAt: serverTimestamp()
       });
       setStep("manual-sent");
     } catch(e) {
@@ -390,7 +375,6 @@ function AuthGate({ onAuth }) {
     );
   }
 
-  // Default: login step
   return (
     <div style={wrapStyle}>
       <style>{CSS}</style>
@@ -479,7 +463,7 @@ function Pill({name, color}) {
 }
 
 function WLBar({w, l, postId, onVote, voted}) {
-  const wFinal = w + (voted==="w" ? 0 : 0); // Firestore already incremented
+  const wFinal = w + (voted==="w" ? 0 : 0); 
   const lFinal = l + (voted==="l" ? 0 : 0);
   const total = wFinal + lFinal;
   const pct = total > 0 ? Math.round((wFinal / total) * 100) : 50;
@@ -515,12 +499,8 @@ function WLBar({w, l, postId, onVote, voted}) {
 
 // ─── POST CARD ────────────────────────────────────────────────────
 function PostCard({post, voted, onVote, saved, onSave, notify}) {
-  const [commOpen, setCommOpen] = useState(false);
-  const [commText, setCommText] = useState("");
-
   return (
     <article style={{borderBottom:"1px solid var(--border)", padding:"22px 0", animation:"fadeIn 0.3s ease both"}}>
-      {/* header */}
       <div style={{display:"flex", gap:11, alignItems:"flex-start", marginBottom:12}}>
         <Avatar initials={initials(post.author)} college={post.college} size={38}/>
         <div style={{flex:1, minWidth:0}}>
@@ -545,7 +525,6 @@ function PostCard({post, voted, onVote, saved, onSave, notify}) {
         </div>
       </div>
 
-      {/* pending badge — visible only to poster */}
       {post.status === "pending" && (
         <div style={{
           marginBottom:8, marginLeft:49,
@@ -557,7 +536,6 @@ function PostCard({post, voted, onVote, saved, onSave, notify}) {
         </div>
       )}
 
-      {/* body */}
       <div style={{paddingLeft:49}}>
         <p style={{fontSize:"0.92rem", color:"var(--ink)", lineHeight:1.68, marginBottom:9}}>
           {post.text}
@@ -571,7 +549,6 @@ function PostCard({post, voted, onVote, saved, onSave, notify}) {
           </div>
         )}
 
-        {/* actions */}
         <div style={{display:"flex", alignItems:"center", gap:12, flexWrap:"wrap"}}>
           <WLBar w={post.w} l={post.l} postId={post.id} onVote={onVote} voted={voted}/>
           <span style={{fontSize:"0.7rem", color:"var(--ink4)"}}>·</span>
@@ -602,8 +579,8 @@ function ComposeBox({user, onPost}) {
         college,
         text: text.trim(),
         tags: [],
-        status: "pending",  // rules enforce this
-        w: 1,               // rules enforce starting at 1
+        status: "pending",  
+        w: 1,               
         l: 0,
         createdAt: serverTimestamp(),
         uid: user.uid
@@ -657,8 +634,10 @@ function ComposeBox({user, onPost}) {
 
 // ─── MAIN APP ────────────────────────────────────────────────────
 function UnrestFeed() {
-  const [user, setUser] = useState(undefined); // undefined = loading
+  const [user, setUser] = useState(undefined); 
   const [posts, setPosts] = useState([]);
+  const [pendingPosts, setPendingPosts] = useState([]); 
+  const [pendingVerifications, setPendingVerifications] = useState([]); 
   const [feedLoading, setFeedLoading] = useState(true);
   const [tab, setTab] = useState("du");
   const [voted, setVoted] = useState({});
@@ -667,11 +646,13 @@ function UnrestFeed() {
   const [searchQ, setSearchQ] = useState("");
   const [searchCollege, setSearchCollege] = useState("");
 
-  // Auth state — boot non-DU accounts even if persisted from previous session
+  const ADMIN_EMAIL = "your_admin_email@gmail.com"; 
+  const isAdmin = user && user.email === ADMIN_EMAIL;
+
   useEffect(() => {
     return onAuthStateChanged(fb().auth, async u => {
-      if (u && !u.email.endsWith(".du.ac.in") && !u.email.endsWith("@du.ac.in")) {
-        await signOut(fb().auth);
+      if (u && !u.email.endsWith(".du.ac.in") && !u.email.endsWith("@du.ac.in") && u.email !== ADMIN_EMAIL) {
+        await fb().signOut(fb().auth);
         setUser(null);
         return;
       }
@@ -679,21 +660,14 @@ function UnrestFeed() {
     });
   }, []);
 
-  // Live feed from Firestore
   useEffect(() => {
     if (!user) return;
 
-    // Single query — no composite index needed during dev
-    // Client-side filter: approved (public) + own pending + legacy docs
-    const q = query(
-      collection(fb().db, "posts"),
-      orderBy("createdAt", "desc")
-    );
+    const q = query(collection(fb().db, "posts"), orderBy("createdAt", "desc"));
 
     const unsub = onSnapshot(q, snap => {
       const all = snap.docs.map(d => {
         const data = d.data();
-        // Normalize legacy Ws/Ls (capital, string) → w/l (number)
         return {
           id: d.id,
           ...data,
@@ -701,13 +675,12 @@ function UnrestFeed() {
           l: parseInt(data.l ?? data.Ls ?? 0, 10) || 0,
         };
       });
-      const filtered = all.filter(p =>
-        p.status === "approved" ||
-        !p.uid ||
-        p.uid === "legacy" ||
-        p.uid === user.uid
-      );
-      setPosts(filtered);
+      
+      const publicFeed = all.filter(p => p.status === "approved" || !p.uid || p.uid === "legacy" || p.uid === user.uid);
+      const moderationQueue = all.filter(p => p.status === "pending");
+
+      setPosts(publicFeed);
+      setPendingPosts(moderationQueue);
       setFeedLoading(false);
     }, err => {
       console.error("Feed error:", err.message);
@@ -717,10 +690,51 @@ function UnrestFeed() {
     return () => unsub();
   }, [user]);
 
+  useEffect(() => {
+    if (!user || !isAdmin) return;
+
+    const qVerif = query(
+      collection(fb().db, "manual_verifications"), 
+      where("status", "==", "pending")
+    );
+
+    const unsubVerif = onSnapshot(qVerif, snap => {
+      const verifs = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      setPendingVerifications(verifs);
+    }, err => {
+      console.error("Verification sync failed:", err);
+    });
+
+    return () => unsubVerif();
+  }, [user, isAdmin]);
+
   function notify(msg) { setToast(msg); setTimeout(() => setToast(null), 2800); }
 
+  async function approvePost(id) {
+    try {
+      await updateDoc(doc(fb().db, "posts", id), { status: "approved" });
+      notify("Post approved live! ✨");
+    } catch(e) { notify("Approval failed."); }
+  }
+
+  async function rejectPost(id) {
+    if(confirm("Delete this post permanently from queue?")) {
+      try {
+        await fb().deleteDoc(doc(fb().db, "posts", id));
+        notify("Post rejected & deleted.");
+      } catch(e) { notify("Deletion failed."); }
+    }
+  }
+
+  async function resolveVerification(id, actionStatus) {
+    try {
+      await updateDoc(doc(fb().db, "manual_verifications", id), { status: actionStatus });
+      notify(`Registration marked as ${actionStatus}`);
+    } catch(e) { notify("Status update failed."); }
+  }
+
   async function handleVote(id, type) {
-    if (voted[id] === type) return; // prevent double vote
+    if (voted[id] === type) return; 
     setVoted(p => ({...p, [id]: type}));
     try {
       await updateDoc(doc(fb().db, "posts", id), {
@@ -728,7 +742,7 @@ function UnrestFeed() {
       });
       notify(type === "w" ? "W noted 🔥" : "L noted");
     } catch(e) {
-      setVoted(p => ({...p, [id]: null})); // revert on fail
+      setVoted(p => ({...p, [id]: null})); 
       notify("Vote failed");
     }
   }
@@ -741,26 +755,15 @@ function UnrestFeed() {
     });
   }
 
-  async function handleSignOut() {
-    await signOut(fb().auth);
-    setUser(null);
-  }
-
-  // Show loading spinner while auth resolves
   if (user === undefined) {
     return (
-      <div style={{minHeight:"100vh", background:"var(--paper)", display:"flex",
-        alignItems:"center", justifyContent:"center", fontFamily:"var(--sans)"}}>
+      <div style={{minHeight:"100vh", background:"var(--paper)", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"var(--sans)"}}>
         <style>{CSS}</style>
-        <span style={{
-          display:"inline-block", width:28, height:28, border:"3px solid rgba(14,13,11,0.12)",
-          borderTopColor:"var(--ink)", borderRadius:"50%", animation:"spin 0.7s linear infinite"
-        }}/>
+        <span style={{display:"inline-block", width:28, height:28, border:"3px solid rgba(14,13,11,0.12)", borderTopColor:"var(--ink)", borderRadius:"50%", animation:"spin 0.7s linear infinite"}}/>
       </div>
     );
   }
 
-  // Show auth gate if not logged in
   if (!user) {
     return <AuthGate onAuth={setUser}/>;
   }
@@ -772,10 +775,12 @@ function UnrestFeed() {
     {id:"college", label:"College"},
     {id:"saved", label:"Saved"}
   ];
+  if (isAdmin) {
+    TABS.push({id:"mod", label:"Mod Queue"});
+  }
 
   const visible = posts.filter(p => {
-    if (searchQ && !p.text?.toLowerCase().includes(searchQ.toLowerCase()) &&
-        !p.author?.toLowerCase().includes(searchQ.toLowerCase())) return false;
+    if (searchQ && !p.text?.toLowerCase().includes(searchQ.toLowerCase()) && !p.author?.toLowerCase().includes(searchQ.toLowerCase())) return false;
     if (searchCollege && p.college !== searchCollege) return false;
     if (tab === "college" && p.college !== userCollege) return false;
     if (tab === "saved" && !savedPosts.has(p.id)) return false;
@@ -787,100 +792,56 @@ function UnrestFeed() {
       <style>{CSS}</style>
 
       {toast && (
-        <div style={{
-          position:"fixed", top:14, left:"50%", transform:"translateX(-50%)",
-          background:"var(--ink)", color:"#fff", padding:"7px 16px", borderRadius:5,
-          fontSize:"0.76rem", fontWeight:500, zIndex:9999, whiteSpace:"nowrap",
-          boxShadow:"0 4px 16px rgba(0,0,0,0.18)", animation:"toastIn 0.22s ease"
-        }}>
+        <div style={{position:"fixed", top:14, left:"50%", transform:"translateX(-50%)", background:"var(--ink)", color:"#fff", padding:"7px 16px", borderRadius:5, fontSize:"0.76rem", fontWeight:500, zIndex:9999, whiteSpace:"nowrap", boxShadow:"0 4px 16px rgba(0,0,0,0.18)", animation:"toastIn 0.22s ease"}}>
           {toast}
         </div>
       )}
 
       {/* NAV */}
-      <nav style={{
-        background:"rgba(242,239,232,0.96)", borderBottom:"1px solid var(--border)",
-        padding:"0 2rem", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(10px)"
-      }}>
+      <nav style={{background:"rgba(242,239,232,0.96)", borderBottom:"1px solid var(--border)", padding:"0 2rem", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(10px)"}}>
         <div style={{maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", height:52, gap:0}}>
-          <a style={{
-            fontFamily:"var(--serif)", fontSize:"1.5rem", color:"var(--ink)",
-            textDecoration:"none", letterSpacing:"-0.02em", marginRight:28, flexShrink:0
-          }}>
+          <a style={{fontFamily:"var(--serif)", fontSize:"1.5rem", color:"var(--ink)", textDecoration:"none", letterSpacing:"-0.02em", marginRight:28, flexShrink:0}}>
             Un<em style={{fontStyle:"italic", color:"var(--accent)"}}>rest</em>
           </a>
 
-          <div style={{display:"flex", alignItems:"center", background:"rgba(14,13,11,0.07)",
-            borderRadius:100, padding:"3px", gap:1}}>
+          <div style={{display:"flex", alignItems:"center", background:"rgba(14,13,11,0.07)", borderRadius100, padding:"3px", gap:1}}>
             {TABS.map(t => (
-              <button key={t.id} onClick={() => setTab(t.id)}
-                style={{
-                  padding:"5px 15px", borderRadius:100, border:"none",
-                  background: tab===t.id ? "var(--white)" : "transparent",
-                  fontSize:"0.76rem", fontWeight: tab===t.id ? 600 : 400,
-                  color: tab===t.id ? "var(--ink)" : "var(--ink3)", transition:"all 0.15s",
-                  boxShadow: tab===t.id ? "0 1px 3px rgba(0,0,0,0.09)" : "none"
-                }}>
-                {t.label}
+              <button key={t.id} onClick={() => setTab(t.id)} style={{padding:"5px 15px", borderRadius:100, border:"none", background: tab===t.id ? "var(--white)" : "transparent", fontSize:"0.76rem", fontWeight: tab===t.id ? 600 : 400, color: tab===t.id ? "var(--ink)" : "var(--ink3)", transition:"all 0.15s", boxShadow: tab===t.id ? "0 1px 3px rgba(0,0,0,0.09)" : "none"}}>
+                {t.label} {t.id === "mod" && (pendingPosts.length + pendingVerifications.length) > 0 ? `(${pendingPosts.length + pendingVerifications.length})` : ""}
               </button>
             ))}
           </div>
 
           <div style={{marginLeft:"auto", display:"flex", alignItems:"center", gap:8}}>
-            <div style={{display:"flex", alignItems:"center", gap:7, padding:"4px 10px 4px 5px",
-              border:"1px solid var(--border)", borderRadius:5, background:"var(--white)"}}>
+            <div style={{display:"flex", alignItems:"center", gap:7, padding:"4px 10px 4px 5px", border:"1px solid var(--border)", borderRadius:5, background:"var(--white)"}}>
               <Avatar initials={initials(user.displayName)} college={userCollege} size={24}/>
-              <span style={{fontSize:"0.78rem", fontWeight:500, color:"var(--ink2)"}}>{userCollege}</span>
+              <span style={{fontSize:"0.78rem", fontWeight:500, color:"var(--ink2)"}}>{isAdmin ? "System Admin" : userCollege}</span>
             </div>
-            <button onClick={handleSignOut}
-              style={{fontSize:"0.72rem", color:"var(--ink3)", background:"none",
-                border:"none", padding:"4px 6px"}}>
-              Sign out
-            </button>
+            <button onClick={() => fb().signOut(fb().auth)} style={{fontSize:"0.72rem", color:"var(--ink3)", background:"none", border:"none", padding:"4px 6px"}}>Sign out</button>
           </div>
         </div>
       </nav>
 
       {/* LAYOUT */}
-      <div style={{maxWidth:1100, margin:"0 auto", display:"grid",
-        gridTemplateColumns:"220px 1fr 210px", minHeight:"calc(100vh - 52px)"}}>
+      <div style={{maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"220px 1fr 210px", minHeight:"calc(100vh - 52px)"}}>
 
         {/* LEFT SIDEBAR */}
         <aside style={{padding:"24px 20px 24px 0", borderRight:"1px solid var(--border)"}}>
           <div style={{marginBottom:24}}>
-            <div style={{fontSize:"0.58rem", fontWeight:700, letterSpacing:"0.1em",
-              textTransform:"uppercase", color:"var(--ink4)", marginBottom:10}}>
-              Your college
-            </div>
-            <div style={{background:"var(--white)", border:"1px solid var(--border)",
-              borderRadius:7, padding:"9px 11px", display:"flex", alignItems:"center", gap:8}}>
-              <div style={{width:7, height:7, borderRadius:"50%", background:"var(--accent)",
-                animation:"dot-pulse 2s infinite", flexShrink:0}}/>
-              <span style={{fontSize:"0.85rem", fontWeight:600, color:"var(--ink)", flex:1}}>{userCollege}</span>
+            <div style={{fontSize:"0.58rem", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"var(--ink4)", marginBottom:10}}>System Context</div>
+            <div style={{background:"var(--white)", border:"1px solid var(--border)", borderRadius:7, padding:"9px 11px", display:"flex", alignItems:"center", gap:8}}>
+              <div style={{width:7, height:7, borderRadius:"50%", background:"var(--accent)", animation:"dot-pulse 2s infinite", flexShrink:0}}/>
+              <span style={{fontSize:"0.85rem", fontWeight:600, color:"var(--ink)", flex:1}}>{isAdmin ? "🛠️ Moderation Mode" : userCollege}</span>
             </div>
           </div>
 
           <div style={{marginBottom:24}}>
-            <div style={{fontSize:"0.58rem", fontWeight:700, letterSpacing:"0.1em",
-              textTransform:"uppercase", color:"var(--ink4)", marginBottom:10}}>
-              Quick links
-            </div>
+            <div style={{fontSize:"0.58rem", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"var(--ink4)", marginBottom:10}}>Quick links</div>
             {TABS.map(t => (
-              <div key={t.id} onClick={() => setTab(t.id)}
-                style={{
-                  fontSize:"0.82rem", padding:"6px 0 6px 8px",
-                  color: tab===t.id ? "var(--accent)" : "var(--ink2)",
-                  fontWeight: tab===t.id ? 600 : 400, cursor:"pointer",
-                  borderLeft: tab===t.id ? "2px solid var(--accent)" : "2px solid transparent",
-                  marginLeft:-8, transition:"all 0.12s",
-                  display:"flex", justifyContent:"space-between", alignItems:"center"
-                }}>
+              <div key={t.id} onClick={() => setTab(t.id)} style={{fontSize:"0.82rem", padding:"6px 0 6px 8px", color: tab===t.id ? "var(--accent)" : "var(--ink2)", fontWeight: tab===t.id ? 600 : 400, cursor:"pointer", borderLeft: tab===t.id ? "2px solid var(--accent)" : "2px solid transparent", marginLeft:-8, transition:"all 0.12s", display:"flex", justifyContent:"space-between", alignItems:"center"}}>
                 <span>{t.label}</span>
                 {t.id==="saved" && savedPosts.size>0 && (
-                  <span style={{fontSize:"0.62rem", background:"var(--blue)",
-                    color:"#fff", borderRadius:10, padding:"1px 5px", fontWeight:700}}>
-                    {savedPosts.size}
-                  </span>
+                  <span style={{fontSize:"0.62rem", background:"var(--blue)", color:"#fff", borderRadius:10, padding:"1px 5px", fontWeight:700}}>{savedPosts.size}</span>
                 )}
               </div>
             ))}
@@ -894,87 +855,109 @@ function UnrestFeed() {
 
         {/* MAIN FEED */}
         <main style={{padding:"24px 28px", minWidth:0}}>
-          <ComposeBox user={user} onPost={() => notify("Posted! Pending approval.")}/>
+          {tab !== "mod" ? (
+            <>
+              <ComposeBox user={user} onPost={() => notify("Posted! Pending approval.")}/>
 
-          {/* search */}
-          <div style={{display:"flex", gap:8, marginBottom:18}}>
-            <div style={{flex:1, display:"flex", alignItems:"center", gap:8,
-              background:"var(--white)", border:"1px solid var(--border)",
-              borderRadius:6, padding:"7px 11px"}}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                stroke="var(--ink4)" strokeWidth="2.2">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
-              <input value={searchQ} onChange={e => setSearchQ(e.target.value)}
-                placeholder="Search posts..."
-                style={{border:"none", outline:"none", fontSize:"0.82rem",
-                  background:"transparent", color:"var(--ink)", flex:1, fontFamily:"var(--sans)"}}/>
-              {searchQ && <button onClick={() => setSearchQ("")}
-                style={{background:"none", border:"none", color:"var(--ink4)",
-                  cursor:"pointer", fontSize:"0.9rem", lineHeight:1}}>×</button>}
-            </div>
-            <select value={searchCollege} onChange={e => setSearchCollege(e.target.value)}
-              style={{padding:"7px 10px", border:"1px solid var(--border)", borderRadius:6,
-                fontSize:"0.78rem", color:"var(--ink2)", background:"var(--white)",
-                outline:"none", cursor:"pointer", fontFamily:"var(--sans)"}}>
-              <option value="">All colleges</option>
-              {COLLEGES.map(c => <option key={c}>{c}</option>)}
-            </select>
-          </div>
+              <div style={{display:"flex", gap:8, marginBottom:18}}>
+                <div style={{flex:1, display:"flex", alignItems:"center", gap:8, background:"var(--white)", border:"1px solid var(--border)", borderRadius:6, padding:"7px 11px"}}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--ink4)" strokeWidth="2.2">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                  </svg>
+                  <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Search posts..." style={{border:"none", outline:"none", fontSize:"0.82rem", background:"transparent", color:"var(--ink)", flex:1, fontFamily:"var(--sans)"}}/>
+                  {searchQ && <button onClick={() => setSearchQ("")} style={{background:"none", border:"none", color:"var(--ink4)", cursor:"pointer", fontSize:"0.9rem", lineHeight:1}}>×</button>}
+                </div>
+                <select value={searchCollege} onChange={e => setSearchCollege(e.target.value)} style={{padding:"7px 10px", border:"1px solid var(--border)", borderRadius:6, fontSize:"0.78rem", color:"var(--ink2)", background:"var(--white)", outline:"none", cursor:"pointer", fontFamily:"var(--sans)"}}>
+                  <option value="">All colleges</option>
+                  {COLLEGES.map(c => <option key={c}>{c}</option>)}
+                </select>
+              </div>
 
-          {feedLoading ? (
-            <div style={{textAlign:"center", padding:"3rem 0"}}>
-              <span style={{
-                display:"inline-block", width:22, height:22, border:"2px solid var(--border)",
-                borderTopColor:"var(--ink)", borderRadius:"50%", animation:"spin 0.7s linear infinite"
-              }}/>
-            </div>
-          ) : visible.length === 0 ? (
-            <div style={{textAlign:"center", padding:"3rem 0", color:"var(--ink3)", fontSize:"0.85rem"}}>
-              {tab === "saved" ? "Nothing saved yet." :
-               searchQ || searchCollege ? "No posts match your search." :
-               "No posts yet. Be the first to post!"}
-            </div>
+              {feedLoading ? (
+                <div style={{textAlign:"center", padding:"3rem 0"}}>
+                  <span style={{display:"inline-block", width:22, height:22, border:"2px solid var(--border)", borderTopColor:"var(--ink)", borderRadius:"50%", animation:"spin 0.7s linear infinite"}}/>
+                </div>
+              ) : visible.length === 0 ? (
+                <div style={{textAlign:"center", padding:"3rem 0", color:"var(--ink3)", fontSize:"0.85rem"}}>
+                  {tab === "saved" ? "Nothing saved yet." : searchQ || searchCollege ? "No posts match your search." : "No posts yet. Be the first to post!"}
+                </div>
+              ) : (
+                visible.map(p => (
+                  <PostCard key={p.id} post={p} voted={voted[p.id] || null} onVote={handleVote} saved={savedPosts.has(p.id)} onSave={handleSave} notify={notify}/>
+                ))
+              )}
+            </>
           ) : (
-            visible.map(p => (
-              <PostCard key={p.id} post={p}
-                voted={voted[p.id] || null} onVote={handleVote}
-                saved={savedPosts.has(p.id)} onSave={handleSave}
-                notify={notify}/>
-            ))
+            <div style={{display:"flex", flexDirection:"column", gap:32}}>
+              <div>
+                <h3 style={{fontFamily:"var(--serif)", fontSize:"1.8rem", marginBottom:12, color:"var(--accent)"}}>Feed Post Submissions ({pendingPosts.length})</h3>
+                {pendingPosts.length === 0 ? (
+                  <p style={{fontSize:"0.85rem", color:"var(--ink3)"}}>No posts waiting in the queue.</p>
+                ) : (
+                  pendingPosts.map(p => (
+                    <div key={p.id} style={{background:"#fff", border:"1px solid var(--border)", borderRadius:8, padding:16, marginBottom:12}}>
+                      <div style={{fontSize:"0.72rem", color:"var(--ink3)", fontWeight:600, marginBottom:6}}>{p.author} · {p.college}</div>
+                      <p style={{fontSize:"0.9rem", marginBottom:12, color:"var(--ink)"}}>"...{p.text}"</p>
+                      <div style={{display:"flex", gap:10}}>
+                        <button onClick={() => approvePost(p.id)} style={{padding:"6px 14px", background:"var(--green)", border:"none", color:"#fff", borderRadius:5, fontSize:"0.75rem", fontWeight:600}}>Approve Live</button>
+                        <button onClick={() => rejectPost(p.id)} style={{padding:"6px 14px", background:"transparent", border:"1px solid var(--accent)", color:"var(--accent)", borderRadius:5, fontSize:"0.75rem", fontWeight:600}}>Delete</button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div>
+                <h3 style={{fontFamily:"var(--serif)", fontSize:"1.8rem", marginBottom:12, color:"var(--blue)"}}>Manual Profile Claims ({pendingVerifications.length})</h3>
+                {pendingVerifications.length === 0 ? (
+                  <p style={{fontSize:"0.85rem", color:"var(--ink3)"}}>No student credential proofs submitted.</p>
+                ) : (
+                  pendingVerifications.map(v => (
+                    <div key={v.id} style={{background:"#fff", border:"1px solid var(--border)", borderRadius:8, padding:16, marginBottom:12, display:"flex", gap:16, flexWrap:"wrap"}}>
+                      <div style={{flex:1, minWidth:240}}>
+                        <div style={{fontSize:"0.85rem", fontWeight:700, marginBottom:4}}>{v.displayName}</div>
+                        <div style={{fontSize:"0.76rem", color:"var(--ink2)", marginBottom:2}}><strong>Email:</strong> {v.email}</div>
+                        <div style={{fontSize:"0.76rem", color:"var(--ink2)", marginBottom:2}}><strong>College:</strong> {v.college} ({v.year})</div>
+                        {v.note && <div style={{fontSize:"0.74rem", color:"var(--ink3)", fontStyle:"italic", marginTop:6}}>Note: "{v.note}"</div>}
+                        
+                        <div style={{display:"flex", gap:10, marginTop:14}}>
+                          <button onClick={() => resolveVerification(v.id, "approved")} style={{padding:"6px 12px", background:"var(--blue)", border:"none", color:"#fff", borderRadius:5, fontSize:"0.74rem", fontWeight:600}}>Verify Account</button>
+                          <button onClick={() => resolveVerification(v.id, "rejected")} style={{padding:"6px 12px", background:"rgba(0,0,0,0.05)", border:"none", color:"var(--ink2)", borderRadius:5, fontSize:"0.74rem", fontWeight:500}}>Deny Access</button>
+                        </div>
+                      </div>
+
+                      <div style={{flexShrink:0, width:140, height:100, border:"1px solid var(--border)", borderRadius:6, overflow:"hidden", background:"#f9f9f9"}}>
+                        <a href={v.proofUrl} target="_blank" rel="noopener noreferrer">
+                          <img src={v.proofUrl} alt="ID Document Proof" style={{width:"100%", height:"100%", objectFit:"cover"}}/>
+                        </a>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           )}
         </main>
 
         {/* RIGHT SIDEBAR */}
         <aside style={{padding:"24px 0 24px 20px", borderLeft:"1px solid var(--border)"}}>
           <div style={{marginBottom:24}}>
-            <div style={{fontSize:"0.58rem", fontWeight:700, letterSpacing:"0.1em",
-              textTransform:"uppercase", color:"var(--ink4)", marginBottom:12}}>
-              About Unrest
-            </div>
+            <div style={{fontSize:"0.58rem", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"var(--ink4)", marginBottom:12}}>About Unrest</div>
             <div style={{fontSize:"0.78rem", color:"var(--ink2)", lineHeight:1.8}}>
               <div>Delhi University's verified student network.</div>
-              <div style={{marginTop:6, color:"var(--ink3)", fontSize:"0.72rem"}}>
-                Launching 11 June 2026
-              </div>
+              <div style={{marginTop:6, color:"var(--ink3)", fontSize:"0.72rem"}}>Launching 11 June 2026</div>
             </div>
           </div>
 
-          <div style={{
-            background:"rgba(200,75,47,0.06)", border:"1px solid rgba(200,75,47,0.14)",
-            borderRadius:7, padding:"12px 14px", marginBottom:24
-          }}>
-            <div style={{fontSize:"0.68rem", fontWeight:700, color:"var(--accent)", marginBottom:6}}>
-              How it works
-            </div>
+          <div style={{background:"rgba(200,75,47,0.06)", border:"1px solid rgba(200,75,47,0.14)", borderRadius:7, padding:"12px 14px", marginBottom:24}}>
+            <div style={{fontSize:"0.68rem", fontWeight:700, color:"var(--accent)", marginBottom:6}}>How it works</div>
             {[
               "Post with your DU Google account",
               "Mods approve before it goes live",
               "W / L votes are real-time",
               "Your college is auto-detected"
             ].map((item, i) => (
-              <div key={i} style={{display:"flex", gap:6, fontSize:"0.72rem",
-                color:"var(--ink2)", padding:"3px 0", lineHeight:1.5}}>
+              <div key={i} style={{display:"flex", gap:6, fontSize:"0.72rem", color:"var(--ink2)", padding:"3px 0", lineHeight:1.5}}>
                 <span style={{color:"var(--ink4)", flexShrink:0}}>{i+1}.</span>
                 <span>{item}</span>
               </div>
@@ -993,6 +976,5 @@ function UnrestFeed() {
     </div>
   );
 }
-
 
 ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(UnrestFeed));
