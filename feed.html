@@ -27,7 +27,7 @@
       query, orderBy, where, updateDoc, doc, increment, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import {
-      getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+      getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const app = initializeApp({
@@ -45,7 +45,7 @@
       googleProvider: Object.assign(new GoogleAuthProvider(), { hd: undefined }),
       collection, addDoc, onSnapshot, query, orderBy, where,
       updateDoc, doc, increment, serverTimestamp,
-      signInWithPopup, signOut, onAuthStateChanged
+      signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged
     };
 
     // Restrict to du.ac.in
