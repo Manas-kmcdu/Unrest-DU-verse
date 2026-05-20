@@ -5,11 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Feed · Unrest</title>
   <meta name="description" content="Delhi University's verified student feed. Real talk, W/L votes, campus culture."/>
-
-  <!-- Favicon / OG (reuse existing) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
-
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:#f2efe8; }
@@ -17,17 +14,13 @@
   </style>
 </head>
 <body>
-
   <div id="root"></div>
 
-  <!-- React + Babel (dev build — swap for prod bundle before launch) -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- Firebase + Feed component -->
   <script type="module">
-    // Import Firebase and expose to window so Babel-compiled feed.css can use it
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
       getFirestore, collection, addDoc, onSnapshot,
@@ -46,31 +39,28 @@
       appId: "1:84735746102:web:6fe5353a0586db71323897"
     });
 
-    const db  = getFirestore(app);
-    const auth = getAuth(app);
-    const googleProvider = new GoogleAuthProvider();
-    googleProvider.setCustomParameters({ hd: "du.ac.in" });
-
-    // Expose everything globally so the Babel-transpiled component can access
     window.__firebase = {
-      db, auth, googleProvider,
+      db: getFirestore(app),
+      auth: getAuth(app),
+      googleProvider: Object.assign(new GoogleAuthProvider(), { hd: undefined }),
       collection, addDoc, onSnapshot, query, orderBy, where,
       updateDoc, doc, increment, serverTimestamp,
       signInWithPopup, signOut, onAuthStateChanged
     };
 
-    // Signal that Firebase is ready, then load the feed component
-    window.__firebaseReady = true;
-    document.dispatchEvent(new Event("firebase-ready"));
+    // Restrict to du.ac.in
+    window.__firebase.googleProvider = new GoogleAuthProvider();
+    window.__firebase.googleProvider.setCustomParameters({ hd: "du.ac.in" });
 
+    // Load feed component AFTER firebase is ready, trigger Babel AFTER script loads
     const s = document.createElement("script");
-s.type = "text/babel";
-s.src = "./feed.js";  // renamed from feed.css
-document.body.appendChild(s);
-setTimeout(() => Babel.transformScriptTags(), 100);
+    s.type = "text/babel";
+    s.setAttribute("data-type", "module");
+    s.src = "./feed.js";
+    s.onload = () => {
+      Babel.transformScriptTags();
+    };
+    document.body.appendChild(s);
   </script>
-
-  <!-- Feed component — loaded after firebase module, compiled by Babel -->
-
 </body>
 </html>
