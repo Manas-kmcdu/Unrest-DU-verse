@@ -375,6 +375,7 @@ function AuthGate({ onAuth }) {
     );
   }
 
+  // Default: login step
   return (
     <div style={wrapStyle}>
       <style>{CSS}</style>
@@ -442,7 +443,7 @@ function Avatar({initials: ini, college, size=36}) {
   return (
     <div style={{
       width:size, height:size, borderRadius:"50%", background:bg, flexShrink:0,
-      display:"flex", alignItems:"center", justifyContent:"center",
+      display:"flex", alignItems:"center", justifyHydrate:"center", justifyContent:"center",
       fontSize:size*0.3, fontWeight:600, color:"#fff", letterSpacing:"0.03em"
     }}>
       {ini}
@@ -798,20 +799,19 @@ function UnrestFeed() {
       )}
 
       {/* NAV */}
-     <nav style={{background:"rgba(242,239,232,0.96)", borderBottom:"1px solid var(--border)", padding:"0 2rem", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(10px)"}}>
-  <div style={{maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", height:52, gap:0}}>
-    <a style={{fontFamily:"var(--serif)", fontSize:"1.5rem", color:"var(--ink)", textDecoration:"none", letterSpacing:"-0.02em", marginRight:28, flexShrink:0}}>
-      Un<em style={{fontStyle:"italic", color:"var(--accent)"}}>rest</em>
-    </a>
+      <nav style={{background:"rgba(242,239,232,0.96)", borderBottom:"1px solid var(--border)", padding:"0 2rem", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(10px)"}}>
+        <div style={{maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", height:52, gap:0}}>
+          <a style={{fontFamily:"var(--serif)", fontSize:"1.5rem", color:"var(--ink)", textDecoration:"none", letterSpacing:"-0.02em", marginRight:28, flexShrink:0}}>
+            Un<em style={{fontStyle:"italic", color:"var(--accent)"}}>rest</em>
+          </a>
 
-    {/* 🌟 FIXED THE INLINE STYLE TYPO RIGHT HERE BELOW 🌟 */}
-    <div style={{display:"flex", alignItems:"center", background:"rgba(14,13,11,0.07)", borderRadius:"100px", padding:"3px", gap:1}}>
-      {TABS.map(t => (
-        <button key={t.id} onClick={() => setTab(t.id)} style={{padding:"5px 15px", borderRadius:100, border:"none", background: tab===t.id ? "var(--white)" : "transparent", fontSize:"0.76rem", fontWeight: tab===t.id ? 600 : 400, color: tab===t.id ? "var(--ink)" : "var(--ink3)", transition:"all 0.15s", boxShadow: tab===t.id ? "0 1px 3px rgba(0,0,0,0.09)" : "none"}}>
-          {t.label} {t.id === "mod" && (pendingPosts.length + pendingVerifications.length) > 0 ? `(${pendingPosts.length + pendingVerifications.length})` : ""}
-        </button>
-      ))}
-    </div>
+          <div style={{display:"flex", alignItems:"center", background:"rgba(14,13,11,0.07)", borderRadius:"100px", padding:"3px", gap:1}}>
+            {TABS.map(t => (
+              <button key={t.id} onClick={() => setTab(t.id)} style={{padding:"5px 15px", borderRadius:100, border:"none", background: tab===t.id ? "var(--white)" : "transparent", fontSize:"0.76rem", fontWeight: tab===t.id ? 600 : 400, color: tab===t.id ? "var(--ink)" : "var(--ink3)", transition:"all 0.15s", boxShadow: tab===t.id ? "0 1px 3px rgba(0,0,0,0.09)" : "none"}}>
+                {t.label} {t.id === "mod" && (pendingPosts.length + pendingVerifications.length) > 0 ? `(${pendingPosts.length + pendingVerifications.length})` : ""}
+              </button>
+            ))}
+          </div>
 
           <div style={{marginLeft:"auto", display:"flex", alignItems:"center", gap:8}}>
             <div style={{display:"flex", alignItems:"center", gap:7, padding:"4px 10px 4px 5px", border:"1px solid var(--border)", borderRadius:5, background:"var(--white)"}}>
