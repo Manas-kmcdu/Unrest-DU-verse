@@ -62,10 +62,15 @@
     // Signal that Firebase is ready, then load the feed component
     window.__firebaseReady = true;
     document.dispatchEvent(new Event("firebase-ready"));
+
+    const s = document.createElement("script");
+s.type = "text/babel";
+s.src = "./feed.js";  // renamed from feed.css
+document.body.appendChild(s);
+setTimeout(() => Babel.transformScriptTags(), 100);
   </script>
 
   <!-- Feed component — loaded after firebase module, compiled by Babel -->
-  <script type="text/babel" data-type="module" src="./feed.css"></script>
 
 </body>
 </html>
