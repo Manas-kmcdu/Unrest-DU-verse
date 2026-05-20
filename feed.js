@@ -15,6 +15,8 @@ const serverTimestamp = () => fb().serverTimestamp();
 const signInWithPopup = (...a) => fb().signInWithPopup(...a);
 const signOut       = (...a) => fb().signOut(...a);
 const onAuthStateChanged = (...a) => fb().onAuthStateChanged(...a);
+const signInWithRedirect  = (...a) => fb().signInWithRedirect(...a);
+const getRedirectResult   = (...a) => fb().getRedirectResult(...a);
 
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
@@ -69,11 +71,11 @@ function colAbbr(n){
 // Falls back to checking display name or returning raw subdomain
 function collegeFromEmail(email) {
   if (!email) return "Delhi University";
+  // Must be a .du.ac.in address
+  if (!email.endsWith(".du.ac.in") && !email.endsWith("@du.ac.in")) return "Delhi University";
   const subdomain = email.split("@")[1]?.split(".")[0] ?? "";
-  const upper = subdomain.toUpperCase();
-  // Try to match against known colleges
   const match = COLLEGES.find(c => c.toLowerCase().replace(/[^a-z]/g,"").includes(subdomain.toLowerCase()));
-  return match || upper || "Delhi University";
+  return match || subdomain.toUpperCase() || "Delhi University";
 }
 
 function initials(name) {
@@ -92,43 +94,302 @@ function timeAgo(ts) {
 
 // ─── AUTH GATE ────────────────────────────────────────────────────
 function AuthGate({ onAuth }) {
+  const [step, setStep] = useState("login");       // login | manual-form | manual-sent
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [pendingUser, setPendingUser] = useState(null);
+
+  // Manual verification form state
+  const [manualName, setManualName] = useState("");
+  const [manualCollege, setManualCollege] = useState("");
+  const [manualYear, setManualYear] = useState("");
+  const [manualNote, setManualNote] = useState("");
+  const [proofFile, setProofFile] = useState(null);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   async function handleLogin() {
     setLoading(true);
     setError("");
     try {
-      const result = await signInWithPopup(fb().auth, fb().googleProvider);
-      const email = result.user.email;
-      // Double-check domain even if hd param set
-      if (!email.endsWith(".du.ac.in") && !email.endsWith("@du.ac.in")) {
-        await signOut(fb().auth);
-        setError("Only Delhi University (.du.ac.in) Google accounts allowed.");
-        setLoading(false);
-        return;
+      const provider = fb().googleProvider;
+      let result;
+      try {
+        result = await signInWithPopup(fb().auth, provider);
+      } catch(popupErr) {
+        // COOP blocks popup detection — fall back to redirect flow
+        if (popupErr.code === "auth/popup-blocked" ||
+            popupErr.code === "auth/popup-closed-by-user" ||
+            popupErr.message?.includes("Cross-Origin") ||
+            popupErr.message?.includes("window.closed")) {
+          await fb().signInWithRedirect(fb().auth, provider);
+          return; // page reloads, getRedirectResult picks it up
+        }
+        throw popupErr;
       }
-      onAuth(result.user);
+      const email = result.user.email;
+      const isDU = email.endsWith(".du.ac.in") || email.endsWith("@du.ac.in");
+      if (isDU) {
+        onAuth(result.user);
+      } else {
+        setPendingUser({ email, displayName: result.user.displayName });
+        await signOut(fb().auth);
+        setStep("manual-form");
+        setManualName(result.user.displayName || "");
+        setLoading(false);
+      }
     } catch (e) {
       setError(e.message);
       setLoading(false);
     }
   }
 
-  return (
-    <div style={{
-      minHeight:"100vh", background:"var(--paper)", display:"flex",
-      alignItems:"center", justifyContent:"center", fontFamily:"var(--sans)", padding:"2rem"
-    }}>
-      <style>{CSS}</style>
-      <div style={{
-        background:"var(--white)", border:"1px solid var(--border)", borderRadius:12,
-        padding:"48px 40px", maxWidth:420, width:"100%", textAlign:"center",
-        boxShadow:"0 8px 40px rgba(0,0,0,0.07)"
-      }}>
-        <div style={{fontFamily:"var(--serif)", fontSize:"2.4rem", marginBottom:6, color:"var(--ink)"}}>
-          Un<em style={{color:"var(--accent)"}}>rest</em>
+  // Pick up redirect result after page reload
+  useEffect(() => {
+    fb().getRedirectResult(fb().auth).then(result => {
+      if (!result?.user) return;
+      const email = result.user.email;
+      const isDU = email.endsWith(".du.ac.in") || email.endsWith("@du.ac.in");
+      if (isDU) {
+        onAuth(result.user);
+      } else {
+        setPendingUser({ email, displayName: result.user.displayName });
+        signOut(fb().auth);
+        setStep("manual-form");
+        setManualName(result.user.displayName || "");
+      }
+    }).catch(() => {});
+  }, []);
+
+  async function handleManualSubmit() {
+    if (!manualName.trim() || !manualCollege || !manualYear) {
+      setError("Please fill all required fields.");
+      return;
+    }
+    if (!proofFile) {
+      setError("Please attach proof of affiliation (ID card or fee slip).");
+      return;
+    }
+    setSubmitLoading(true);
+    setError("");
+    try {
+      // Convert file to base64 for storage
+      const base64 = await new Promise((res, rej) => {
+        const reader = new FileReader();
+        reader.onload = () => res(reader.result);
+        reader.onerror = rej;
+        reader.readAsDataURL(proofFile);
+      });
+
+      await fb().addDoc(fb().collection(fb().db, "manual_verifications"), {
+        email: pendingUser?.email || "",
+        displayName: manualName.trim(),
+        college: manualCollege,
+        year: manualYear,
+        note: manualNote.trim(),
+        proofFileName: proofFile.name,
+        proofFileType: proofFile.type,
+        proofBase64: base64,
+        status: "pending",
+        submittedAt: fb().serverTimestamp()
+      });
+      setStep("manual-sent");
+    } catch(e) {
+      setError("Submission failed: " + e.message);
+    } finally {
+      setSubmitLoading(false);
+    }
+  }
+
+  const cardStyle = {
+    background:"var(--white)", border:"1px solid var(--border)", borderRadius:12,
+    padding:"40px 36px", maxWidth:460, width:"100%",
+    boxShadow:"0 8px 40px rgba(0,0,0,0.07)"
+  };
+
+  const wrapStyle = {
+    minHeight:"100vh", background:"var(--paper)", display:"flex",
+    alignItems:"center", justifyContent:"center", fontFamily:"var(--sans)", padding:"2rem"
+  };
+
+  const Logo = () => (
+    <div style={{fontFamily:"var(--serif)", fontSize:"2.2rem", marginBottom:6, color:"var(--ink)", textAlign:"center"}}>
+      Un<em style={{color:"var(--accent)"}}>rest</em>
+    </div>
+  );
+
+  const inputStyle = {
+    width:"100%", border:"1px solid var(--border)", borderRadius:6,
+    padding:"9px 12px", fontSize:"0.84rem", color:"var(--ink)",
+    background:"var(--white)", outline:"none", fontFamily:"var(--sans)"
+  };
+
+  const labelStyle = {
+    fontSize:"0.72rem", fontWeight:600, color:"var(--ink3)",
+    display:"block", marginBottom:5, textAlign:"left"
+  };
+
+  if (step === "manual-sent") {
+    return (
+      <div style={wrapStyle}>
+        <style>{CSS}</style>
+        <div style={{...cardStyle, textAlign:"center"}}>
+          <Logo/>
+          <div style={{fontSize:"2.2rem", marginBottom:16}}>📬</div>
+          <div style={{fontSize:"1rem", fontWeight:700, color:"var(--ink)", marginBottom:10}}>
+            Request submitted!
+          </div>
+          <div style={{fontSize:"0.84rem", color:"var(--ink2)", lineHeight:1.7}}>
+            Your affiliation proof is under review.<br/>
+            We'll reach out to <strong>{pendingUser?.email}</strong> once approved.<br/>
+            Usually reviewed within 24–48 hours.
+          </div>
+          <button onClick={() => { setStep("login"); setError(""); }}
+            style={{marginTop:24, padding:"8px 20px", background:"var(--ink)",
+              color:"#fff", border:"none", borderRadius:6, fontSize:"0.8rem", fontWeight:600}}>
+            ← Back to sign in
+          </button>
         </div>
+      </div>
+    );
+  }
+
+  if (step === "manual-form") {
+    return (
+      <div style={wrapStyle}>
+        <style>{CSS}</style>
+        <div style={cardStyle}>
+          <Logo/>
+          <div style={{textAlign:"center", marginBottom:24}}>
+            <div style={{fontSize:"0.84rem", color:"var(--ink2)", lineHeight:1.6}}>
+              Your Google account isn't a DU address.<br/>
+              Submit proof of DU affiliation for manual review.
+            </div>
+            <div style={{
+              marginTop:10, padding:"7px 12px", background:"rgba(200,75,47,0.07)",
+              border:"1px solid rgba(200,75,47,0.18)", borderRadius:6,
+              fontSize:"0.72rem", color:"var(--accent)", fontWeight:500
+            }}>
+              Signing in as: {pendingUser?.email}
+            </div>
+          </div>
+
+          <div style={{display:"flex", flexDirection:"column", gap:14}}>
+            <div>
+              <label style={labelStyle}>Full Name *</label>
+              <input value={manualName} onChange={e => setManualName(e.target.value)}
+                placeholder="Your name" style={inputStyle}/>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Your College *</label>
+              <select value={manualCollege} onChange={e => setManualCollege(e.target.value)}
+                style={inputStyle}>
+                <option value="">Select college...</option>
+                {COLLEGES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Year of Study *</label>
+              <select value={manualYear} onChange={e => setManualYear(e.target.value)}
+                style={inputStyle}>
+                <option value="">Select year...</option>
+                <option>1st Year</option>
+                <option>2nd Year</option>
+                <option>3rd Year</option>
+                <option>Postgraduate</option>
+                <option>PhD</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={labelStyle}>
+                Proof of Affiliation * &nbsp;
+                <span style={{fontWeight:400, color:"var(--ink4)"}}>
+                  (College ID card or fee slip — JPG, PNG or PDF)
+                </span>
+              </label>
+              <div style={{
+                border:"1.5px dashed var(--border)", borderRadius:7, padding:"16px",
+                textAlign:"center", cursor:"pointer", background:"rgba(14,13,11,0.02)",
+                position:"relative"
+              }}>
+                <input type="file" accept="image/*,.pdf"
+                  onChange={e => setProofFile(e.target.files[0])}
+                  style={{position:"absolute", inset:0, opacity:0, cursor:"pointer"}}/>
+                {proofFile ? (
+                  <div style={{fontSize:"0.78rem", color:"var(--green)", fontWeight:600}}>
+                    ✓ {proofFile.name}
+                  </div>
+                ) : (
+                  <div style={{fontSize:"0.78rem", color:"var(--ink3)"}}>
+                    Click to upload file
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Additional note (optional)</label>
+              <textarea value={manualNote} onChange={e => setManualNote(e.target.value)}
+                placeholder="Anything you want to add..."
+                rows={2}
+                style={{...inputStyle, resize:"vertical"}}/>
+            </div>
+          </div>
+
+          {error && (
+            <div style={{
+              marginTop:12, padding:"8px 12px", background:"rgba(200,75,47,0.08)",
+              border:"1px solid rgba(200,75,47,0.2)", borderRadius:6,
+              fontSize:"0.76rem", color:"var(--accent)"
+            }}>
+              {error}
+            </div>
+          )}
+
+          <div style={{display:"flex", gap:10, marginTop:20}}>
+            <button onClick={() => { setStep("login"); setError(""); setPendingUser(null); }}
+              style={{
+                flex:1, padding:"10px", background:"transparent",
+                border:"1px solid var(--border)", borderRadius:6,
+                fontSize:"0.82rem", color:"var(--ink2)", fontWeight:500
+              }}>
+              ← Back
+            </button>
+            <button onClick={handleManualSubmit} disabled={submitLoading}
+              style={{
+                flex:2, padding:"10px", background: submitLoading ? "var(--ink3)" : "var(--ink)",
+                border:"none", borderRadius:6, color:"#fff",
+                fontSize:"0.82rem", fontWeight:600,
+                display:"flex", alignItems:"center", justifyContent:"center", gap:8
+              }}>
+              {submitLoading ? (
+                <span style={{
+                  display:"inline-block", width:14, height:14, border:"2px solid rgba(255,255,255,0.4)",
+                  borderTopColor:"#fff", borderRadius:"50%", animation:"spin 0.7s linear infinite"
+                }}/>
+              ) : null}
+              {submitLoading ? "Submitting..." : "Submit for review"}
+            </button>
+          </div>
+
+          <div style={{marginTop:14, fontSize:"0.68rem", color:"var(--ink4)", textAlign:"center", lineHeight:1.6}}>
+            By submitting you agree to our{" "}
+            <a href="/terms.html" style={{color:"var(--ink3)"}}>Terms</a> &amp;{" "}
+            <a href="/privacy.html" style={{color:"var(--ink3)"}}>Privacy Policy</a>.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Default: login step
+  return (
+    <div style={wrapStyle}>
+      <style>{CSS}</style>
+      <div style={{...cardStyle, textAlign:"center"}}>
+        <Logo/>
         <div style={{fontSize:"0.82rem", color:"var(--ink3)", marginBottom:32, lineHeight:1.6}}>
           Delhi University's verified student network.<br/>
           Sign in with your <strong>.du.ac.in</strong> Google account.
@@ -157,18 +418,25 @@ function AuthGate({ onAuth }) {
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
             </svg>
           )}
-          {loading ? "Signing in..." : "Continue with DU Google"}
+          {loading ? "Signing in..." : "Continue with Google"}
         </button>
+        <div style={{
+          marginTop:12, padding:"8px 12px", background:"rgba(14,13,11,0.04)",
+          borderRadius:6, fontSize:"0.72rem", color:"var(--ink3)", lineHeight:1.6
+        }}>
+          DU email (.du.ac.in) → instant access<br/>
+          Other email → manual affiliation review
+        </div>
         {error && (
           <div style={{
-            marginTop:14, padding:"8px 12px", background:"rgba(200,75,47,0.08)",
+            marginTop:12, padding:"8px 12px", background:"rgba(200,75,47,0.08)",
             border:"1px solid rgba(200,75,47,0.2)", borderRadius:6,
             fontSize:"0.78rem", color:"var(--accent)", lineHeight:1.5
           }}>
             {error}
           </div>
         )}
-        <div style={{marginTop:20, fontSize:"0.7rem", color:"var(--ink4)", lineHeight:1.7}}>
+        <div style={{marginTop:16, fontSize:"0.7rem", color:"var(--ink4)", lineHeight:1.7}}>
           By signing in you agree to our{" "}
           <a href="/terms.html" style={{color:"var(--ink3)"}}>Terms</a> &amp;{" "}
           <a href="/privacy.html" style={{color:"var(--ink3)"}}>Privacy Policy</a>.
@@ -393,9 +661,16 @@ function UnrestFeed() {
   const [searchQ, setSearchQ] = useState("");
   const [searchCollege, setSearchCollege] = useState("");
 
-  // Auth state
+  // Auth state — boot non-DU accounts even if persisted from previous session
   useEffect(() => {
-    return onAuthStateChanged(fb().auth, u => setUser(u || null));
+    return onAuthStateChanged(fb().auth, async u => {
+      if (u && !u.email.endsWith(".du.ac.in") && !u.email.endsWith("@du.ac.in")) {
+        await signOut(fb().auth);
+        setUser(null);
+        return;
+      }
+      setUser(u || null);
+    });
   }, []);
 
   // Live feed from Firestore
@@ -410,7 +685,16 @@ function UnrestFeed() {
     );
 
     const unsub = onSnapshot(q, snap => {
-      const all = snap.docs.map(d => ({id:d.id, ...d.data()}));
+      const all = snap.docs.map(d => {
+        const data = d.data();
+        // Normalize legacy Ws/Ls (capital, string) → w/l (number)
+        return {
+          id: d.id,
+          ...data,
+          w: parseInt(data.w ?? data.Ws ?? 0, 10) || 0,
+          l: parseInt(data.l ?? data.Ls ?? 0, 10) || 0,
+        };
+      });
       const filtered = all.filter(p =>
         p.status === "approved" ||
         !p.uid ||
