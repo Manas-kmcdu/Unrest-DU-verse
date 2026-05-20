@@ -1,12 +1,21 @@
 const { useState, useRef, useEffect } = React;
-const {
-  db, auth, googleProvider,
-  collection, addDoc, onSnapshot, query, orderBy, where,
-  updateDoc, doc, increment, serverTimestamp,
-  signInWithPopup, signOut, onAuthStateChanged
-} = window.__firebase;
-const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+
+// Lazy getters — safe even if firebase module is still loading
+const fb = () => window.__firebase;
+const collection    = (...a) => fb().collection(...a);
+const addDoc        = (...a) => fb().addDoc(...a);
+const onSnapshot    = (...a) => fb().onSnapshot(...a);
+const query         = (...a) => fb().query(...a);
+const orderBy       = (...a) => fb().orderBy(...a);
+const where         = (...a) => fb().where(...a);
+const updateDoc     = (...a) => fb().updateDoc(...a);
+const doc           = (...a) => fb().doc(...a);
+const increment     = (...a) => fb().increment(...a);
+const serverTimestamp = () => fb().serverTimestamp();
+const signInWithPopup = (...a) => fb().signInWithPopup(...a);
+const signOut       = (...a) => fb().signOut(...a);
+const onAuthStateChanged = (...a) => fb().onAuthStateChanged(...a);
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --paper: #f2efe8;
@@ -88,11 +97,11 @@ function AuthGate({ onAuth }) {
     setLoading(true);
     setError("");
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(fb().auth, fb().googleProvider);
       const email = result.user.email;
       // Double-check domain even if hd param set
       if (!email.endsWith(".du.ac.in") && !email.endsWith("@du.ac.in")) {
-        await signOut(auth);
+        await signOut(fb().auth);
         setError("Only Delhi University (.du.ac.in) Google accounts allowed.");
         setLoading(false);
         return;
@@ -311,7 +320,7 @@ function ComposeBox({user, onPost}) {
     setLoading(true);
     try {
       const college = collegeFromEmail(user.email);
-      await addDoc(collection(db, "posts"), {
+      await addDoc(collection(fb().db, "posts"), {
         author: user.displayName,
         email: user.email,
         college,
@@ -384,7 +393,7 @@ function UnrestFeed() {
 
   // Auth state
   useEffect(() => {
-    return onAuthStateChanged(auth, u => setUser(u || null));
+    return onAuthStateChanged(fb().auth, u => setUser(u || null));
   }, []);
 
   // Live feed from Firestore
@@ -394,7 +403,7 @@ function UnrestFeed() {
     // Single query — no composite index needed during dev
     // Client-side filter: approved (public) + own pending + legacy docs
     const q = query(
-      collection(db, "posts"),
+      collection(fb().db, "posts"),
       orderBy("createdAt", "desc")
     );
 
@@ -422,7 +431,7 @@ function UnrestFeed() {
     if (voted[id] === type) return; // prevent double vote
     setVoted(p => ({...p, [id]: type}));
     try {
-      await updateDoc(doc(db, "posts", id), {
+      await updateDoc(doc(fb().db, "posts", id), {
         [type]: increment(1)
       });
       notify(type === "w" ? "W noted 🔥" : "L noted");
@@ -441,7 +450,7 @@ function UnrestFeed() {
   }
 
   async function handleSignOut() {
-    await signOut(auth);
+    await signOut(fb().auth);
     setUser(null);
   }
 
