@@ -371,7 +371,7 @@ function ComposeBox({user, onPost}) {
 }
 
 // ─── MAIN APP ────────────────────────────────────────────────────
-export default function UnrestFeed() {
+function UnrestFeed() {
   const [user, setUser] = useState(undefined); // undefined = loading
   const [posts, setPosts] = useState([]);
   const [feedLoading, setFeedLoading] = useState(true);
