@@ -646,7 +646,7 @@ function UnrestFeed() {
   const [searchQ, setSearchQ] = useState("");
   const [searchCollege, setSearchCollege] = useState("");
 
-  const ADMIN_EMAIL = "your_admin_email@gmail.com"; 
+  const ADMIN_EMAIL = "manaspandeya@gmail.com"; 
   const isAdmin = user && user.email === ADMIN_EMAIL;
 
   useEffect(() => {
