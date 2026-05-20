@@ -716,7 +716,6 @@
   </div>
 </div>
 
-<!-- METRO ANIMATION SECTION -->
 <section class="metro-section" id="metro">
   <div class="metro-eyebrow">THE DU LINE</div>
   <div class="metro-headline">One <em>network</em> connecting every campus</div>
@@ -805,46 +804,33 @@
     { name: 'Govind Puri',      tag: '',                    above: false },
   ];
 
-  /* ── palette ── */
+  /* ── Minimalist Brand Palette ── */
   const C = {
-    line:      '#2a5caa',
-    lineGlow:  'rgba(42,92,170,0.4)',
-    trail:     '#c84b2f',
-    trailDim:  'rgba(200,75,47,0.25)',
-    dot:       'rgba(245,242,235,0.2)',
-    dotPassed: 'rgba(200,75,47,0.55)',
-    dotHL:     'rgba(232,160,32,0.9)',
-    dotHLDim:  'rgba(232,160,32,0.3)',
+    line:      'rgba(255, 255, 255, 0.08)', // Very subtle background track
+    trail:     '#c84b2f', // Unrest primary accent
+    dot:       'rgba(255, 255, 255, 0.15)',
+    dotPassed: '#c84b2f',
+    dotHL:     '#e8a020', // Secondary accent for major stations
     dotActive: '#ffffff',
-    pulse:     'rgba(255,255,255,0.25)',
-    labelDim:  'rgba(245,242,235,0.28)',
-    labelPass: 'rgba(245,242,235,0.5)',
-    labelHL:   'rgba(232,160,32,0.85)',
-    labelAct:  '#ffffff',
-    tagHL:     'rgba(232,160,32,0.45)',
-    tagAct:    'rgba(255,255,255,0.55)',
-    trainTop:  '#d9d9d9',
-    trainMid:  '#ececec',
-    trainBot:  '#b0b0b0',
-    trainRoof: '#a0a0a0',
-    stripeR:   '#c84b2f',
-    stripeB:   '#2a5caa',
-    glass:     'rgba(200,220,255,0.18)',
-    glassEdge: 'rgba(200,220,255,0.35)',
+    labelDim:  'rgba(245,242,235,0.25)',
+    labelPass: 'rgba(245,242,235,0.6)',
+    labelHL:   '#e8a020',
+    trainMain: '#ffffff',
+    trainTail: 'rgba(200, 75, 47, 0.8)'
   };
 
-  const PAD   = 56;   // horizontal padding
-  const LY_F  = 0.58; // line Y fraction of canvas height
+  const PAD  = 56;
+  const LY_F = 0.58; 
 
   let W, H, LY, spacing, stnX = [];
   let tx = -120, spd = 0, frame = 0;
   let dwellTimer = null, dwelling = false;
   let activeStn = -1;
-  let animId, started = false;
+  let animId;
+  let ripples = []; // Holds the live network pulses
 
   const N = STATIONS.length;
 
-  /* ── resize ── */
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     W = canvas.parentElement.offsetWidth;
@@ -859,49 +845,49 @@
     stnX    = STATIONS.map((_, i) => PAD + i * spacing);
   }
 
-  /* ── rail ── */
-  function drawRail() {
-    /* rail bed shadow */
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(PAD, LY + 2); ctx.lineTo(W - PAD, LY + 2);
-    ctx.strokeStyle = 'rgba(0,0,0,0.45)';
-    ctx.lineWidth = 5; ctx.stroke();
-    ctx.restore();
+  /* ── "Live" Network Pulse System ── */
+  function drawRipples() {
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      let r = ripples[i];
+      r.radius += 0.4;   // Expand outward
+      r.alpha -= 0.015;  // Fade out smoothly
 
-    /* sleepers */
-    const slW = 6, slH = 12, slGap = 18;
-    for (let x = PAD; x < W - PAD; x += slGap) {
-      ctx.fillStyle = 'rgba(245,242,235,0.05)';
-      ctx.fillRect(x - slW/2, LY - slH/2, slW, slH);
-    }
+      if (r.alpha <= 0) {
+        ripples.splice(i, 1);
+        continue;
+      }
 
-    /* rail glow (blue line) */
-    ctx.save();
-    ctx.shadowColor = C.lineGlow; ctx.shadowBlur = 12;
-    ctx.beginPath();
-    ctx.moveTo(PAD, LY); ctx.lineTo(W - PAD, LY);
-    ctx.strokeStyle = C.line; ctx.lineWidth = 3; ctx.stroke();
-    ctx.restore();
-
-    /* upper rail */
-    ctx.beginPath();
-    ctx.moveTo(PAD, LY - 3); ctx.lineTo(W - PAD, LY - 3);
-    ctx.strokeStyle = 'rgba(42,92,170,0.35)'; ctx.lineWidth = 1.5; ctx.stroke();
-
-    /* travelled trail */
-    const tx2 = Math.min(W - PAD, tx);
-    if (tx2 > PAD) {
-      const g = ctx.createLinearGradient(PAD, 0, tx2, 0);
-      g.addColorStop(0, C.trailDim);
-      g.addColorStop(1, C.trail);
+      ctx.save();
       ctx.beginPath();
-      ctx.moveTo(PAD, LY); ctx.lineTo(tx2, LY);
-      ctx.strokeStyle = g; ctx.lineWidth = 3; ctx.stroke();
+      ctx.arc(r.x, LY, r.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(200, 75, 47, ${r.alpha})`; // Brand color pulse
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.restore();
     }
   }
 
-  /* ── station ── */
+  /* ── Clean, Minimal Rail & Stations ── */
+  function drawRail() {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(PAD, LY); ctx.lineTo(W - PAD, LY);
+    ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.stroke();
+    ctx.restore();
+
+    // The glowing trail of the "data" stream
+    const tx2 = Math.min(W - PAD, Math.max(PAD, tx));
+    if (tx2 > PAD) {
+      ctx.save();
+      ctx.shadowColor = 'rgba(200, 75, 47, 0.4)';
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.moveTo(PAD, LY); ctx.lineTo(tx2, LY);
+      ctx.strokeStyle = C.trail; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.restore();
+    }
+  }
+
   function drawStation(i) {
     const x   = stnX[i];
     const s   = STATIONS[i];
@@ -910,218 +896,65 @@
     const hl  = s.highlight;
     const maj = s.major;
 
-    /* stem */
-    const stemH = maj ? 22 : hl ? 16 : 11;
-    const stemUp = s.above;
-    ctx.beginPath();
-    ctx.moveTo(x, LY - (stemUp ? stemH : 0));
-    ctx.lineTo(x, LY + (stemUp ? 0 : stemH));
-    ctx.strokeStyle = current ? C.dotActive
-      : passed ? (hl ? 'rgba(232,160,32,0.6)' : 'rgba(200,75,47,0.35)')
-      : (hl ? 'rgba(232,160,32,0.25)' : 'rgba(245,242,235,0.12)');
-    ctx.lineWidth = hl ? 1.5 : 1; ctx.stroke();
-
-    /* outer ring for major */
-    if (maj) {
-      const ringR = 10;
-      ctx.beginPath(); ctx.arc(x, LY, ringR, 0, Math.PI*2);
-      ctx.strokeStyle = current ? 'rgba(255,255,255,0.35)'
-        : passed ? 'rgba(232,160,32,0.35)'
-        : 'rgba(232,160,32,0.12)';
-      ctx.lineWidth = 1; ctx.stroke();
-    }
-
-    /* pulse rings on current */
-    if (current) {
-      const base = maj ? 10 : hl ? 7 : 5;
-      for (let p = 1; p <= 2; p++) {
-        const pr = base + 5*p + Math.sin(frame*0.15)*2;
-        ctx.beginPath(); ctx.arc(x, LY, pr, 0, Math.PI*2);
-        ctx.strokeStyle = `rgba(255,255,255,${0.18 - p*0.06})`;
-        ctx.lineWidth = 1; ctx.stroke();
-      }
-    }
-
-    /* dot */
-    const r = maj ? 8 : hl ? 6 : 4;
+    const r = maj ? 5 : hl ? 4 : 2.5;
+    
+    // Sleek geometric dot
     ctx.beginPath(); ctx.arc(x, LY, r, 0, Math.PI*2);
-    ctx.fillStyle = current ? C.dotActive
-      : passed ? (hl ? C.dotHL : C.dotPassed)
-      : (hl ? C.dotHLDim : C.dot);
+    ctx.fillStyle = current ? C.dotActive : passed ? (hl ? C.dotHL : C.dotPassed) : C.dot;
     ctx.fill();
 
-    /* inner white dot on major */
-    if (maj && !current) {
-      ctx.beginPath(); ctx.arc(x, LY, 3, 0, Math.PI*2);
-      ctx.fillStyle = passed ? '#e8a020' : 'rgba(245,242,235,0.25)';
-      ctx.fill();
-    }
-
-    /* ── labels ── */
-    const gap   = r + (stemUp ? stemH + 4 : 2);
-    const baseY = stemUp ? LY - gap : LY + gap + 4;
-    const dir   = stemUp ? -1 : 1;
-    const lAlign = (i === 0) ? 'left' : (i === N-1) ? 'right' : 'center';
-
-    ctx.textAlign = lAlign;
-
-    /* station name */
-    ctx.font = hl ? '600 10px DM Sans,sans-serif' : '400 9px DM Sans,sans-serif';
-    ctx.fillStyle = current ? C.labelAct
-      : passed ? (hl ? C.labelHL : C.labelPass)
-      : (hl ? 'rgba(232,160,32,0.6)' : C.labelDim);
+    // Text labels - sharp and clean typography
+    const stemUp = s.above;
+    const gap    = r + 10;
+    const baseY  = stemUp ? LY - gap : LY + gap + 4;
+    ctx.textAlign = (i === 0) ? 'left' : (i === N-1) ? 'right' : 'center';
+    
+    ctx.font = hl ? '600 10px "DM Sans", sans-serif' : '500 9px "DM Sans", sans-serif';
+    ctx.fillStyle = current ? '#ffffff' : passed ? (hl ? C.labelHL : C.labelPass) : C.labelDim;
     ctx.fillText(s.name, x, baseY);
 
-    /* tag */
-    if (s.tag) {
-      ctx.font = '400 8px DM Sans,sans-serif';
-      ctx.fillStyle = current ? C.tagAct : C.tagHL;
-      ctx.fillText(s.tag, x, baseY + dir * 12);
+    // Minimal tags for major stations
+    if (s.tag && (current || passed)) {
+      ctx.font = '500 8px "DM Sans", sans-serif';
+      ctx.fillStyle = current ? 'rgba(255,255,255,0.7)' : 'rgba(200, 75, 47, 0.7)';
+      ctx.fillText(s.tag, x, baseY + (stemUp ? -12 : 12));
     }
   }
 
-  /* ── train (realistic minimal DMC-style) ── */
+  /* ── Sleek "Data Stream" Train Design ── */
   function drawTrain() {
-    /* 3 cars: lead + 2 trailing */
-    const carL = 54, carH = 20, carGap = 4;
-    const cars = 3;
-    const totalL = cars * carL + (cars-1) * carGap;
+    const carL = 40;
+    const carH = 4; // Ultra-thin profile
+    const cx1 = tx - carL;               
+    const cY  = LY - carH / 2;
 
     ctx.save();
+    
+    // Train core (sharp, glowing white line)
+    ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
+    ctx.shadowBlur = 12;
+    
+    ctx.beginPath();
+    ctx.roundRect(cx1, cY, carL, carH, 2);
+    ctx.fillStyle = C.trainMain;
+    ctx.fill();
 
-    for (let c = 0; c < cars; c++) {
-      const cx2 = tx - c * (carL + carGap); // right edge of this car
-      const cx1 = cx2 - carL;               // left edge
-      const cY  = LY - carH / 2;
-      const isLead = c === 0;
-
-      /* undercarriage shadow */
-      ctx.shadowColor = 'rgba(0,0,0,0.5)';
-      ctx.shadowBlur  = 8;
-      ctx.shadowOffsetY = 3;
-
-      /* body */
-      const bGrad = ctx.createLinearGradient(cx1, cY, cx1, cY + carH);
-      bGrad.addColorStop(0,   C.trainRoof);
-      bGrad.addColorStop(0.15, C.trainTop);
-      bGrad.addColorStop(0.5,  C.trainMid);
-      bGrad.addColorStop(1,    C.trainBot);
+    // Accent trail behind the train
+    if (spd > 0) {
+      const gradient = ctx.createLinearGradient(cx1 - 20, cY, cx1, cY);
+      gradient.addColorStop(0, 'transparent');
+      gradient.addColorStop(1, C.trainTail);
+      
       ctx.beginPath();
-      const radii = isLead ? [2, 5, 5, 2] : [2, 2, 2, 2];
-      ctx.roundRect(cx1, cY, carL, carH, radii);
-      ctx.fillStyle = bGrad;
+      ctx.roundRect(cx1 - 20, cY + 1, 20, 2, 1);
+      ctx.fillStyle = gradient;
       ctx.fill();
-      ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
-
-      /* red stripe */
-      ctx.fillStyle = C.stripeR;
-      ctx.fillRect(cx1, cY + carH * 0.38, carL, 3.5);
-
-      /* blue stripe below */
-      ctx.fillStyle = C.stripeB;
-      ctx.fillRect(cx1, cY + carH * 0.38 + 3.5, carL, 2);
-
-      /* windows */
-      const winY    = cY + 3;
-      const winH    = carH * 0.32;
-      const winGap  = 7;
-      const winW    = isLead ? 10 : 12;
-      const winStartX = isLead ? cx1 + 16 : cx1 + 6;
-      const nWins   = isLead ? 3 : 4;
-      for (let w = 0; w < nWins; w++) {
-        const wx = winStartX + w * (winW + winGap);
-        if (wx + winW > cx2 - 2) break;
-        /* glass */
-        ctx.beginPath();
-        ctx.roundRect(wx, winY, winW, winH, 1.5);
-        ctx.fillStyle = C.glass;
-        ctx.fill();
-        ctx.strokeStyle = C.glassEdge;
-        ctx.lineWidth = 0.5;
-        ctx.stroke();
-        /* reflection */
-        ctx.fillStyle = 'rgba(255,255,255,0.12)';
-        ctx.fillRect(wx + 1, winY + 1, 2, winH - 2);
-      }
-
-      /* front face for lead car */
-      if (isLead) {
-        /* cab window */
-        ctx.beginPath();
-        ctx.roundRect(cx2 - 14, cY + 3, 11, carH * 0.38, [1,3,1,1]);
-        ctx.fillStyle = 'rgba(180,210,255,0.22)';
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(200,220,255,0.4)'; ctx.lineWidth = 0.5; ctx.stroke();
-
-        /* headlight cluster */
-        const hlY1 = cY + 4;
-        const hlY2 = cY + carH - 6;
-        for (const [hx, hy, hr, col] of [
-          [cx2 - 3, hlY1, 2.5, '#fff9d0'],
-          [cx2 - 3, hlY2, 1.8, '#ffddaa'],
-        ]) {
-          ctx.save();
-          ctx.shadowColor = col; ctx.shadowBlur = 8;
-          ctx.beginPath(); ctx.arc(hx, hy, hr, 0, Math.PI*2);
-          ctx.fillStyle = col; ctx.fill();
-          ctx.restore();
-        }
-
-        /* headlight beam (moving) */
-        if (spd > 0.3) {
-          const bLen = 30 + spd * 6;
-          const bGr = ctx.createLinearGradient(cx2, LY, cx2 + bLen, LY);
-          bGr.addColorStop(0, 'rgba(255,249,200,0.18)');
-          bGr.addColorStop(1, 'transparent');
-          ctx.beginPath();
-          ctx.moveTo(cx2, cY + 3);
-          ctx.lineTo(cx2 + bLen, LY - 12);
-          ctx.lineTo(cx2 + bLen, LY + 12);
-          ctx.lineTo(cx2, cY + carH - 3);
-          ctx.fillStyle = bGr; ctx.fill();
-        }
-      }
-
-      /* coupler */
-      if (c < cars - 1) {
-        ctx.fillStyle = 'rgba(100,100,100,0.6)';
-        ctx.fillRect(cx1 - carGap, LY - 2, carGap, 4);
-      }
-
-      /* bogie wheels */
-      const axles = [cx1 + 10, cx1 + carL - 10];
-      for (const ax of axles) {
-        /* wheel */
-        ctx.beginPath(); ctx.arc(ax, LY + carH/2, 4, 0, Math.PI*2);
-        ctx.fillStyle = '#555'; ctx.fill();
-        ctx.beginPath(); ctx.arc(ax, LY + carH/2, 2, 0, Math.PI*2);
-        ctx.fillStyle = '#888'; ctx.fill();
-        /* rail contact flash */
-        if (spd > 1.5) {
-          ctx.beginPath(); ctx.arc(ax, LY + carH/2 + 4, 1.5, 0, Math.PI*2);
-          ctx.fillStyle = `rgba(255,200,50,${Math.random() * 0.4})`;
-          ctx.fill();
-        }
-      }
-
-      /* motion blur streaks behind last car */
-      if (c === cars - 1 && spd > 1.2) {
-        const streakX = cx1 - 4;
-        for (let s = 0; s < 4; s++) {
-          const sLen = (8 - s*1.5) * (spd / 4);
-          ctx.beginPath();
-          ctx.moveTo(streakX - s*10, cY + 5 + s*3);
-          ctx.lineTo(streakX - s*10 - sLen, cY + 5 + s*3);
-          ctx.strokeStyle = `rgba(200,75,47,${0.22 - s*0.04})`;
-          ctx.lineWidth = 1; ctx.stroke();
-        }
-      }
     }
 
     ctx.restore();
   }
 
-  /* ── tick ── */
+  /* ── Smooth Animation Logic ── */
   function tick() {
     frame++;
     ctx.clearRect(0, 0, W, H);
@@ -1129,41 +962,53 @@
     if (!dwelling) {
       const next = stnX.findIndex(x => x > tx + 8);
       if (next === -1) {
-        spd = Math.min(5, spd + 0.1);
+        spd = Math.min(6, spd + 0.15); // Faster acceleration off-screen
         tx += spd;
-        if (tx > W + 160) { tx = -130; spd = 0; activeStn = -1; }
+        if (tx > W + 100) { tx = -80; spd = 0; activeStn = -1; }
       } else {
         const dist = stnX[next] - tx;
-        if (dist > 55)      { spd = Math.min(5, spd + 0.1); }
-        else if (dist > 0)  { spd = Math.max(0, spd - 0.22); }
-        if (spd < 0.04 && dist < 8) {
+        const brakeDist = Math.min(60, spacing * 0.45); 
+        
+        if (dist > brakeDist) { 
+          spd = Math.min(5, spd + 0.15); // Smooth, fast glide
+        } else { 
+          spd = Math.max(0.7, spd - 0.2); // Buttery smooth braking
+        }
+        
+        if (dist <= spd || dist < 2) {
           tx = stnX[next];
           spd = 0;
           dwelling = true;
           activeStn = next;
-          const dwell = 900 + (STATIONS[next].highlight ? 700 : 0);
+          const dwell = 1200 + (STATIONS[next].highlight ? 800 : 0);
+          
           dwellTimer = setTimeout(() => {
-            dwelling = false; dwellTimer = null; spd = 0.05;
+            dwelling = false; dwellTimer = null; spd = 0.5; 
           }, dwell);
         }
         tx += spd;
       }
+    } else {
+      // Create network pulse rings while stopped
+      if (frame % 40 === 0) {
+        ripples.push({ x: stnX[activeStn], radius: 4, alpha: 0.8 });
+      }
     }
 
     drawRail();
+    drawRipples(); // Draw the network pulses
     for (let i = 0; i < N; i++) drawStation(i);
     drawTrain();
+    
     animId = requestAnimationFrame(tick);
   }
 
   function init() {
     resize();
-    started = true;
-    tx = -130; spd = 0.08;
+    tx = -80; spd = 0.5;
     tick();
   }
 
-  // Always start — no intersection gating
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
@@ -1171,13 +1016,11 @@
   }
 
   window.addEventListener('resize', () => {
-    cancelAnimationFrame(animId); animId = null;
+    cancelAnimationFrame(animId);
     resize(); tick();
   });
 })();
 </script>
-<!-- END METRO ANIMATION SECTION -->
-
 <div class="pulse-section">
   <div class="pulse-inner">
     <div class="pulse-left">
@@ -1377,9 +1220,6 @@
   </div>
 </section>
 
-<!-- OTP VERIFICATION SECTION -->
-
-<!-- SOCIAL FEED SECTION -->
 <section class="social-feed-section" id="feed" style="display: none;">
   <div class="social-feed-wrapper">
     <div class="feed-header">
@@ -1393,7 +1233,6 @@
       <button class="feed-tab" data-tab="brainstorm">Brainstorm</button>
     </div>
 
-    <!-- DU MAIN -->
     <div id="du-main" class="feed-section active">
       <div class="posts-grid">
         <div class="post-card">
@@ -1462,7 +1301,6 @@
       </div>
     </div>
 
-    <!-- FOR COLLEGE -->
     <div id="for-college" class="feed-section">
       <div class="posts-grid">
         <div class="post-card">
@@ -1528,7 +1366,6 @@
       </div>
     </div>
 
-    <!-- BRAINSTORM -->
     <div id="brainstorm" class="feed-section">
       <div class="posts-grid">
         <div class="post-card idea-card">
