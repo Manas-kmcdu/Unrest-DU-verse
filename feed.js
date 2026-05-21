@@ -783,8 +783,14 @@ function UnrestFeed(){
 
   useEffect(()=>onAuthStateChanged(fb().auth,async u=>{
     if(u){
-      const isDU=u.email.endsWith(".du.ac.in")||u.email.endsWith("@du.ac.in");
-      if(!isDU&&u.email!==ADMIN_EMAIL){await signOut(fb().auth);setUser(null);return;}
+      const email=u.email.toLowerCase().trim();
+      const isDU=email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
+      if(!isDU&&email!==ADMIN_EMAIL){
+        try{
+          const snap=await fb().getDoc(fb().doc(fb().db,"allowlisted_emails",email));
+          if(!snap.exists()){await signOut(fb().auth);setUser(null);return;}
+        }catch(e){await signOut(fb().auth);setUser(null);return;}
+      }
     }
     setUser(u||null);
   }),[]);
