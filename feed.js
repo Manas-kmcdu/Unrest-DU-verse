@@ -1116,8 +1116,10 @@ function UnrestFeed(){
             <div style={{background:"rgba(200,75,47,0.05)",border:"1px solid rgba(200,75,47,0.12)",borderRadius:8,padding:"12px 13px",marginBottom:20}}>
               <div style={{fontSize:"0.66rem",fontWeight:700,color:"var(--accent)",marginBottom:7}}>How it works</div>
               {["Post with your DU Google account","Mods approve before it goes live","W / L votes are real-time","Your college is auto-detected","Comment on any post"].map((item,i)=>(
-                <div key={i} style={{display:"flex",gap:5,fontSize:"0.7rem",color:"var(--ink2)",padding:"3px 0",lineHeight:1.5}>
-                 <><span style={{color:"var(--ink4)",flexShrink:0}}>{i+1}.</span><span>{item}</span></>
+                <div key={i} style={{display:"flex",gap:5,fontSize:"0.7rem",color:"var(--ink2)",padding:"3px 0",lineHeight:1.5}}>
+                  {/* 🌟 FIXED: Stripped away the unnecessary wrapping ghost fragments */}
+                  <span style={{color:"var(--ink4)",flexShrink:0}}>{i+1}.</span>
+                  <span>{item}</span>
                 </div>
               ))}
             </div>
