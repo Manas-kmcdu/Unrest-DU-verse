@@ -472,7 +472,6 @@ function PostCard({post,voted,onVote,saved,onSave,notify,user,categoryTag}){
         <p style={{fontSize:"0.9rem",color:"var(--ink)",lineHeight:1.7,marginBottom:10}}>{post.text}</p>
         {post.tags&&post.tags.length>0 && <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:10}}>{post.tags.map(t=><span key={t} style={{fontSize:"0.67rem",color:"var(--ink3)",fontWeight:500}}>#{t}</span>)}</div>}
         
-        {/* ─── FIXED ACTION ROW SECTIONS ─── */}
         <div style={{display:"flex",alignItems:"center",gap:11,flexWrap:"wrap"}}>
           <WLBar w={post.w} l={post.l} postId={post.id} onVote={onVote} voted={voted}/>
           <span style={{fontSize:"0.67rem",color:"var(--ink4)"}}>·</span>
@@ -785,12 +784,22 @@ function UnrestFeed(){
   const [pendingVerifications,setPendingVerifications]=useState([]);
   const [feedLoading,setFeedLoading]=useState(true);
   const [tab,setTab]=useState("du");
-  const [voted,setVoted]=useState({});
-  const [savedPosts,setSavedPosts]=useState(new Set());
-  const [toast,setToast]=useState(null);
   const [searchQ,setSearchQ]=useState("");
   const [searchCollege,setSearchCollege]=useState("");
   const [exploreCategory,setExploreCategory]=useState(null);
+  const [savedPosts,setSavedPosts]=useState(new Set());
+  const [toast,setToast]=useState(null);
+
+  // 🔒 Local Persistence Vote System Initialization Check
+  const [voted, setVoted] = useState(() => {
+    const savedVotes = localStorage.getItem("unrest_user_votes");
+    return savedVotes ? JSON.parse(savedVotes) : {};
+  });
+
+  // Keep localStorage continuously synchronized with active metrics changes
+  useEffect(() => {
+    localStorage.setItem("unrest_user_votes", JSON.stringify(voted));
+  }, [voted]);
 
   const isAdmin=user&&user.email===ADMIN_EMAIL;
 
@@ -876,12 +885,31 @@ function UnrestFeed(){
     }
   }
 
-  async function handleVote(id,type){
-    if(voted[id]===type) return;
-    setVoted(p=>({...p,[id]:type}));
-    try{await updateDoc(doc(fb().db,"posts",id),{[type]:increment(1)});notify(type==="w"?"W noted":"L noted");}
-    catch(e){setVoted(p=>({...p,[id]:null}));notify("Vote failed");}
+  async function handleVote(id, type) {
+    if (!user) return;
+    if (voted[id]) {
+      notify("You have already voted on this post!");
+      return;
+    }
+    
+    setVoted(p => ({ ...p, [id]: type }));
+    
+    try {
+      await updateDoc(doc(fb().db, "posts", id), {
+        [type]: increment(1)
+      });
+      notify(type === "w" ? "W noted 🔥" : "L noted");
+    } catch(e) {
+      console.error("Database tracking constraint error:", e);
+      setVoted(p => {
+        const rollback = { ...p };
+        delete rollback[id];
+        return rollback;
+      });
+      notify("Vote failed");
+    }
   }
+
   function handleSave(id){setSavedPosts(p=>{const n=new Set(p);n.has(id)?n.delete(id):n.add(id);return n;});}
 
   function switchTab(t){setTab(t);if(t!=="explore")setExploreCategory(null);}
@@ -1088,7 +1116,7 @@ function UnrestFeed(){
             <div style={{background:"rgba(200,75,47,0.05)",border:"1px solid rgba(200,75,47,0.12)",borderRadius:8,padding:"12px 13px",marginBottom:20}}>
               <div style={{fontSize:"0.66rem",fontWeight:700,color:"var(--accent)",marginBottom:7}}>How it works</div>
               {["Post with your DU Google account","Mods approve before it goes live","W / L votes are real-time","Your college is auto-detected","Comment on any post"].map((item,i)=>(
-                <div key={i} style={{display:"flex",gap:5,fontSize:"0.7rem",color:"var(--ink2)",padding:"3px 0",lineHeight:1.5}}>
+                <div key={i} style={{display:"flex",gap:5,fontSize:"0.7rem",color:"var(--ink2)",padding:"3px 0",lineHeight:1.5}>
                   <span style={{color:"var(--ink4)",flexShrink:0}}>{i+1}.</span><span>{item}</span>
                 </div>
               ))}
