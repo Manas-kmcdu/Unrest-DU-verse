@@ -1046,7 +1046,7 @@ function UnrestFeed(){
             <div style={{marginBottom:20}}>
               <div style={{fontSize:"0.56rem",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"var(--ink4)",marginBottom:10}}>About Unrest</div>
               <div style={{fontSize:"0.76rem",color:"var(--ink2)",lineHeight:1.8}}>Delhi University's verified student network.</div>
-              <div style={{marginTop:5,fontSize:"0.7rem",color:"var(--ink4)"}}>Launching 11 June 2026</div>
+              <div style={{marginTop:5,fontSize:"0.7rem",color:"var(--ink4)"}}>Full Launch - 11 June 2026</div>
             </div>
             <div style={{background:"rgba(200,75,47,0.05)",border:"1px solid rgba(200,75,47,0.12)",borderRadius:8,padding:"12px 13px",marginBottom:20}}>
               <div style={{fontSize:"0.66rem",fontWeight:700,color:"var(--accent)",marginBottom:7}}>How it works</div>
