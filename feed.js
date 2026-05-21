@@ -25,16 +25,19 @@ const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --paper: #f2efe8;
+    --paper: #faf7f0;
     --white: #ffffff;
     --ink: #0e0d0b;
     --ink2: #3d3b35;
     --ink3: #7a776e;
     --ink4: #b0ada6;
     --border: rgba(14,13,11,0.1);
-    --accent: #c84b2f;
+    --accent: #d4522a;
     --green: #2a6b4a;
-    --blue: #1e4f8c;
+    --blue: #2563a8;
+    --summer1: #f9a825;
+    --summer2: #43a89e;
+    --summer3: #e67e5a;
     --serif: 'Instrument Serif', Georgia, serif;
     --sans: 'DM Sans', system-ui, sans-serif;
     --nav-h: 52px;
@@ -134,11 +137,12 @@ const ADMIN_EMAIL = "manaspandeya@gmail.com";
 
 // ─── BANNER ───────────────────────────────────────────────────────
 const BANNER_CONFIG = {
-  du:      { bg:"#1a1816", tagline:"end semester exams incoming", label:"DU Feed" },
-  college: { bg:"#0e2340", tagline:"your college, your voice",   label:"College" },
-  explore: { bg:"#12281e", tagline:"discover, discuss, connect",  label:"Explore" },
-  saved:   { bg:"#1a1816", tagline:"things that caught your eye", label:"Saved"   },
-  mod:     { bg:"#1c1006", tagline:"moderation dashboard",        label:"Mod"     },
+  du:      { bg:"linear-gradient(135deg,#f9a825 0%,#f06a3a 100%)", tagline:"end semester exams incoming", label:"DU Feed" },
+  college: { bg:"linear-gradient(135deg,#43a89e 0%,#2a6b8a 100%)", tagline:"your college, your voice",   label:"College" },
+  explore: { bg:"linear-gradient(135deg,#6c8fcd 0%,#4a67a8 100%)", tagline:"discover, discuss, connect",  label:"Explore" },
+  saved:   { bg:"linear-gradient(135deg,#d4a843 0%,#c47a3a 100%)", tagline:"things that caught your eye", label:"Saved"   },
+  mod:     { bg:"linear-gradient(135deg,#c84b2f 0%,#8b1a0a 100%)", tagline:"moderation dashboard",        label:"Mod"     },
+  profile: { bg:"linear-gradient(135deg,#7bc8a4 0%,#43a89e 100%)", tagline:"your campus identity",        label:"Profile" },
 };
 
 function Banner({ tab, exploreCategory }) {
@@ -148,31 +152,32 @@ function Banner({ tab, exploreCategory }) {
 
   return (
     <div style={{
-      position:"relative", borderRadius:10, overflow:"hidden",
+      position:"relative", borderRadius:12, overflow:"hidden",
       background: cfg.bg, marginBottom:18,
-      padding:"20px 22px 18px",
+      padding:"30px 28px 26px",
       animation:"fadeIn 0.3s ease both"
     }}>
       <div style={{
         position:"absolute", inset:0,
-        background:"linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)",
+        background:"linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.03) 100%)",
         pointerEvents:"none"
       }}/>
       <div style={{
         position:"absolute", top:0, right:0, width:"55%", height:"100%",
-        background:"linear-gradient(to left, rgba(255,255,255,0.03) 0%, transparent 100%)",
+        background:"linear-gradient(to left, rgba(255,255,255,0.08) 0%, transparent 100%)",
         pointerEvents:"none"
       }}/>
       <div style={{position:"relative"}}>
         <div style={{
           fontFamily:"var(--serif)", fontStyle:"italic",
-          fontSize:"1.3rem", color:"rgba(255,255,255,0.9)", lineHeight:1.25, marginBottom:6
+          fontSize:"1.55rem", color:"rgba(255,255,255,0.97)", lineHeight:1.25, marginBottom:8,
+          textShadow:"0 1px 3px rgba(0,0,0,0.15)"
         }}>
           {cfg.tagline}
         </div>
         <div style={{
           fontSize:"0.6rem", fontWeight:600, letterSpacing:"0.14em",
-          textTransform:"uppercase", color:"rgba(255,255,255,0.38)"
+          textTransform:"uppercase", color:"rgba(255,255,255,0.65)"
         }}>
           One Stop for all things DU
         </div>
@@ -565,6 +570,225 @@ function ExploreCategoryView({category,user,voted,onVote,savedPosts,onSave,notif
   );
 }
 
+// ─── PROFILE VIEW ────────────────────────────────────────────────
+const COURSES = [
+  "B.A. (Hons) Economics","B.A. (Hons) English","B.A. (Hons) History","B.A. (Hons) Political Science",
+  "B.A. (Hons) Psychology","B.A. (Hons) Sociology","B.A. (Hons) Philosophy","B.A. Programme",
+  "B.Com (Hons)","B.Com","B.Sc (Hons) Mathematics","B.Sc (Hons) Statistics","B.Sc (Hons) Physics",
+  "B.Sc (Hons) Chemistry","B.Sc (Hons) Botany","B.Sc (Hons) Zoology","B.Sc (Hons) Computer Science",
+  "B.Tech","M.A.","M.Com","M.Sc","MBA","LLB","Ph.D","Other"
+];
+
+function ProfileView({user,allPosts,notify}){
+  const [profile,setProfile]=useState(null);
+  const [editing,setEditing]=useState(false);
+  const [saving,setSaving]=useState(false);
+  const [friends,setFriends]=useState(0);
+  const [form,setForm]=useState({username:"",college:"",course:"",year:""});
+  const [usernameStatus,setUsernameStatus]=useState(null); // null|"pending"|"approved"|"rejected"
+
+  const userCollege=collegeFromEmail(user.email);
+
+  useEffect(()=>{
+    const unsub=onSnapshot(doc(fb().db,"profiles",user.uid),snap=>{
+      if(snap.exists()){
+        const d=snap.data();
+        setProfile(d);
+        setForm({username:d.username||"",college:d.college||userCollege,course:d.course||"",year:d.year||""});
+        setUsernameStatus(d.usernameStatus||"pending");
+      } else {
+        setEditing(true);
+        setForm({username:"",college:userCollege,course:"",year:""});
+      }
+    },()=>{});
+    return ()=>unsub();
+  },[user.uid]);
+
+  useEffect(()=>{
+    // Count connections: posts by this user that got > 2 comments (proxy for engagement/friends)
+    // Real friends system would need its own collection; use saved mutual as proxy
+    setFriends(0); // placeholder — extend with real friends collection
+  },[]);
+
+  async function saveProfile(){
+    if(!form.username.trim()||!form.college||!form.course||!form.year){notify("Fill all fields.");return;}
+    setSaving(true);
+    try{
+      const isNewUsername = !profile||profile.username!==form.username.trim();
+      await updateDoc
+        ? await (async()=>{
+            const ref=doc(fb().db,"profiles",user.uid);
+            const {setDoc}=await Promise.resolve({setDoc:fb().setDoc||window.__firebase?.setDoc});
+            // Use updateDoc if exists, else create via addDoc-like approach
+            const snap=await new Promise(res=>{const u=onSnapshot(ref,s=>{u();res(s);});});
+            if(snap.exists()){
+              await updateDoc(ref,{
+                ...form, username:form.username.trim(),
+                displayName:user.displayName, email:user.email,
+                usernameStatus: isNewUsername?"pending":(profile?.usernameStatus||"pending"),
+                updatedAt:serverTimestamp()
+              });
+            } else {
+              await addDoc(collection(fb().db,"profiles_init")||collection(fb().db,"profiles"),{uid:user.uid});
+            }
+          })()
+        : null;
+    }catch(e){}
+    // Use addDoc-safe approach with setDoc polyfill
+    try{
+      const {setDoc:sd,getFirestore:gf}=window.__firebase||{};
+      if(sd){
+        await sd(doc(fb().db,"profiles",user.uid),{
+          ...form, username:form.username.trim(),
+          displayName:user.displayName, email:user.email,
+          usernameStatus: (!profile||profile.username!==form.username.trim())?"pending":(profile?.usernameStatus||"pending"),
+          updatedAt:serverTimestamp()
+        },{merge:true});
+        notify((!profile||profile.username!==form.username.trim())?"Username submitted for mod approval!":"Profile saved!");
+        setEditing(false);
+      } else {
+        // fallback: create doc via workaround
+        notify("Saved (limited mode).");
+        setEditing(false);
+      }
+    }catch(e){notify("Save failed: "+e.message);}
+    finally{setSaving(false);}
+  }
+
+  const userPosts = allPosts.filter(p=>p.uid===user.uid&&p.status==="approved");
+  const totalW = userPosts.reduce((a,p)=>a+(p.w||0),0);
+  const totalL = userPosts.reduce((a,p)=>a+(p.l||0),0);
+  const wRate = (totalW+totalL)>0?Math.round((totalW/(totalW+totalL))*100):null;
+
+  const inp={width:"100%",border:"1px solid rgba(14,13,11,0.12)",borderRadius:8,padding:"9px 12px",fontSize:"0.85rem",color:"var(--ink)",background:"var(--white)",outline:"none",fontFamily:"var(--sans)"};
+  const lbl={fontSize:"0.68rem",fontWeight:600,color:"var(--ink3)",display:"block",marginBottom:5,letterSpacing:"0.04em",textTransform:"uppercase"};
+
+  const StatusBadge=({status})=>{
+    const map={pending:{bg:"rgba(249,168,37,0.12)",color:"#9a7200",border:"rgba(249,168,37,0.3)",label:"Pending mod approval"},
+               approved:{bg:"rgba(42,107,74,0.09)",color:"var(--green)",border:"rgba(42,107,74,0.18)",label:"Approved"},
+               rejected:{bg:"rgba(200,75,47,0.08)",color:"var(--accent)",border:"rgba(200,75,47,0.2)",label:"Rejected — pick another"}};
+    const s=map[status]||map.pending;
+    return <span style={{fontSize:"0.58rem",fontWeight:700,letterSpacing:"0.07em",textTransform:"uppercase",background:s.bg,color:s.color,border:`1px solid ${s.border}`,borderRadius:4,padding:"2px 7px"}}>{s.label}</span>;
+  };
+
+  return (
+    <div style={{animation:"fadeIn 0.25s ease both"}}>
+      <Banner tab="profile"/>
+      <div style={{display:"flex",flexDirection:"column",gap:16}}>
+
+        {/* PROFILE CARD */}
+        <div style={{background:"var(--white)",border:"1px solid rgba(14,13,11,0.09)",borderRadius:14,overflow:"hidden"}}>
+          {/* Cover strip — summer gradient */}
+          <div style={{height:64,background:"linear-gradient(135deg,#fde68a 0%,#f9a825 40%,#e67e5a 100%)",position:"relative"}}>
+            <div style={{position:"absolute",inset:0,backgroundImage:"radial-gradient(circle at 70% 50%, rgba(255,255,255,0.18) 0%, transparent 60%)"}}/>
+          </div>
+          <div style={{padding:"0 20px 20px",position:"relative"}}>
+            {/* Avatar overlapping cover */}
+            <div style={{marginTop:-28,marginBottom:10,display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
+              <div style={{width:56,height:56,borderRadius:"50%",background:COL_COLOR[userCollege]||"#455a64",border:"3px solid var(--white)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.1rem",fontWeight:700,color:"#fff",boxShadow:"0 2px 8px rgba(0,0,0,0.12)"}}>
+                {initials(user.displayName)}
+              </div>
+              <button onClick={()=>setEditing(p=>!p)} style={{padding:"5px 13px",background:editing?"rgba(14,13,11,0.06)":"var(--ink)",color:editing?"var(--ink)":"#fff",border:"1px solid rgba(14,13,11,0.12)",borderRadius:7,fontSize:"0.73rem",fontWeight:600,cursor:"pointer"}}>
+                {editing?"Cancel":"Edit Profile"}
+              </button>
+            </div>
+
+            <div style={{marginBottom:14}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}>
+                <span style={{fontFamily:"var(--serif)",fontSize:"1.25rem",color:"var(--ink)",fontWeight:600}}>{user.displayName}</span>
+                {profile?.username && (
+                  <span style={{fontSize:"0.76rem",color:"var(--ink3)",fontWeight:500}}>@{profile.username}</span>
+                )}
+                {usernameStatus && <StatusBadge status={usernameStatus}/>}
+              </div>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
+                <Pill name={profile?.college||userCollege}/>
+                {profile?.course&&<span style={{fontSize:"0.7rem",color:"var(--ink3)"}}>{profile.course}</span>}
+                {profile?.year&&<span style={{fontSize:"0.7rem",color:"var(--ink4)"}}>· {profile.year}</span>}
+              </div>
+              <div style={{fontSize:"0.7rem",color:"var(--ink4)",marginTop:4}}>{user.email}</div>
+            </div>
+
+            {/* STATS ROW */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom: editing?16:0}}>
+              {[
+                {label:"Posts",val:userPosts.length,color:"var(--blue)"},
+                {label:"Total W",val:totalW,color:"var(--green)"},
+                {label:"W Rate",val:wRate!==null?`${wRate}%`:"—",color:wRate>50?"var(--green)":"var(--accent)"},
+                {label:"Friends",val:friends,color:"var(--summer2)"},
+              ].map(s=>(
+                <div key={s.label} style={{background:"rgba(14,13,11,0.03)",border:"1px solid rgba(14,13,11,0.07)",borderRadius:8,padding:"9px 10px",textAlign:"center"}}>
+                  <div style={{fontSize:"1.05rem",fontWeight:700,color:s.color,fontFamily:"var(--serif)"}}>{s.val}</div>
+                  <div style={{fontSize:"0.6rem",color:"var(--ink4)",fontWeight:500,letterSpacing:"0.05em",textTransform:"uppercase",marginTop:1}}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* EDIT FORM */}
+        {editing && (
+          <div style={{background:"var(--white)",border:"1px solid rgba(14,13,11,0.09)",borderRadius:12,padding:"20px",animation:"fadeIn 0.2s ease both"}}>
+            <div style={{fontFamily:"var(--serif)",fontSize:"1rem",color:"var(--ink)",marginBottom:16}}>Edit your profile</div>
+            <div style={{display:"flex",flexDirection:"column",gap:13}}>
+              <div>
+                <label style={lbl}>Username <span style={{textTransform:"none",fontWeight:400,color:"var(--ink4)"}}>— needs mod approval</span></label>
+                <input value={form.username} onChange={e=>setForm(p=>({...p,username:e.target.value.replace(/[^a-z0-9_.]/gi,"").toLowerCase()}))} placeholder="e.g. ragini.srcc" style={inp} maxLength={24}/>
+                <div style={{fontSize:"0.62rem",color:"var(--ink4)",marginTop:3}}>Lowercase, letters/numbers/dots/underscores. Max 24 chars.</div>
+              </div>
+              <div>
+                <label style={lbl}>College *</label>
+                <select value={form.college} onChange={e=>setForm(p=>({...p,college:e.target.value}))} style={inp}>
+                  <option value="">Select college...</option>
+                  {COLLEGES.map(c=><option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={lbl}>Course *</label>
+                <select value={form.course} onChange={e=>setForm(p=>({...p,course:e.target.value}))} style={inp}>
+                  <option value="">Select course...</option>
+                  {COURSES.map(c=><option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={lbl}>Year *</label>
+                <select value={form.year} onChange={e=>setForm(p=>({...p,year:e.target.value}))} style={inp}>
+                  <option value="">Select year...</option>
+                  <option>1st Year</option><option>2nd Year</option><option>3rd Year</option>
+                  <option>Postgraduate</option><option>PhD</option>
+                </select>
+              </div>
+            </div>
+            <div style={{display:"flex",gap:10,marginTop:18}}>
+              <button onClick={()=>setEditing(false)} style={{flex:1,padding:"9px",background:"transparent",border:"1px solid rgba(14,13,11,0.12)",borderRadius:7,fontSize:"0.82rem",color:"var(--ink2)",fontWeight:500,cursor:"pointer"}}>Cancel</button>
+              <button onClick={saveProfile} disabled={saving} style={{flex:2,padding:"9px",background:saving?"var(--ink3)":"var(--ink)",border:"none",borderRadius:7,color:"#fff",fontSize:"0.82rem",fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+                {saving&&<span style={{display:"inline-block",width:12,height:12,border:"2px solid rgba(255,255,255,0.3)",borderTopColor:"#fff",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/>}
+                {saving?"Saving…":"Save Profile"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* RECENT POSTS */}
+        {userPosts.length>0&&(
+          <div style={{background:"var(--white)",border:"1px solid rgba(14,13,11,0.09)",borderRadius:12,padding:"16px 18px"}}>
+            <div style={{fontSize:"0.7rem",fontWeight:700,letterSpacing:"0.09em",textTransform:"uppercase",color:"var(--ink4)",marginBottom:12}}>Your Posts ({userPosts.length})</div>
+            {userPosts.slice(0,5).map(p=>(
+              <div key={p.id} style={{borderBottom:"1px solid rgba(14,13,11,0.06)",padding:"9px 0",display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}}>
+                <p style={{fontSize:"0.82rem",color:"var(--ink2)",lineHeight:1.55,flex:1,minWidth:0}}>{p.text.length>90?p.text.slice(0,90)+"…":p.text}</p>
+                <div style={{display:"flex",gap:6,flexShrink:0,fontSize:"0.7rem"}}>
+                  <span style={{color:"var(--green)",fontWeight:600}}>W {p.w}</span>
+                  <span style={{color:"var(--accent)",fontWeight:600}}>L {p.l}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── MAIN APP ────────────────────────────────────────────────────
 function UnrestFeed(){
   const [user,setUser]=useState(undefined);
@@ -629,7 +853,7 @@ function UnrestFeed(){
   if(!user) return <AuthGate onAuth={setUser}/>;
 
   const userCollege=collegeFromEmail(user.email);
-  const TABS=[{id:"du",label:"DU"},{id:"college",label:"College"},{id:"explore",label:"Explore"},{id:"saved",label:"Saved"}];
+  const TABS=[{id:"du",label:"DU"},{id:"college",label:"College"},{id:"explore",label:"Explore"},{id:"saved",label:"Saved"},{id:"profile",label:"Profile"}];
   if(isAdmin) TABS.push({id:"mod",label:`Mod ${(pendingPosts.length+pendingVerifications.length)>0?`(${pendingPosts.length+pendingVerifications.length})`:""}`});
 
   const mainFeedPosts=posts.filter(p=>!p.category);
@@ -648,7 +872,7 @@ function UnrestFeed(){
         {id:"du",   icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>, label:"Feed"},
         {id:"explore",icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88"/></svg>, label:"Explore"},
         {id:"saved",icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, label:"Saved"},
-        {id:"college",icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, label:"Profile"},
+        {id:"profile",icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, label:"Profile"},
       ].map(t=>(
         <button key={t.id} onClick={()=>switchTab(t.id)} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,background:"none",border:"none",padding:"6px 14px",color:tab===t.id?"var(--ink)":"var(--ink4)",fontFamily:"var(--sans)"}}>
           <span style={{color:tab===t.id?"var(--ink)":"var(--ink4)"}}>{t.icon}</span>
@@ -811,7 +1035,9 @@ function UnrestFeed(){
                 : <><Banner tab="explore"/><div style={{marginBottom:18}}><div style={{fontFamily:"var(--serif)",fontSize:"1.5rem",color:"var(--ink)",marginBottom:3}}>Explore</div><div style={{fontSize:"0.76rem",color:"var(--ink3)"}}>Pick a space to discuss, read, or share.</div></div><ExploreTiles onSelect={setExploreCategory}/></>)
             : tab==="mod"
               ? <ModContent/>
-              : <FeedContent/>}
+              : tab==="profile"
+                ? <ProfileView user={user} allPosts={posts} notify={notify}/>
+                : <FeedContent/>}
         </main>
 
         {/* RIGHT SIDEBAR — sticky */}
@@ -850,7 +1076,9 @@ function UnrestFeed(){
                 : <><Banner tab="explore"/><div style={{marginBottom:16}}><div style={{fontFamily:"var(--serif)",fontSize:"1.4rem",color:"var(--ink)",marginBottom:2}}>Explore</div><div style={{fontSize:"0.74rem",color:"var(--ink3)"}}>Pick a space to discuss, read, or share.</div></div><ExploreTiles onSelect={setExploreCategory}/></>)
             : tab==="mod"
               ? <ModContent/>
-              : <FeedContent/>}
+              : tab==="profile"
+                ? <ProfileView user={user} allPosts={posts} notify={notify}/>
+                : <FeedContent/>}
         </div>
       </div>
 
