@@ -200,13 +200,11 @@ function AuthGate({ onAuth }) {
   const [submitLoading, setSubmitLoading] = useState(false);
 
   useEffect(() => {
-    getRedirectResult(fb().auth).then(async result => {
+    getRedirectResult(fb().auth).then(result => {
       if (!result?.user) return;
-      const email = result.user.email.toLowerCase().trim();
+      const email = result.user.email;
       const isDU = email.endsWith(".du.ac.in") || email.endsWith("@du.ac.in");
       if (isDU || email === ADMIN_EMAIL) { onAuth(result.user); return; }
-      const snap = await fb().getDoc(fb().doc(fb().db, "allowlisted_emails", email));
-      if (snap.exists()) { onAuth(result.user); return; }
       setPendingUser({ email, displayName: result.user.displayName });
       signOut(fb().auth); setStep("manual-form"); setManualName(result.user.displayName||"");
     }).catch(()=>{});
@@ -224,11 +222,9 @@ function AuthGate({ onAuth }) {
         }
         throw e;
       }
-      const email = result.user.email.toLowerCase().trim();
+      const email = result.user.email;
       const isDU = email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
       if (isDU || email===ADMIN_EMAIL) { onAuth(result.user); return; }
-      const snap = await fb().getDoc(fb().doc(fb().db, "allowlisted_emails", email));
-      if (snap.exists()) { onAuth(result.user); return; }
       setPendingUser({email, displayName: result.user.displayName});
       await signOut(fb().auth); setStep("manual-form"); setManualName(result.user.displayName||""); setLoading(false);
     } catch(e) { setError(e.message); setLoading(false); }
@@ -618,45 +614,19 @@ function ProfileView({user,allPosts,notify}){
     if(!form.username.trim()||!form.college||!form.course||!form.year){notify("Fill all fields.");return;}
     setSaving(true);
     try{
-      const isNewUsername = !profile||profile.username!==form.username.trim();
-      await updateDoc
-        ? await (async()=>{
-            const ref=doc(fb().db,"profiles",user.uid);
-            const {setDoc}=await Promise.resolve({setDoc:fb().setDoc||window.__firebase?.setDoc});
-            // Use updateDoc if exists, else create via addDoc-like approach
-            const snap=await new Promise(res=>{const u=onSnapshot(ref,s=>{u();res(s);});});
-            if(snap.exists()){
-              await updateDoc(ref,{
-                ...form, username:form.username.trim(),
-                displayName:user.displayName, email:user.email,
-                usernameStatus: isNewUsername?"pending":(profile?.usernameStatus||"pending"),
-                updatedAt:serverTimestamp()
-              });
-            } else {
-              await addDoc(collection(fb().db,"profiles_init")||collection(fb().db,"profiles"),{uid:user.uid});
-            }
-          })()
-        : null;
-    }catch(e){}
-    // Use addDoc-safe approach with setDoc polyfill
-    try{
-      const {setDoc:sd,getFirestore:gf}=window.__firebase||{};
-      if(sd){
-        await sd(doc(fb().db,"profiles",user.uid),{
-          ...form, username:form.username.trim(),
-          displayName:user.displayName, email:user.email,
-          usernameStatus: (!profile||profile.username!==form.username.trim())?"pending":(profile?.usernameStatus||"pending"),
-          updatedAt:serverTimestamp()
-        },{merge:true});
-        notify((!profile||profile.username!==form.username.trim())?"Username submitted for mod approval!":"Profile saved!");
-        setEditing(false);
-      } else {
-        // fallback: create doc via workaround
-        notify("Saved (limited mode).");
-        setEditing(false);
-      }
-    }catch(e){notify("Save failed: "+e.message);}
-    finally{setSaving(false);}
+      const isNewUsername = !profile || profile.username !== form.username.trim();
+      await fb().setDoc(doc(fb().db,"profiles",user.uid),{
+        ...form,
+        username: form.username.trim(),
+        displayName: user.displayName,
+        email: user.email,
+        usernameStatus: isNewUsername ? "pending" : (profile?.usernameStatus||"pending"),
+        updatedAt: serverTimestamp()
+      },{merge:true});
+      notify(isNewUsername ? "Username submitted for mod approval!" : "Profile saved!");
+      setEditing(false);
+    }catch(e){ notify("Save failed: "+e.message); }
+    finally{ setSaving(false); }
   }
 
   const userPosts = allPosts.filter(p=>p.uid===user.uid&&p.status==="approved");
@@ -799,6 +769,7 @@ function UnrestFeed(){
   const [posts,setPosts]=useState([]);
   const [pendingPosts,setPendingPosts]=useState([]);
   const [pendingVerifications,setPendingVerifications]=useState([]);
+  const [pendingUsernames,setPendingUsernames]=useState([]);
   const [feedLoading,setFeedLoading]=useState(true);
   const [tab,setTab]=useState("du");
   const [voted,setVoted]=useState({});
@@ -812,12 +783,8 @@ function UnrestFeed(){
 
   useEffect(()=>onAuthStateChanged(fb().auth,async u=>{
     if(u){
-      const email=u.email.toLowerCase().trim();
-      const isDU=email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
-      if(!isDU&&email!==ADMIN_EMAIL){
-        const snap=await fb().getDoc(fb().doc(fb().db,"allowlisted_emails",email));
-        if(!snap.exists()){setUser(null);return;}
-      }
+      const isDU=u.email.endsWith(".du.ac.in")||u.email.endsWith("@du.ac.in");
+      if(!isDU&&u.email!==ADMIN_EMAIL){await signOut(fb().auth);setUser(null);return;}
     }
     setUser(u||null);
   }),[]);
@@ -841,11 +808,19 @@ function UnrestFeed(){
     return ()=>unsub();
   },[user,isAdmin]);
 
+  useEffect(()=>{
+    if(!user||!isAdmin) return;
+    const q=query(collection(fb().db,"profiles"),where("usernameStatus","==","pending"));
+    const unsub=onSnapshot(q,snap=>setPendingUsernames(snap.docs.map(d=>({id:d.id,...d.data()}))),()=>{});
+    return ()=>unsub();
+  },[user,isAdmin]);
+
   function notify(msg){setToast(msg);setTimeout(()=>setToast(null),2600);}
 
   async function approvePost(id){try{await updateDoc(doc(fb().db,"posts",id),{status:"approved"});notify("Approved!");}catch(e){notify("Failed.");}}
   async function rejectPost(id){if(confirm("Delete this post?")){try{await deleteDoc(doc(fb().db,"posts",id));notify("Deleted.");}catch(e){notify("Failed.");}}}
   async function resolveVerification(id,s){try{await updateDoc(doc(fb().db,"manual_verifications",id),{status:s});notify(`Marked ${s}`);}catch(e){notify("Failed.");}}
+  async function resolveUsername(id,s){try{await updateDoc(doc(fb().db,"profiles",id),{usernameStatus:s});notify(s==="approved"?"Username approved!":"Username rejected.");}catch(e){notify("Failed.");}}}
 
   async function handleVote(id,type){
     if(voted[id]===type) return;
@@ -862,7 +837,7 @@ function UnrestFeed(){
 
   const userCollege=collegeFromEmail(user.email);
   const TABS=[{id:"du",label:"DU"},{id:"college",label:"College"},{id:"explore",label:"Explore"},{id:"saved",label:"Saved"},{id:"profile",label:"Profile"}];
-  if(isAdmin) TABS.push({id:"mod",label:`Mod ${(pendingPosts.length+pendingVerifications.length)>0?`(${pendingPosts.length+pendingVerifications.length})`:""}`});
+  if(isAdmin) TABS.push({id:"mod",label:`Mod ${(pendingPosts.length+pendingVerifications.length+pendingUsernames.length)>0?`(${pendingPosts.length+pendingVerifications.length+pendingUsernames.length})`:""}`});
 
   const mainFeedPosts=posts.filter(p=>!p.category);
   const visible=mainFeedPosts.filter(p=>{
@@ -964,6 +939,22 @@ function UnrestFeed(){
           </div>
         ))}
       </div>
+      <div>
+        <h3 style={{fontFamily:"var(--serif)",fontSize:"1.7rem",marginBottom:12,color:"var(--summer2)"}}>Username Requests ({pendingUsernames.length})</h3>
+        {pendingUsernames.length===0?<p style={{fontSize:"0.83rem",color:"var(--ink3)"}}>No usernames pending.</p>:pendingUsernames.map(u=>(
+          <div key={u.id} style={{background:"#fff",border:"1px solid rgba(14,13,11,0.08)",borderRadius:9,padding:14,marginBottom:10,display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+            <div>
+              <div style={{fontSize:"0.84rem",fontWeight:700,marginBottom:3}}>@{u.username}</div>
+              <div style={{fontSize:"0.72rem",color:"var(--ink3)"}}>{u.displayName} · {u.college} · {u.course} · {u.year}</div>
+              <div style={{fontSize:"0.68rem",color:"var(--ink4)",marginTop:2}}>{u.email}</div>
+            </div>
+            <div style={{display:"flex",gap:9}}>
+              <button onClick={()=>resolveUsername(u.id,"approved")} style={{padding:"5px 13px",background:"var(--green)",border:"none",color:"#fff",borderRadius:5,fontSize:"0.74rem",fontWeight:600}}>Approve</button>
+              <button onClick={()=>resolveUsername(u.id,"rejected")} style={{padding:"5px 13px",background:"transparent",border:"1px solid var(--accent)",color:"var(--accent)",borderRadius:5,fontSize:"0.74rem",fontWeight:600}}>Reject</button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 
@@ -1054,7 +1045,7 @@ function UnrestFeed(){
             <div style={{marginBottom:20}}>
               <div style={{fontSize:"0.56rem",fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"var(--ink4)",marginBottom:10}}>About Unrest</div>
               <div style={{fontSize:"0.76rem",color:"var(--ink2)",lineHeight:1.8}}>Delhi University's verified student network.</div>
-              <div style={{marginTop:5,fontSize:"0.7rem",color:"var(--ink4)"}}>Full Launch - 11 June 2026</div>
+              <div style={{marginTop:5,fontSize:"0.7rem",color:"var(--ink4)"}}>Launching 11 June 2026</div>
             </div>
             <div style={{background:"rgba(200,75,47,0.05)",border:"1px solid rgba(200,75,47,0.12)",borderRadius:8,padding:"12px 13px",marginBottom:20}}>
               <div style={{fontSize:"0.66rem",fontWeight:700,color:"var(--accent)",marginBottom:7}}>How it works</div>
