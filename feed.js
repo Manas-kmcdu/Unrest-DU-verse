@@ -9,7 +9,7 @@ const query           = (...a) => fb().query(...a);
 const orderBy         = (...a) => fb().orderBy(...a);
 const where           = (...a) => fb().where(...a);
 const updateDoc       = (...a) => fb().updateDoc(...a);
-const deleteDoc       = (...a) => fb().deleteDoc(...a);         // FIX 5: was missing
+const deleteDoc       = (...a) => fb().deleteDoc(...a);
 const doc             = (...a) => fb().doc(...a);
 const increment       = (...a) => fb().increment(...a);
 const serverTimestamp = ()     => fb().serverTimestamp();
@@ -19,7 +19,6 @@ const onAuthStateChanged    = (...a) => fb().onAuthStateChanged(...a);
 const signInWithRedirect    = (...a) => fb().signInWithRedirect(...a);
 const getRedirectResult     = (...a) => fb().getRedirectResult(...a);
 
-// FIX 8: Storage helpers — guarded so they only call if storage is wired up
 const storageRef      = (...a) => fb().storageRef(...a);
 const uploadBytes     = (...a) => fb().uploadBytes(...a);
 const getDownloadURL  = (...a) => fb().getDownloadURL(...a);
@@ -49,6 +48,7 @@ const CSS = `
   @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(-8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
   @keyframes dot-pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
   @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes carouselFade { from{opacity:0.6} to{opacity:1} }
 `;
 
 const COLLEGES = [
@@ -64,6 +64,106 @@ const COL_COLOR = {
   "Ramjas College":"#2e7d32","Dyal Singh":"#455a64","SGTB Khalsa":"#f57c00",
   "Sri Venkateswara":"#6d4c41","SSCBS":"#283593","PGDAV":"#00695c"
 };
+
+// Banner sets for each tab
+const BANNERS = {
+  du: [
+    { bg: "#f5e6d3", title: "end semester", subtitle: "exams incoming", tag: "ACADEMICS", tagColor: "#d4a574" },
+    { bg: "#e8f0f7", title: "placement", subtitle: "season starts", tag: "CAREERS", tagColor: "#5b9bd5" },
+    { bg: "#f0e8f5", title: "fests &", subtitle: "cultural events", tag: "EVENTS", tagColor: "#a66ba6" },
+    { bg: "#e6f5e6", title: "north campus", subtitle: "vibes only", tag: "CAMPUS", tagColor: "#5b9c5b" }
+  ],
+  college: [
+    { bg: "#fff3e0", title: "your college", subtitle: "trending posts", tag: "HOT", tagColor: "#ff8a65" },
+    { bg: "#f3e5f5", title: "college news", subtitle: "stay updated", tag: "UPDATES", tagColor: "#ba68c8" },
+    { bg: "#e0f2f1", title: "alumni connect", subtitle: "network here", tag: "COMMUNITY", tagColor: "#4db6ac" }
+  ],
+  explore: [
+    { bg: "#fce4ec", title: "trending", subtitle: "across DU", tag: "VIRAL", tagColor: "#f06292" },
+    { bg: "#ede7f6", title: "discover new", subtitle: "perspectives", tag: "EXPLORE", tagColor: "#7e57c2" },
+    { bg: "#e1f5fe", title: "join conversations", subtitle: "start connecting", tag: "COMMUNITY", tagColor: "#29b6f6" }
+  ]
+};
+
+function BannerCarousel({ banners }) {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent(prev => (prev + 1) % banners.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [banners.length]);
+
+  const banner = banners[current];
+
+  return (
+    <div style={{
+      background: banner.bg,
+      borderRadius: 8,
+      padding: "32px 28px",
+      marginBottom: 20,
+      minHeight: 140,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      animation: "carouselFade 0.5s ease-in-out"
+    }}>
+      <div>
+        <div style={{
+          fontFamily: "var(--serif)",
+          fontSize: "2.2rem",
+          fontStyle: "italic",
+          color: "var(--ink)",
+          lineHeight: 1.1,
+          marginBottom: 8
+        }}>
+          {banner.title}
+        </div>
+        <div style={{
+          fontSize: "1.8rem",
+          fontStyle: "italic",
+          color: "var(--ink2)",
+          fontWeight: 300
+        }}>
+          {banner.subtitle}
+        </div>
+      </div>
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center"
+      }}>
+        <div style={{
+          display: "flex",
+          gap: 6
+        }}>
+          {banners.map((_, i) => (
+            <div
+              key={i}
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: i === current ? "var(--ink)" : "var(--ink4)",
+                transition: "background 0.3s"
+              }}
+            />
+          ))}
+        </div>
+        <span style={{
+          fontSize: "0.72rem",
+          fontWeight: 700,
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          color: banner.tagColor
+        }}>
+          {banner.tag}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 function colAbbr(n){
   const m={"Lady Shri Ram":"LSR","Hindu College":"Hindu College","Miranda House":"Miranda",
@@ -110,7 +210,6 @@ function AuthGate({ onAuth }) {
   const [proofFile, setProofFile] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  // FIX 7: use wrapper instead of fb().getRedirectResult(fb().auth)
   useEffect(() => {
     getRedirectResult(fb().auth).then(result => {
       if (!result?.user) return;
@@ -139,9 +238,8 @@ function AuthGate({ onAuth }) {
       } catch(popupErr) {
         if (popupErr.code === "auth/popup-blocked" ||
             popupErr.code === "auth/popup-closed-by-user" ||
-            popupErr.message?.includes("Cross-Origin") ||
-            popupErr.message?.includes("window.closed")) {
-          await signInWithRedirect(fb().auth, provider);  // FIX 6: use wrapper
+            popupErr.message?.includes("Cross-Origin")) {
+          signInWithRedirect(fb().auth, provider);
           return;
         }
         throw popupErr;
@@ -149,638 +247,546 @@ function AuthGate({ onAuth }) {
       const email = result.user.email;
       const isDU = email.endsWith(".du.ac.in") || email.endsWith("@du.ac.in");
       const isAdminUser = email === ADMIN_EMAIL;
-      if (isDU || isAdminUser) {  // FIX 2: admin bypasses DU check
+      if (isDU || isAdminUser) {
         onAuth(result.user);
       } else {
         setPendingUser({ email, displayName: result.user.displayName });
         await signOut(fb().auth);
         setStep("manual-form");
         setManualName(result.user.displayName || "");
-        setLoading(false);
       }
-    } catch (e) {
-      console.error("Auth error:", e);
-      setError(e.message);
+    } catch (err) {
+      setError(err.message || "Login failed");
+    } finally {
       setLoading(false);
     }
   }
 
   async function handleManualSubmit() {
-    if (!manualName.trim() || !manualCollege || !manualYear) {
-      setError("Please fill all required fields.");
-      return;
-    }
-    if (!proofFile) {
-      setError("Please attach proof of affiliation (ID card or fee slip).");
+    if (!manualName.trim() || !manualCollege || !proofFile) {
+      setError("Name, college, and proof required");
       return;
     }
     setSubmitLoading(true);
-    setError("");
     try {
-      // FIX 8: Guard storage calls — if storage not wired, skip upload and note in doc
-      let authenticatedProofUrl = "no-storage-configured";
-      if (fb().storageRef && fb().storage) {
-        const uniquePathName = `${Date.now()}_${proofFile.name}`;
-        const bucketDestination = storageRef(fb().storage, `manual_proofs/${uniquePathName}`);
-        const uploadTaskSnapshot = await uploadBytes(bucketDestination, proofFile);
-        authenticatedProofUrl = await getDownloadURL(uploadTaskSnapshot.ref);
-      }
+      const bucket = fb().storage;
+      const proofRef = fb().storageRef(bucket, `proofs/${Date.now()}_${proofFile.name}`);
+      await fb().uploadBytes(proofRef, proofFile);
+      const proofUrl = await fb().getDownloadURL(proofRef);
 
       await addDoc(collection(fb().db, "manual_verifications"), {
-        email: pendingUser?.email || "",
-        displayName: manualName.trim(),
+        email: pendingUser.email,
+        displayName: manualName,
         college: manualCollege,
-        year: manualYear,
-        note: manualNote.trim(),
-        proofUrl: authenticatedProofUrl,
-        status: "pending",
-        submittedAt: serverTimestamp()
+        year: manualYear || "N/A",
+        note: manualNote,
+        proofUrl: proofUrl,
+        createdAt: serverTimestamp(),
+        status: "pending"
       });
-      setStep("manual-sent");
-    } catch(e) {
-      setError("Submission failed: " + e.message);
+
+      setStep("submitted");
+    } catch (err) {
+      setError(err.message || "Submission failed");
     } finally {
       setSubmitLoading(false);
     }
   }
 
-  const cardStyle = {
-    background:"var(--white)", border:"1px solid var(--border)", borderRadius:12,
-    padding:"40px 36px", maxWidth:460, width:"100%",
-    boxShadow:"0 8px 40px rgba(0,0,0,0.07)"
-  };
-
-  const wrapStyle = {
-    minHeight:"100vh", background:"var(--paper)", display:"flex",
-    alignItems:"center", justifyContent:"center", fontFamily:"var(--sans)", padding:"2rem"
-  };
-
-  const Logo = () => (
-    <div style={{fontFamily:"var(--serif)", fontSize:"2.2rem", marginBottom:6, color:"var(--ink)", textAlign:"center"}}>
-      Un<em style={{color:"var(--accent)"}}>rest</em>
-    </div>
-  );
-
-  const inputStyle = {
-    width:"100%", border:"1px solid var(--border)", borderRadius:6,
-    padding:"9px 12px", fontSize:"0.84rem", color:"var(--ink)",
-    background:"var(--white)", outline:"none", fontFamily:"var(--sans)"
-  };
-
-  const labelStyle = {
-    fontSize:"0.72rem", fontWeight:600, color:"var(--ink3)",
-    display:"block", marginBottom:5, textAlign:"left"
-  };
-
-  if (step === "manual-sent") {
-    return (
-      <div style={wrapStyle}>
-        <style>{CSS}</style>
-        <div style={{...cardStyle, textAlign:"center"}}>
-          <Logo/>
-          <div style={{fontSize:"2.2rem", marginBottom:16}}>📬</div>
-          <div style={{fontSize:"1rem", fontWeight:700, color:"var(--ink)", marginBottom:10}}>
-            Request submitted!
-          </div>
-          <div style={{fontSize:"0.84rem", color:"var(--ink2)", lineHeight:1.7}}>
-            Your affiliation proof is under review.<br/>
-            We'll reach out to <strong>{pendingUser?.email}</strong> once approved.<br/>
-            Usually reviewed within 24–48 hours.
-          </div>
-          <button onClick={() => { setStep("login"); setError(""); }}
-            style={{marginTop:24, padding:"8px 20px", background:"var(--ink)",
-              color:"#fff", border:"none", borderRadius:6, fontSize:"0.8rem", fontWeight:600}}>
-            ← Back to sign in
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (step === "manual-form") {
-    return (
-      <div style={wrapStyle}>
-        <style>{CSS}</style>
-        <div style={cardStyle}>
-          <Logo/>
-          <div style={{textAlign:"center", marginBottom:24}}>
-            <div style={{fontSize:"0.84rem", color:"var(--ink2)", lineHeight:1.6}}>
-              Your Google account isn't a DU address.<br/>
-              Submit proof of DU affiliation for manual review.
-            </div>
-            <div style={{
-              marginTop:10, padding:"7px 12px", background:"rgba(200,75,47,0.07)",
-              border:"1px solid rgba(200,75,47,0.18)", borderRadius:6,
-              fontSize:"0.72rem", color:"var(--accent)", fontWeight:500
-            }}>
-              Signing in as: {pendingUser?.email}
-            </div>
-          </div>
-
-          <div style={{display:"flex", flexDirection:"column", gap:14}}>
-            <div>
-              <label style={labelStyle}>Full Name *</label>
-              <input value={manualName} onChange={e => setManualName(e.target.value)}
-                placeholder="Your name" style={inputStyle}/>
-            </div>
-
-            <div>
-              <label style={labelStyle}>Your College *</label>
-              <select value={manualCollege} onChange={e => setManualCollege(e.target.value)}
-                style={inputStyle}>
-                <option value="">Select college...</option>
-                {COLLEGES.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-
-            <div>
-              <label style={labelStyle}>Year of Study *</label>
-              <select value={manualYear} onChange={e => setManualYear(e.target.value)}
-                style={inputStyle}>
-                <option value="">Select year...</option>
-                <option>1st Year</option>
-                <option>2nd Year</option>
-                <option>3rd Year</option>
-                <option>Postgraduate</option>
-                <option>PhD</option>
-              </select>
-            </div>
-
-            <div>
-              <label style={labelStyle}>
-                Proof of Affiliation * &nbsp;
-                <span style={{fontWeight:400, color:"var(--ink4)"}}>
-                  (College ID card or fee slip — JPG, PNG or PDF)
-                </span>
-              </label>
-              <div style={{
-                border:"1.5px dashed var(--border)", borderRadius:7, padding:"16px",
-                textAlign:"center", cursor:"pointer", background:"rgba(14,13,11,0.02)",
-                position:"relative"
-              }}>
-                <input type="file" accept="image/*,.pdf"
-                  onChange={e => setProofFile(e.target.files[0])}
-                  style={{position:"absolute", inset:0, opacity:0, cursor:"pointer"}}/>
-                {proofFile ? (
-                  <div style={{fontSize:"0.78rem", color:"var(--green)", fontWeight:600}}>
-                    ✓ {proofFile.name}
-                  </div>
-                ) : (
-                  <div style={{fontSize:"0.78rem", color:"var(--ink3)"}}>
-                    Click to upload file
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label style={labelStyle}>Additional note (optional)</label>
-              <textarea value={manualNote} onChange={e => setManualNote(e.target.value)}
-                placeholder="Anything you want to add..."
-                rows={2}
-                style={{...inputStyle, resize:"vertical"}}/>
-            </div>
-          </div>
-
-          {error && (
-            <div style={{
-              marginTop:12, padding:"8px 12px", background:"rgba(200,75,47,0.08)",
-              border:"1px solid rgba(200,75,47,0.2)", borderRadius:6,
-              fontSize:"0.76rem", color:"var(--accent)"
-            }}>
-              {error}
-            </div>
-          )}
-
-          <div style={{display:"flex", gap:10, marginTop:20}}>
-            <button onClick={() => { setStep("login"); setError(""); setPendingUser(null); }}
-              style={{
-                flex:1, padding:"10px", background:"transparent",
-                border:"1px solid var(--border)", borderRadius:6,
-                fontSize:"0.82rem", color:"var(--ink2)", fontWeight:500
-              }}>
-              ← Back
-            </button>
-            <button onClick={handleManualSubmit} disabled={submitLoading}
-              style={{
-                flex:2, padding:"10px", background: submitLoading ? "var(--ink3)" : "var(--ink)",
-                border:"none", borderRadius:6, color:"#fff",
-                fontSize:"0.82rem", fontWeight:600,
-                display:"flex", alignItems:"center", justifyContent:"center", gap:8
-              }}>
-              {submitLoading ? (
-                <span style={{
-                  display:"inline-block", width:14, height:14, border:"2px solid rgba(255,255,255,0.4)",
-                  borderTopColor:"#fff", borderRadius:"50%", animation:"spin 0.7s linear infinite"
-                }}/>
-              ) : null}
-              {submitLoading ? "Submitting..." : "Submit for review"}
-            </button>
-          </div>
-
-          <div style={{marginTop:14, fontSize:"0.68rem", color:"var(--ink4)", textAlign:"center", lineHeight:1.6}}>
-            By submitting you agree to our{" "}
-            <a href="/terms.html" style={{color:"var(--ink3)"}}>Terms</a> &amp;{" "}
-            <a href="/privacy.html" style={{color:"var(--ink3)"}}>Privacy Policy</a>.
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div style={wrapStyle}>
+    <div style={{minHeight:"100vh", background:"var(--paper)", display:"flex", alignItems:"center", justifyContent:"center", padding:20}}>
       <style>{CSS}</style>
-      <div style={{...cardStyle, textAlign:"center"}}>
-        <Logo/>
-        <div style={{fontSize:"0.82rem", color:"var(--ink3)", marginBottom:32, lineHeight:1.6}}>
-          Delhi University's verified student network.<br/>
-          Sign in with your <strong>.du.ac.in</strong> Google account.
-        </div>
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          style={{
-            width:"100%", padding:"12px 20px",
-            background: loading ? "var(--ink3)" : "var(--ink)",
-            color:"#fff", border:"none", borderRadius:7,
-            fontSize:"0.9rem", fontWeight:600,
-            display:"flex", alignItems:"center", justifyContent:"center", gap:10
-          }}
-        >
-          {loading ? (
-            <span style={{
-              display:"inline-block", width:16, height:16, border:"2px solid rgba(255,255,255,0.4)",
-              borderTopColor:"#fff", borderRadius:"50%", animation:"spin 0.7s linear infinite"
-            }}/>
-          ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-          )}
-          {loading ? "Signing in..." : "Continue with Google"}
-        </button>
-        <div style={{
-          marginTop:12, padding:"8px 12px", background:"rgba(14,13,11,0.04)",
-          borderRadius:6, fontSize:"0.72rem", color:"var(--ink3)", lineHeight:1.6
-        }}>
-          DU email (.du.ac.in) → instant access<br/>
-          Other email → manual affiliation review
-        </div>
-        {error && (
-          <div style={{
-            marginTop:12, padding:"8px 12px", background:"rgba(200,75,47,0.08)",
-            border:"1px solid rgba(200,75,47,0.2)", borderRadius:6,
-            fontSize:"0.78rem", color:"var(--accent)", lineHeight:1.5
-          }}>
-            {error}
-          </div>
-        )}
-        {/* FIX 1: was lineHeight:1.7}> — stray > broke JSX */}
-        <div style={{marginTop:16, fontSize:"0.7rem", color:"var(--ink4)", lineHeight:1.7}}>
-          By signing in you agree to our{" "}
-          <a href="/terms.html" style={{color:"var(--ink3)"}}>Terms</a> &amp;{" "}
-          <a href="/privacy.html" style={{color:"var(--ink3)"}}>Privacy Policy</a>.
-        </div>
-      </div>
-    </div>
-  );
-}
+      <div style={{maxWidth:420, width:"100%"}}>
+        {step === "login" && (
+          <div style={{background:"var(--white)", border:"1px solid var(--border)", borderRadius:12, padding:32}}>
+            <div style={{fontFamily:"var(--serif)", fontSize:"2rem", marginBottom:8, color:"var(--accent)"}}>Unrest</div>
+            <div style={{fontSize:"0.9rem", color:"var(--ink3)", marginBottom:32}}>Delhi University's verified student feed</div>
 
-// ─── SMALL COMPONENTS ─────────────────────────────────────────────
-function Avatar({initials: ini, college, size=36}) {
-  const bg = COL_COLOR[college] || "#455a64";
-  return (
-    <div style={{
-      width:size, height:size, borderRadius:"50%", background:bg, flexShrink:0,
-      display:"flex", alignItems:"center", justifyContent:"center",
-      fontSize:size*0.3, fontWeight:600, color:"#fff", letterSpacing:"0.03em"
-    }}>
-      {ini}
-    </div>
-  );
-}
+            <button
+              onClick={handleLogin}
+              disabled={loading}
+              style={{
+                width:"100%",
+                padding:"12px 16px",
+                background:"var(--ink)",
+                color:"var(--white)",
+                border:"none",
+                borderRadius:6,
+                fontSize:"0.9rem",
+                fontWeight:600,
+                cursor:"pointer",
+                opacity: loading ? 0.7 : 1,
+                transition:"opacity 0.2s"
+              }}
+            >
+              {loading ? "Signing in..." : "Sign in with Google"}
+            </button>
 
-function Pill({name, color}) {
-  const bg = color || COL_COLOR[name] || "#455a64";
-  return (
-    <span style={{
-      fontSize:"0.58rem", fontWeight:600, letterSpacing:"0.07em", textTransform:"uppercase",
-      background:`${bg}18`, color:bg, border:`1px solid ${bg}28`, borderRadius:3, padding:"2px 6px"
-    }}>
-      {colAbbr(name)}
-    </span>
-  );
-}
+            {error && <div style={{color:"var(--accent)", fontSize:"0.8rem", marginTop:12}}>{error}</div>}
 
-// FIX 3: wFinal/lFinal now reflect optimistic voted state
-function WLBar({w, l, postId, onVote, voted}) {
-  const wFinal = w + (voted === "w" ? 1 : 0);
-  const lFinal = l + (voted === "l" ? 1 : 0);
-  const total = wFinal + lFinal;
-  const pct = total > 0 ? Math.round((wFinal / total) * 100) : 50;
-  return (
-    <div style={{display:"flex", alignItems:"center", gap:10, flexWrap:"wrap"}}>
-      <button onClick={() => onVote(postId, "w")}
-        style={{
-          display:"flex", alignItems:"center", gap:7, padding:"5px 13px",
-          background: voted==="w" ? "var(--ink)" : "transparent",
-          border:"1px solid", borderColor: voted==="w" ? "var(--ink)" : "var(--border)",
-          borderRadius:5, fontSize:"0.78rem", fontWeight:600,
-          color: voted==="w" ? "#fff" : "var(--ink2)", transition:"all 0.15s", lineHeight:1
-        }}>
-        <span style={{fontSize:"0.7rem", fontWeight:700, letterSpacing:"0.06em"}}>W</span>
-        {wFinal}
-      </button>
-      <button onClick={() => onVote(postId, "l")}
-        style={{
-          display:"flex", alignItems:"center", gap:7, padding:"5px 13px",
-          background: voted==="l" ? "var(--accent)" : "transparent",
-          border:"1px solid", borderColor: voted==="l" ? "var(--accent)" : "var(--border)",
-          borderRadius:5, fontSize:"0.78rem", fontWeight:600,
-          color: voted==="l" ? "#fff" : "var(--ink2)", transition:"all 0.15s", lineHeight:1
-        }}>
-        <span style={{fontSize:"0.7rem", fontWeight:700, letterSpacing:"0.06em"}}>L</span>
-        {lFinal}
-      </button>
-      <span style={{fontSize:"0.72rem", color:"var(--ink3)", fontWeight:500}}>{pct}% W</span>
-      <span style={{fontSize:"0.72rem", color:"var(--ink4)"}}>{total} votes</span>
-    </div>
-  );
-}
-
-// ─── POST CARD ────────────────────────────────────────────────────
-function PostCard({post, voted, onVote, saved, onSave, notify}) {
-  return (
-    <article style={{borderBottom:"1px solid var(--border)", padding:"22px 0", animation:"fadeIn 0.3s ease both"}}>
-      <div style={{display:"flex", gap:11, alignItems:"flex-start", marginBottom:12}}>
-        <Avatar initials={initials(post.author)} college={post.college} size={38}/>
-        <div style={{flex:1, minWidth:0}}>
-          <div style={{display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:8}}>
-            <div>
-              <div style={{display:"flex", alignItems:"center", gap:6, flexWrap:"wrap", marginBottom:2}}>
-                <span style={{fontSize:"0.9rem", fontWeight:600, color:"var(--ink)"}}>{post.author}</span>
-                {post.verified && (
-                  <span style={{
-                    fontSize:"0.56rem", fontWeight:700, letterSpacing:"0.07em", textTransform:"uppercase",
-                    background:"rgba(42,107,74,0.09)", color:"var(--green)",
-                    border:"1px solid rgba(42,107,74,0.18)", borderRadius:3, padding:"1px 5px"
-                  }}>Verified</span>
-                )}
-              </div>
-              <div style={{display:"flex", alignItems:"center", gap:6, flexWrap:"wrap"}}>
-                <Pill name={post.college}/>
-                <span style={{fontSize:"0.68rem", color:"var(--ink4)"}}>· {timeAgo(post.createdAt)}</span>
-              </div>
+            <div style={{fontSize:"0.75rem", color:"var(--ink4)", marginTop:20, lineHeight:1.6}}>
+              DU email gets instant access. Others: submit credentials for verification.
             </div>
           </div>
-        </div>
-      </div>
+        )}
 
-      {post.status === "pending" && (
-        <div style={{
-          marginBottom:8, marginLeft:49,
-          padding:"4px 10px", background:"rgba(255,200,0,0.1)",
-          border:"1px solid rgba(255,200,0,0.3)", borderRadius:4,
-          fontSize:"0.68rem", color:"#b8860b", fontWeight:500
-        }}>
-          ⏳ Pending approval — visible only to you until a mod approves it.
-        </div>
-      )}
+        {step === "manual-form" && (
+          <div style={{background:"var(--white)", border:"1px solid var(--border)", borderRadius:12, padding:32}}>
+            <div style={{fontSize:"1.1rem", fontWeight:600, marginBottom:20}}>Verify your identity</div>
 
-      <div style={{paddingLeft:49}}>
-        <p style={{fontSize:"0.92rem", color:"var(--ink)", lineHeight:1.68, marginBottom:9}}>
-          {post.text}
-        </p>
+            <input
+              type="text"
+              value={manualName}
+              onChange={e => setManualName(e.target.value)}
+              placeholder="Full name"
+              style={{
+                width:"100%",
+                padding:"10px 12px",
+                border:"1px solid var(--border)",
+                borderRadius:6,
+                fontSize:"0.9rem",
+                marginBottom:12,
+                fontFamily:"var(--sans)",
+                outline:"none"
+              }}
+            />
 
-        {post.tags && post.tags.length > 0 && (
-          <div style={{display:"flex", gap:8, flexWrap:"wrap", marginBottom:10}}>
-            {post.tags.map(t => (
-              <span key={t} style={{fontSize:"0.68rem", color:"var(--ink3)", fontWeight:500}}>#{t}</span>
-            ))}
+            <select
+              value={manualCollege}
+              onChange={e => setManualCollege(e.target.value)}
+              style={{
+                width:"100%",
+                padding:"10px 12px",
+                border:"1px solid var(--border)",
+                borderRadius:6,
+                fontSize:"0.9rem",
+                marginBottom:12,
+                fontFamily:"var(--sans)",
+                outline:"none"
+              }}
+            >
+              <option value="">Select college</option>
+              {COLLEGES.map(c => <option key={c}>{c}</option>)}
+            </select>
+
+            <select
+              value={manualYear}
+              onChange={e => setManualYear(e.target.value)}
+              style={{
+                width:"100%",
+                padding:"10px 12px",
+                border:"1px solid var(--border)",
+                borderRadius:6,
+                fontSize:"0.9rem",
+                marginBottom:12,
+                fontFamily:"var(--sans)",
+                outline:"none"
+              }}
+            >
+              <option value="">Year (optional)</option>
+              <option value="1st">1st Year</option>
+              <option value="2nd">2nd Year</option>
+              <option value="3rd">3rd Year</option>
+            </select>
+
+            <textarea
+              value={manualNote}
+              onChange={e => setManualNote(e.target.value)}
+              placeholder="Additional note (optional)"
+              style={{
+                width:"100%",
+                padding:"10px 12px",
+                border:"1px solid var(--border)",
+                borderRadius:6,
+                fontSize:"0.9rem",
+                marginBottom:12,
+                fontFamily:"var(--sans)",
+                outline:"none",
+                minHeight:80,
+                resize:"none"
+              }}
+            />
+
+            <div style={{marginBottom:12}}>
+              <label style={{display:"block", fontSize:"0.85rem", fontWeight:600, marginBottom:8}}>
+                Upload ID proof
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={e => setProofFile(e.target.files?.[0] || null)}
+                style={{
+                  width:"100%",
+                  padding:"10px",
+                  border:"1px solid var(--border)",
+                  borderRadius:6,
+                  fontSize:"0.85rem",
+                  fontFamily:"var(--sans)"
+                }}
+              />
+            </div>
+
+            <button
+              onClick={handleManualSubmit}
+              disabled={submitLoading}
+              style={{
+                width:"100%",
+                padding:"12px 16px",
+                background:"var(--ink)",
+                color:"var(--white)",
+                border:"none",
+                borderRadius:6,
+                fontSize:"0.9rem",
+                fontWeight:600,
+                cursor:"pointer",
+                opacity: submitLoading ? 0.7 : 1
+              }}
+            >
+              {submitLoading ? "Submitting..." : "Submit for verification"}
+            </button>
+
+            {error && <div style={{color:"var(--accent)", fontSize:"0.8rem", marginTop:12}}>{error}</div>}
           </div>
         )}
 
-        <div style={{display:"flex", alignItems:"center", gap:12, flexWrap:"wrap"}}>
-          <WLBar w={post.w} l={post.l} postId={post.id} onVote={onVote} voted={voted}/>
-          <span style={{fontSize:"0.7rem", color:"var(--ink4)"}}>·</span>
-          <button onClick={() => {onSave(post.id); notify(saved ? "Removed from saved" : "Saved");}}
-            style={{background:"none", border:"none", fontSize:"0.72rem",
-              color: saved ? "var(--blue)" : "var(--ink3)", fontWeight: saved ? 600 : 500, padding:0}}>
-            {saved ? "Saved" : "Save"}
-          </button>
-        </div>
+        {step === "submitted" && (
+          <div style={{background:"var(--white)", border:"1px solid var(--border)", borderRadius:12, padding:32, textAlign:"center"}}>
+            <div style={{fontSize:"3rem", marginBottom:12}}>✓</div>
+            <div style={{fontSize:"1.1rem", fontWeight:600, marginBottom:8}}>Submitted!</div>
+            <div style={{fontSize:"0.85rem", color:"var(--ink3)", lineHeight:1.6}}>
+              Your verification is pending. Check back soon!
+            </div>
+          </div>
+        )}
       </div>
-    </article>
+    </div>
   );
 }
 
-// ─── COMPOSE BOX ─────────────────────────────────────────────────
-function ComposeBox({user, onPost}) {
+// ─── COMPOSE BOX ───────────────────────────────────────────────────
+function ComposeBox({ user, onPost }) {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  async function submit() {
-    if (!text.trim() || loading) return;
+  async function handlePost() {
+    if (!text.trim()) return;
     setLoading(true);
+    setError("");
     try {
-      const college = collegeFromEmail(user.email);
       await addDoc(collection(fb().db, "posts"), {
-        author: user.displayName,
+        author: user.displayName || "Anonymous",
         email: user.email,
-        college,
+        college: collegeFromEmail(user.email),
         text: text.trim(),
-        tags: [],
-        status: "pending",
-        w: 1,
-        l: 0,
         createdAt: serverTimestamp(),
-        uid: user.uid
+        w_count: 0,
+        l_count: 0,
+        approved: user.email === ADMIN_EMAIL
       });
       setText("");
       onPost();
-    } catch (e) {
-      console.error("Post failed:", e);
-      alert("Failed to post: " + e.message);
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div style={{
-      background:"var(--white)", border:"1px solid var(--border)",
-      borderRadius:8, padding:"12px 14px", marginBottom:22,
-      display:"flex", gap:10, alignItems:"flex-start"
-    }}>
-      <Avatar initials={initials(user.displayName)} college={collegeFromEmail(user.email)} size={34}/>
-      <div style={{flex:1}}>
-        <textarea
-          value={text}
-          onChange={e => setText(e.target.value)}
-          placeholder="What's happening at DU?"
-          rows={3}
+    <div style={{background:"var(--white)", border:"1px solid var(--border)", borderRadius:8, padding:16, marginBottom:20}}>
+      <textarea
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder="What's happening at DU?"
+        style={{
+          width:"100%",
+          border:"none",
+          fontSize:"1rem",
+          fontFamily:"var(--sans)",
+          outline:"none",
+          minHeight:80,
+          resize:"none",
+          color:"var(--ink)"
+        }}
+      />
+      <div style={{display:"flex", justifyContent:"flex-end", marginTop:12, gap:8}}>
+        {error && <span style={{color:"var(--accent)", fontSize:"0.8rem"}}>{error}</span>}
+        <button
+          onClick={handlePost}
+          disabled={loading || !text.trim()}
           style={{
-            width:"100%", border:"1px solid var(--border)", borderRadius:6,
-            padding:"8px 11px", resize:"vertical", fontSize:"0.85rem",
-            color:"var(--ink)", background:"var(--white)", outline:"none",
-            lineHeight:1.5, fontFamily:"var(--sans)"
+            padding:"8px 20px",
+            background: text.trim() && !loading ? "var(--ink)" : "var(--ink4)",
+            color:"var(--white)",
+            border:"none",
+            borderRadius:6,
+            fontSize:"0.85rem",
+            fontWeight:600,
+            cursor: text.trim() && !loading ? "pointer" : "default",
+            opacity: loading ? 0.7 : 1
           }}
-        />
-        <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:8}}>
-          <span style={{fontSize:"0.68rem", color:"var(--ink4)"}}>
-            Posts go live after mod approval.
-          </span>
-          <button onClick={submit} disabled={loading || !text.trim()}
-            style={{
-              padding:"5px 14px", background: loading ? "var(--ink3)" : "var(--ink)",
-              color:"#fff", border:"none", borderRadius:5, fontSize:"0.76rem", fontWeight:600
-            }}>
-            {loading ? "Posting…" : "Post"}
-          </button>
-        </div>
+        >
+          {loading ? "Posting..." : "Post"}
+        </button>
       </div>
     </div>
   );
 }
 
-// ─── MAIN APP ────────────────────────────────────────────────────
+// ─── POST CARD ─────────────────────────────────────────────────────
+function PostCard({ post, voted, onVote, saved, onSave, notify }) {
+  return (
+    <div style={{
+      background:"var(--white)",
+      border:"1px solid var(--border)",
+      borderRadius:8,
+      padding:"16px 20px",
+      marginBottom:12,
+      animation:"fadeIn 0.3s ease-out"
+    }}>
+      <div style={{display:"flex", gap:12, marginBottom:10}}>
+        <div style={{
+          width:40,
+          height:40,
+          borderRadius:"50%",
+          background: COL_COLOR[post.college] || "var(--ink3)",
+          color:"white",
+          display:"flex",
+          alignItems:"center",
+          justifyContent:"center",
+          fontWeight:600,
+          fontSize:"0.9rem",
+          flexShrink:0
+        }}>
+          {initials(post.author)}
+        </div>
+        <div style={{flex:1, minWidth:0}}>
+          <div style={{fontSize:"0.9rem", fontWeight:600, color:"var(--ink)"}}>
+            {post.author}
+          </div>
+          <div style={{fontSize:"0.75rem", color:"var(--ink3)"}}>
+            {colAbbr(post.college)} · {timeAgo(post.createdAt)}
+          </div>
+        </div>
+      </div>
+
+      <p style={{fontSize:"0.95rem", lineHeight:1.6, marginBottom:12, color:"var(--ink)"}}>{post.text}</p>
+
+      <div style={{display:"flex", gap:16, fontSize:"0.8rem", color:"var(--ink3)"}}>
+        <button
+          onClick={() => onVote(post.id, voted === "w" ? null : "w")}
+          style={{
+            background:"none",
+            border:"none",
+            color: voted === "w" ? "var(--green)" : "var(--ink3)",
+            cursor:"pointer",
+            fontWeight: voted === "w" ? 600 : 400,
+            fontSize:"0.8rem"
+          }}
+        >
+          W {post.w_count}
+        </button>
+        <button
+          onClick={() => onVote(post.id, voted === "l" ? null : "l")}
+          style={{
+            background:"none",
+            border:"none",
+            color: voted === "l" ? "var(--accent)" : "var(--ink3)",
+            cursor:"pointer",
+            fontWeight: voted === "l" ? 600 : 400,
+            fontSize:"0.8rem"
+          }}
+        >
+          L {post.l_count}
+        </button>
+        <button
+          onClick={() => onSave(post.id)}
+          style={{
+            background:"none",
+            border:"none",
+            color: saved ? "var(--blue)" : "var(--ink3)",
+            cursor:"pointer",
+            fontWeight: saved ? 600 : 400,
+            fontSize:"0.8rem"
+          }}
+        >
+          {saved ? "✓" : "○"} Save
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── MAIN FEED ─────────────────────────────────────────────────────
 function UnrestFeed() {
-  const [user, setUser] = useState(undefined);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState([]);
-  const [pendingPosts, setPendingPosts] = useState([]);
-  const [pendingVerifications, setPendingVerifications] = useState([]);
-  const [feedLoading, setFeedLoading] = useState(true);
-  const [tab, setTab] = useState("du");
   const [voted, setVoted] = useState({});
   const [savedPosts, setSavedPosts] = useState(new Set());
-  const [toast, setToast] = useState(null);
+  const [tab, setTab] = useState("du");
   const [searchQ, setSearchQ] = useState("");
   const [searchCollege, setSearchCollege] = useState("");
+  const [feedLoading, setFeedLoading] = useState(false);
+  const [toasts, setToasts] = useState([]);
+  const [pendingPosts, setPendingPosts] = useState([]);
+  const [pendingVerifications, setPendingVerifications] = useState([]);
 
-  const isAdmin = user && user.email === ADMIN_EMAIL;
+  const TABS = [
+    { id: "du", label: "DU Feed" },
+    { id: "college", label: "College" },
+    { id: "explore", label: "Explore" },
+    { id: "saved", label: "Saved" },
+    { id: "mod", label: "Mod Panel" }
+  ];
 
-  // FIX 2: admin email allowed through — no longer force-signed-out
   useEffect(() => {
-    return onAuthStateChanged(fb().auth, async u => {
-      if (u) {
-        const isDU = u.email.endsWith(".du.ac.in") || u.email.endsWith("@du.ac.in");
-        const isAdminUser = u.email === ADMIN_EMAIL;
-        if (!isDU && !isAdminUser) {
-          await signOut(fb().auth);  // FIX 4: use wrapper
-          setUser(null);
-          return;
-        }
+    const unsub = onAuthStateChanged(fb().auth, user => {
+      if (user) {
+        setUser(user);
       }
-      setUser(u || null);
+      setLoading(false);
     });
+    return () => unsub();
   }, []);
 
   useEffect(() => {
     if (!user) return;
+    setFeedLoading(true);
 
-    const q = query(collection(fb().db, "posts"), orderBy("createdAt", "desc"));
+    let q = query(collection(fb().db, "posts"), where("approved", "==", true), orderBy("createdAt", "desc"));
+    if (tab === "college") {
+      const userCollege = collegeFromEmail(user.email);
+      q = query(collection(fb().db, "posts"), where("college", "==", userCollege), where("approved", "==", true), orderBy("createdAt", "desc"));
+    }
 
-    const unsub = onSnapshot(q, snap => {
-      const all = snap.docs.map(d => {
-        const data = d.data();
-        return {
-          id: d.id,
-          ...data,
-          w: parseInt(data.w ?? data.Ws ?? 0, 10) || 0,
-          l: parseInt(data.l ?? data.Ls ?? 0, 10) || 0,
-        };
-      });
-
-      const publicFeed = all.filter(p =>
-        p.status === "approved" || !p.uid || p.uid === "legacy" || p.uid === user.uid
-      );
-      const moderationQueue = all.filter(p => p.status === "pending");
-
-      setPosts(publicFeed);
-      setPendingPosts(moderationQueue);
-      setFeedLoading(false);
-    }, err => {
-      console.error("Feed error:", err.message);
+    const unsub = onSnapshot(q, snapshot => {
+      setPosts(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
       setFeedLoading(false);
     });
 
     return () => unsub();
+  }, [user, tab]);
+
+  useEffect(() => {
+    if (!user) return;
+    const unsub = onSnapshot(collection(fb().db, "votes"), snapshot => {
+      const voteMap = {};
+      snapshot.docs.forEach(d => {
+        const data = d.data();
+        if (data.userId === user.uid) {
+          voteMap[data.postId] = data.vote;
+        }
+      });
+      setVoted(voteMap);
+    });
+    return () => unsub();
   }, [user]);
 
   useEffect(() => {
-    if (!user || !isAdmin) return;
-
-    const qVerif = query(
-      collection(fb().db, "manual_verifications"),
-      where("status", "==", "pending")
-    );
-
-    const unsubVerif = onSnapshot(qVerif, snap => {
-      const verifs = snap.docs.map(d => ({id: d.id, ...d.data()}));
-      setPendingVerifications(verifs);
-    }, err => {
-      console.error("Verification sync failed:", err);
-    });
-
-    return () => unsubVerif();
-  }, [user, isAdmin]);
-
-  function notify(msg) { setToast(msg); setTimeout(() => setToast(null), 2800); }
-
-  async function approvePost(id) {
-    try {
-      await updateDoc(doc(fb().db, "posts", id), { status: "approved" });
-      notify("Post approved live! ✨");
-    } catch(e) { notify("Approval failed."); }
-  }
-
-  async function rejectPost(id) {
-    if(confirm("Delete this post permanently from queue?")) {
-      try {
-        await deleteDoc(doc(fb().db, "posts", id));  // FIX 5: use wrapper
-        notify("Post rejected & deleted.");
-      } catch(e) { notify("Deletion failed."); }
-    }
-  }
-
-  async function resolveVerification(id, actionStatus) {
-    try {
-      await updateDoc(doc(fb().db, "manual_verifications", id), { status: actionStatus });
-      notify(`Registration marked as ${actionStatus}`);
-    } catch(e) { notify("Status update failed."); }
-  }
-
-  async function handleVote(id, type) {
-    if (voted[id] === type) return;
-    setVoted(p => ({...p, [id]: type}));
-    try {
-      await updateDoc(doc(fb().db, "posts", id), {
-        [type]: increment(1)
+    if (!user) return;
+    const unsub = onSnapshot(collection(fb().db, "saves"), snapshot => {
+      const saved = new Set();
+      snapshot.docs.forEach(d => {
+        const data = d.data();
+        if (data.userId === user.uid) {
+          saved.add(data.postId);
+        }
       });
-      notify(type === "w" ? "W noted 🔥" : "L noted");
-    } catch(e) {
-      setVoted(p => ({...p, [id]: null}));
-      notify("Vote failed");
+      setSavedPosts(saved);
+    });
+    return () => unsub();
+  }, [user]);
+
+  useEffect(() => {
+    if (user?.email !== ADMIN_EMAIL) return;
+    const unsub = onSnapshot(query(collection(fb().db, "posts"), where("approved", "==", false)), snapshot => {
+      setPendingPosts(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+    return () => unsub();
+  }, [user]);
+
+  useEffect(() => {
+    if (user?.email !== ADMIN_EMAIL) return;
+    const unsub = onSnapshot(collection(fb().db, "manual_verifications"), snapshot => {
+      setPendingVerifications(snapshot.docs.map(d => ({ id: d.id, ...d.data() })).filter(v => v.status === "pending"));
+    });
+    return () => unsub();
+  }, [user]);
+
+  function notify(msg) {
+    const id = Date.now();
+    setToasts(t => [...t, { id, msg }]);
+    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 3000);
+  }
+
+  async function handleVote(postId, voteType) {
+    if (!user) return;
+    try {
+      const existing = await query(collection(fb().db, "votes"), where("postId", "==", postId), where("userId", "==", user.uid));
+      const snap = await onSnapshot(existing, s => {
+        s.docs.forEach(d => deleteDoc(d.ref));
+      });
+      if (voteType) {
+        await addDoc(collection(fb().db, "votes"), { postId, userId: user.uid, vote: voteType, createdAt: serverTimestamp() });
+        const postRef = doc(fb().db, "posts", postId);
+        if (voteType === "w") await updateDoc(postRef, { w_count: increment(1) });
+        else await updateDoc(postRef, { l_count: increment(1) });
+      }
+    } catch (err) {
+      notify("Vote failed: " + err.message);
     }
   }
 
-  function handleSave(id) {
-    setSavedPosts(p => {
-      const n = new Set(p);
-      n.has(id) ? n.delete(id) : n.add(id);
-      return n;
-    });
+  async function handleSave(postId) {
+    if (!user) return;
+    try {
+      if (savedPosts.has(postId)) {
+        const snap = await query(collection(fb().db, "saves"), where("postId", "==", postId), where("userId", "==", user.uid));
+        const unsub = onSnapshot(snap, s => {
+          s.docs.forEach(d => deleteDoc(d.ref));
+        });
+      } else {
+        await addDoc(collection(fb().db, "saves"), { postId, userId: user.uid, createdAt: serverTimestamp() });
+      }
+    } catch (err) {
+      notify("Save failed: " + err.message);
+    }
   }
 
-  if (user === undefined) {
+  async function approvePost(postId) {
+    try {
+      await updateDoc(doc(fb().db, "posts", postId), { approved: true });
+      notify("Post approved");
+    } catch (err) {
+      notify("Approve failed: " + err.message);
+    }
+  }
+
+  async function rejectPost(postId) {
+    try {
+      await deleteDoc(doc(fb().db, "posts", postId));
+      notify("Post deleted");
+    } catch (err) {
+      notify("Delete failed: " + err.message);
+    }
+  }
+
+  async function resolveVerification(verificationId, action) {
+    try {
+      await updateDoc(doc(fb().db, "manual_verifications", verificationId), { status: action === "approved" ? "verified" : "rejected" });
+      notify(`Verification ${action}`);
+    } catch (err) {
+      notify("Resolution failed: " + err.message);
+    }
+  }
+
+  if (loading) {
     return (
-      <div style={{minHeight:"100vh", background:"var(--paper)", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"var(--sans)"}}>
+      <div style={{minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"var(--paper)"}}>
         <style>{CSS}</style>
-        <span style={{display:"inline-block", width:28, height:28, border:"3px solid rgba(14,13,11,0.12)", borderTopColor:"var(--ink)", borderRadius:"50%", animation:"spin 0.7s linear infinite"}}/>
+        <span style={{display:"inline-block", width:32, height:32, border:"2px solid var(--border)", borderTopColor:"var(--ink)", borderRadius:"50%", animation:"spin 0.7s linear infinite"}}/>
       </div>
     );
   }
@@ -789,69 +795,41 @@ function UnrestFeed() {
     return <AuthGate onAuth={setUser}/>;
   }
 
-  const userCollege = collegeFromEmail(user.email);
-
-  const TABS = [
-    {id:"du", label:"DU"},
-    {id:"college", label:"College"},
-    {id:"saved", label:"Saved"}
-  ];
-  if (isAdmin) {
-    TABS.push({id:"mod", label:"Mod Queue"});
-  }
-
   const visible = posts.filter(p => {
-    if (searchQ && !p.text?.toLowerCase().includes(searchQ.toLowerCase()) && !p.author?.toLowerCase().includes(searchQ.toLowerCase())) return false;
+    if (tab === "saved") return savedPosts.has(p.id);
+    if (searchQ && !p.text.toLowerCase().includes(searchQ.toLowerCase())) return false;
     if (searchCollege && p.college !== searchCollege) return false;
-    if (tab === "college" && p.college !== userCollege) return false;
-    if (tab === "saved" && !savedPosts.has(p.id)) return false;
     return true;
   });
 
   return (
-    <div style={{fontFamily:"var(--sans)", background:"var(--paper)", minHeight:"100vh"}}>
+    <div style={{minHeight:"100vh", background:"var(--paper)"}}>
       <style>{CSS}</style>
-
-      {toast && (
-        <div style={{position:"fixed", top:14, left:"50%", transform:"translateX(-50%)", background:"var(--ink)", color:"#fff", padding:"7px 16px", borderRadius:5, fontSize:"0.76rem", fontWeight:500, zIndex:9999, whiteSpace:"nowrap", boxShadow:"0 4px 16px rgba(0,0,0,0.18)", animation:"toastIn 0.22s ease"}}>
-          {toast}
+      {toasts.map(t => (
+        <div
+          key={t.id}
+          style={{
+            position:"fixed",
+            bottom:20,
+            left:"50%",
+            transform:"translateX(-50%)",
+            background:"var(--ink)",
+            color:"var(--white)",
+            padding:"12px 20px",
+            borderRadius:6,
+            fontSize:"0.85rem",
+            animation:"toastIn 0.2s ease-out",
+            zIndex:9999
+          }}
+        >
+          {t.msg}
         </div>
-      )}
+      ))}
 
-      <nav style={{background:"rgba(242,239,232,0.96)", borderBottom:"1px solid var(--border)", padding:"0 2rem", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(10px)"}}>
-        <div style={{maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", height:52, gap:0}}>
-          <a style={{fontFamily:"var(--serif)", fontSize:"1.5rem", color:"var(--ink)", textDecoration:"none", letterSpacing:"-0.02em", marginRight:28, flexShrink:0}}>
-            Un<em style={{fontStyle:"italic", color:"var(--accent)"}}>rest</em>
-          </a>
-
-          <div style={{display:"flex", alignItems:"center", background:"rgba(14,13,11,0.07)", borderRadius:"100px", padding:"3px", gap:1}}>
-            {TABS.map(t => (
-              <button key={t.id} onClick={() => setTab(t.id)} style={{padding:"5px 15px", borderRadius:100, border:"none", background: tab===t.id ? "var(--white)" : "transparent", fontSize:"0.76rem", fontWeight: tab===t.id ? 600 : 400, color: tab===t.id ? "var(--ink)" : "var(--ink3)", transition:"all 0.15s", boxShadow: tab===t.id ? "0 1px 3px rgba(0,0,0,0.09)" : "none"}}>
-                {t.label} {t.id === "mod" && (pendingPosts.length + pendingVerifications.length) > 0 ? `(${pendingPosts.length + pendingVerifications.length})` : ""}
-              </button>
-            ))}
-          </div>
-
-          <div style={{marginLeft:"auto", display:"flex", alignItems:"center", gap:8}}>
-            <div style={{display:"flex", alignItems:"center", gap:7, padding:"4px 10px 4px 5px", border:"1px solid var(--border)", borderRadius:5, background:"var(--white)"}}>
-              <Avatar initials={initials(user.displayName)} college={userCollege} size={24}/>
-              <span style={{fontSize:"0.78rem", fontWeight:500, color:"var(--ink2)"}}>{isAdmin ? "System Admin" : userCollege}</span>
-            </div>
-            <button onClick={() => signOut(fb().auth)} style={{fontSize:"0.72rem", color:"var(--ink3)", background:"none", border:"none", padding:"4px 6px"}}>Sign out</button>
-          </div>
-        </div>
-      </nav>
-
-      <div style={{maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"220px 1fr 210px", minHeight:"calc(100vh - 52px)"}}>
-
-        <aside style={{padding:"24px 20px 24px 0", borderRight:"1px solid var(--border)"}}>
-          <div style={{marginBottom:24}}>
-            <div style={{fontSize:"0.58rem", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"var(--ink4)", marginBottom:10}}>System Context</div>
-            <div style={{background:"var(--white)", border:"1px solid var(--border)", borderRadius:7, padding:"9px 11px", display:"flex", alignItems:"center", gap:8}}>
-              <div style={{width:7, height:7, borderRadius:"50%", background:"var(--accent)", animation:"dot-pulse 2s infinite", flexShrink:0}}/>
-              <span style={{fontSize:"0.85rem", fontWeight:600, color:"var(--ink)", flex:1}}>{isAdmin ? "🛠️ Moderation Mode" : userCollege}</span>
-            </div>
-          </div>
+      <div style={{display:"grid", gridTemplateColumns:"280px 1fr 240px", gap:20, maxWidth:"1400px", margin:"0 auto", minHeight:"100vh", padding:"20px", "@media (max-width: 1024px)": {gridTemplateColumns:"1fr"}}}>
+        
+        <aside style={{padding:"24px 0", borderRight:"1px solid var(--border)", "@media (max-width: 1024px)": {display:"none"}}}>
+          <div style={{fontSize:"1.2rem", fontWeight:700, marginBottom:24, color:"var(--ink)"}}>Unrest</div>
 
           <div style={{marginBottom:24}}>
             <div style={{fontSize:"0.58rem", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"var(--ink4)", marginBottom:10}}>Quick links</div>
@@ -871,12 +849,39 @@ function UnrestFeed() {
           </div>
         </aside>
 
-        <main style={{padding:"24px 28px", minWidth:0}}>
+        <main style={{padding:"0", minWidth:0, "@media (max-width: 1024px)": {padding:0}}}>
+          {/* Mobile nav */}
+          <div style={{display:"none", "@media (max-width: 1024px)": {display:"flex", gap:8, marginBottom:12, overflowX:"auto", paddingBottom:8}}}>
+            {TABS.filter(t => t.id !== "mod").map(t => (
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                style={{
+                  padding:"8px 14px",
+                  background: tab === t.id ? "var(--ink)" : "var(--white)",
+                  color: tab === t.id ? "var(--white)" : "var(--ink)",
+                  border: tab === t.id ? "none" : "1px solid var(--border)",
+                  borderRadius:6,
+                  fontSize:"0.8rem",
+                  fontWeight: tab === t.id ? 600 : 400,
+                  cursor:"pointer",
+                  whiteSpace:"nowrap",
+                  flexShrink:0
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
           {tab !== "mod" ? (
             <>
               <ComposeBox user={user} onPost={() => notify("Posted! Pending approval.")}/>
 
-              <div style={{display:"flex", gap:8, marginBottom:18}}>
+              {/* Banner carousel */}
+              <BannerCarousel banners={BANNERS[tab] || BANNERS.du}/>
+
+              <div style={{display:"flex", gap:8, marginBottom:18, "@media (max-width: 768px)": {flexDirection:"column"}}}>
                 <div style={{flex:1, display:"flex", alignItems:"center", gap:8, background:"var(--white)", border:"1px solid var(--border)", borderRadius:6, padding:"7px 11px"}}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--ink4)" strokeWidth="2.2">
                     <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
@@ -956,7 +961,7 @@ function UnrestFeed() {
           )}
         </main>
 
-        <aside style={{padding:"24px 0 24px 20px", borderLeft:"1px solid var(--border)"}}>
+        <aside style={{padding:"24px 0", borderLeft:"1px solid var(--border)", "@media (max-width: 1024px)": {display:"none"}}}>
           <div style={{marginBottom:24}}>
             <div style={{fontSize:"0.58rem", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"var(--ink4)", marginBottom:12}}>About Unrest</div>
             <div style={{fontSize:"0.78rem", color:"var(--ink2)", lineHeight:1.8}}>
