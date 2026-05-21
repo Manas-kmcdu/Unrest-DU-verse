@@ -491,6 +491,7 @@ function PostCard({post,voted,onVote,saved,onSave,notify,user,categoryTag}){
 
 // ─── COMPOSE BOX ─────────────────────────────────────────────────
 // ─── COMPOSE BOX ─────────────────────────────────────────────────
+// ─── COMPOSE BOX ─────────────────────────────────────────────────
 function ComposeBox({user,onPost,categoryId}){
   const [text,setText]=useState("");
   const [loading,setLoading]=useState(false);
@@ -505,20 +506,23 @@ function ComposeBox({user,onPost,categoryId}){
         createdAt:serverTimestamp(), uid:user.uid,
         ...(categoryId?{category:categoryId}:{})
       });
-      setText(""); 
-      onPost();
+      setText(""); onPost();
     } catch(e){ alert("Failed: "+e.message); }
     finally{ setLoading(false); }
   }
   
+  // 🌟 FIXED: Generate a completely unique ID string depending on the active tab context
+  const uniqueId = categoryId ? `compose-textarea-${categoryId}` : "compose-textarea-main-feed";
+  const uniqueName = categoryId ? `postContent-${categoryId}` : "postContent-main";
+
   return (
     <div style={{background:"var(--white)",border:"1px solid rgba(14,13,11,0.09)",borderRadius:10,padding:"12px 14px",marginBottom:20,display:"flex",gap:10,alignItems:"flex-start"}}>
       <Avatar initials={initials(user.displayName)} college={collegeFromEmail(user.email)} size={34}/>
       <div style={{flex:1}}>
-        {/* ✅ FIXED: Added explicit id, name, and handled structural value syncing */}
+        {/* ✅ FIXED: Bound to dynamic attributes to stop DOM id collisions */}
         <textarea 
-          id="post-compose-textarea"
-          name="postContent"
+          id={uniqueId}
+          name={uniqueName}
           value={text} 
           onChange={e=>setText(e.target.value)} 
           placeholder={categoryId?`Post in #${categoryId}...`:"What's happening at DU?"} 
