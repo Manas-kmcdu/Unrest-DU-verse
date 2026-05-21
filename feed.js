@@ -490,9 +490,11 @@ function PostCard({post,voted,onVote,saved,onSave,notify,user,categoryTag}){
 }
 
 // ─── COMPOSE BOX ─────────────────────────────────────────────────
+// ─── COMPOSE BOX ─────────────────────────────────────────────────
 function ComposeBox({user,onPost,categoryId}){
   const [text,setText]=useState("");
   const [loading,setLoading]=useState(false);
+  
   async function submit(){
     if(!text.trim()||loading) return;
     setLoading(true);
@@ -503,15 +505,26 @@ function ComposeBox({user,onPost,categoryId}){
         createdAt:serverTimestamp(), uid:user.uid,
         ...(categoryId?{category:categoryId}:{})
       });
-      setText(""); onPost();
+      setText(""); 
+      onPost();
     } catch(e){ alert("Failed: "+e.message); }
     finally{ setLoading(false); }
   }
+  
   return (
     <div style={{background:"var(--white)",border:"1px solid rgba(14,13,11,0.09)",borderRadius:10,padding:"12px 14px",marginBottom:20,display:"flex",gap:10,alignItems:"flex-start"}}>
       <Avatar initials={initials(user.displayName)} college={collegeFromEmail(user.email)} size={34}/>
       <div style={{flex:1}}>
-        <textarea value={text} onChange={e=>setText(e.target.value)} placeholder={categoryId?`Post in #${categoryId}...`:"What's happening at DU?"} rows={3} style={{width:"100%",border:"1px solid rgba(14,13,11,0.1)",borderRadius:7,padding:"8px 11px",resize:"vertical",fontSize:"0.85rem",color:"var(--ink)",background:"var(--white)",outline:"none",lineHeight:1.5,fontFamily:"var(--sans)"}}/>
+        {/* ✅ FIXED: Added explicit id, name, and handled structural value syncing */}
+        <textarea 
+          id="post-compose-textarea"
+          name="postContent"
+          value={text} 
+          onChange={e=>setText(e.target.value)} 
+          placeholder={categoryId?`Post in #${categoryId}...`:"What's happening at DU?"} 
+          rows={3} 
+          style={{width:"100%",border:"1px solid rgba(14,13,11,0.1)",borderRadius:7,padding:"8px 11px",resize:"vertical",fontSize:"0.85rem",color:"var(--ink)",background:"var(--white)",outline:"none",lineHeight:1.5,fontFamily:"var(--sans)"}}
+        />
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:7}}>
           <span style={{fontSize:"0.67rem",color:"var(--ink4)"}}>Posts go live after mod approval.</span>
           <button onClick={submit} disabled={loading||!text.trim()} style={{padding:"5px 13px",background:loading?"var(--ink3)":"var(--ink)",color:"#fff",border:"none",borderRadius:6,fontSize:"0.75rem",fontWeight:600}}>{loading?"Posting…":"Post"}</button>
