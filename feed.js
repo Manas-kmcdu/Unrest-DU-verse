@@ -820,8 +820,7 @@ function UnrestFeed(){
   async function approvePost(id){try{await updateDoc(doc(fb().db,"posts",id),{status:"approved"});notify("Approved!");}catch(e){notify("Failed.");}}
   async function rejectPost(id){if(confirm("Delete this post?")){try{await deleteDoc(doc(fb().db,"posts",id));notify("Deleted.");}catch(e){notify("Failed.");}}}
   async function resolveVerification(id,s){try{await updateDoc(doc(fb().db,"manual_verifications",id),{status:s});notify(`Marked ${s}`);}catch(e){notify("Failed.");}}
-  async function resolveUsername(id,s){try{await updateDoc(doc(fb().db,"profiles",id),{usernameStatus:s});notify(s==="approved"?"Username approved!":"Username rejected.");}catch(e){notify("Failed.");}}}
-
+  async function resolveUsername(id,s){try{await updateDoc(doc(fb().db,"profiles",id),{usernameStatus:s});notify(s==="approved"?"Username approved!":"Username rejected.");}catch(e){notify("Failed.");}}
   async function handleVote(id,type){
     if(voted[id]===type) return;
     setVoted(p=>({...p,[id]:type}));
