@@ -10,6 +10,7 @@ const where           = (...a) => fb().where(...a);
 const updateDoc       = (...a) => fb().updateDoc(...a);
 const deleteDoc       = (...a) => fb().deleteDoc(...a);
 const doc             = (...a) => fb().doc(...a);
+const setDoc          = (...a) => fb().setDoc(...a); // 🌟 FIXED: Top-level reference mapped
 const increment       = (...a) => fb().increment(...a);
 const serverTimestamp = ()     => fb().serverTimestamp();
 const signInWithPopup = (...a) => fb().signInWithPopup(...a);
@@ -868,8 +869,8 @@ function UnrestFeed(){
       
       if (s === "approved" && targetClaim?.email) {
         const cleanEmail = targetClaim.email.toLowerCase().trim();
-        const { setDoc } = fb();
         
+        // 🌟 FIXED: Plugs directly into the globally structured setDoc wrapper
         await setDoc(doc(fb().db, "allowlisted_emails", cleanEmail), {
           email: cleanEmail,
           college: targetClaim.college,
@@ -1117,7 +1118,6 @@ function UnrestFeed(){
               <div style={{fontSize:"0.66rem",fontWeight:700,color:"var(--accent)",marginBottom:7}}>How it works</div>
               {["Post with your DU Google account","Mods approve before it goes live","W / L votes are real-time","Your college is auto-detected","Comment on any post"].map((item,i)=>(
                 <div key={i} style={{display:"flex",gap:5,fontSize:"0.7rem",color:"var(--ink2)",padding:"3px 0",lineHeight:1.5}}>
-                  {/* 🌟 FIXED: Stripped away the unnecessary wrapping ghost fragments */}
                   <span style={{color:"var(--ink4)",flexShrink:0}}>{i+1}.</span>
                   <span>{item}</span>
                 </div>
