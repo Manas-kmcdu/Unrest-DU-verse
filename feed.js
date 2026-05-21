@@ -2,21 +2,27 @@ const { useState, useRef, useEffect } = React;
 
 // Lazy getters — safe even if firebase module is still loading
 const fb = () => window.__firebase;
-const collection    = (...a) => fb().collection(...a);
-const addDoc        = (...a) => fb().addDoc(...a);
-const onSnapshot    = (...a) => fb().onSnapshot(...a);
-const query         = (...a) => fb().query(...a);
-const orderBy       = (...a) => fb().orderBy(...a);
-const where         = (...a) => fb().where(...a);
-const updateDoc     = (...a) => fb().updateDoc(...a);
-const doc           = (...a) => fb().doc(...a);
-const increment     = (...a) => fb().increment(...a);
-const serverTimestamp = () => fb().serverTimestamp();
+const collection      = (...a) => fb().collection(...a);
+const addDoc          = (...a) => fb().addDoc(...a);
+const onSnapshot      = (...a) => fb().onSnapshot(...a);
+const query           = (...a) => fb().query(...a);
+const orderBy         = (...a) => fb().orderBy(...a);
+const where           = (...a) => fb().where(...a);
+const updateDoc       = (...a) => fb().updateDoc(...a);
+const deleteDoc       = (...a) => fb().deleteDoc(...a);         // FIX 5: was missing
+const doc             = (...a) => fb().doc(...a);
+const increment       = (...a) => fb().increment(...a);
+const serverTimestamp = ()     => fb().serverTimestamp();
 const signInWithPopup = (...a) => fb().signInWithPopup(...a);
-const signOut       = (...a) => fb().signOut(...a);
-const onAuthStateChanged = (...a) => fb().onAuthStateChanged(...a);
-const signInWithRedirect  = (...a) => fb().signInWithRedirect(...a);
-const getRedirectResult   = (...a) => fb().getRedirectResult(...a);
+const signOut         = (...a) => fb().signOut(...a);
+const onAuthStateChanged    = (...a) => fb().onAuthStateChanged(...a);
+const signInWithRedirect    = (...a) => fb().signInWithRedirect(...a);
+const getRedirectResult     = (...a) => fb().getRedirectResult(...a);
+
+// FIX 8: Storage helpers — guarded so they only call if storage is wired up
+const storageRef      = (...a) => fb().storageRef(...a);
+const uploadBytes     = (...a) => fb().uploadBytes(...a);
+const getDownloadURL  = (...a) => fb().getDownloadURL(...a);
 
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
@@ -88,14 +94,15 @@ function timeAgo(ts) {
   return `${Math.floor(seconds/86400)}d ago`;
 }
 
+const ADMIN_EMAIL = "manaspandeya@gmail.com";
+
 // ─── AUTH GATE ────────────────────────────────────────────────────
 function AuthGate({ onAuth }) {
-  const [step, setStep] = useState("login");       // login | manual-form | manual-sent
+  const [step, setStep] = useState("login");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [pendingUser, setPendingUser] = useState(null);
 
-  // Manual verification form state
   const [manualName, setManualName] = useState("");
   const [manualCollege, setManualCollege] = useState("");
   const [manualYear, setManualYear] = useState("");
@@ -103,13 +110,14 @@ function AuthGate({ onAuth }) {
   const [proofFile, setProofFile] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  // Pick up redirect result after page reload
+  // FIX 7: use wrapper instead of fb().getRedirectResult(fb().auth)
   useEffect(() => {
-    fb().getRedirectResult(fb().auth).then(result => {
+    getRedirectResult(fb().auth).then(result => {
       if (!result?.user) return;
       const email = result.user.email;
       const isDU = email.endsWith(".du.ac.in") || email.endsWith("@du.ac.in");
-      if (isDU) {
+      const isAdminUser = email === ADMIN_EMAIL;
+      if (isDU || isAdminUser) {
         onAuth(result.user);
       } else {
         setPendingUser({ email, displayName: result.user.displayName });
@@ -133,14 +141,15 @@ function AuthGate({ onAuth }) {
             popupErr.code === "auth/popup-closed-by-user" ||
             popupErr.message?.includes("Cross-Origin") ||
             popupErr.message?.includes("window.closed")) {
-          await fb().signInWithRedirect(fb().auth, provider);
+          await signInWithRedirect(fb().auth, provider);  // FIX 6: use wrapper
           return;
         }
         throw popupErr;
       }
       const email = result.user.email;
       const isDU = email.endsWith(".du.ac.in") || email.endsWith("@du.ac.in");
-      if (isDU) {
+      const isAdminUser = email === ADMIN_EMAIL;
+      if (isDU || isAdminUser) {  // FIX 2: admin bypasses DU check
         onAuth(result.user);
       } else {
         setPendingUser({ email, displayName: result.user.displayName });
@@ -150,7 +159,7 @@ function AuthGate({ onAuth }) {
         setLoading(false);
       }
     } catch (e) {
-      console.error("🔥 ACTUAL AUTH ERROR DETECTED:", e);
+      console.error("Auth error:", e);
       setError(e.message);
       setLoading(false);
     }
@@ -168,11 +177,14 @@ function AuthGate({ onAuth }) {
     setSubmitLoading(true);
     setError("");
     try {
-      const uniquePathName = `${Date.now()}_${proofFile.name}`;
-      const bucketDestination = fb().storageRef(fb().storage, `manual_proofs/${uniquePathName}`);
-      
-      const uploadTaskSnapshot = await fb().uploadBytes(bucketDestination, proofFile);
-      const authenticatedProofUrl = await fb().getDownloadURL(uploadTaskSnapshot.ref);
+      // FIX 8: Guard storage calls — if storage not wired, skip upload and note in doc
+      let authenticatedProofUrl = "no-storage-configured";
+      if (fb().storageRef && fb().storage) {
+        const uniquePathName = `${Date.now()}_${proofFile.name}`;
+        const bucketDestination = storageRef(fb().storage, `manual_proofs/${uniquePathName}`);
+        const uploadTaskSnapshot = await uploadBytes(bucketDestination, proofFile);
+        authenticatedProofUrl = await getDownloadURL(uploadTaskSnapshot.ref);
+      }
 
       await addDoc(collection(fb().db, "manual_verifications"), {
         email: pendingUser?.email || "",
@@ -376,7 +388,6 @@ function AuthGate({ onAuth }) {
     );
   }
 
-  // Default: login step
   return (
     <div style={wrapStyle}>
       <style>{CSS}</style>
@@ -428,7 +439,8 @@ function AuthGate({ onAuth }) {
             {error}
           </div>
         )}
-        <div style={{marginTop:16, fontSize:"0.7rem", color:"var(--ink4)", lineHeight:1.7}>
+        {/* FIX 1: was lineHeight:1.7}> — stray > broke JSX */}
+        <div style={{marginTop:16, fontSize:"0.7rem", color:"var(--ink4)", lineHeight:1.7}}>
           By signing in you agree to our{" "}
           <a href="/terms.html" style={{color:"var(--ink3)"}}>Terms</a> &amp;{" "}
           <a href="/privacy.html" style={{color:"var(--ink3)"}}>Privacy Policy</a>.
@@ -464,9 +476,10 @@ function Pill({name, color}) {
   );
 }
 
+// FIX 3: wFinal/lFinal now reflect optimistic voted state
 function WLBar({w, l, postId, onVote, voted}) {
-  const wFinal = w + (voted==="w" ? 0 : 0); 
-  const lFinal = l + (voted==="l" ? 0 : 0);
+  const wFinal = w + (voted === "w" ? 1 : 0);
+  const lFinal = l + (voted === "l" ? 1 : 0);
   const total = wFinal + lFinal;
   const pct = total > 0 ? Math.round((wFinal / total) * 100) : 50;
   return (
@@ -581,8 +594,8 @@ function ComposeBox({user, onPost}) {
         college,
         text: text.trim(),
         tags: [],
-        status: "pending",  
-        w: 1,               
+        status: "pending",
+        w: 1,
         l: 0,
         createdAt: serverTimestamp(),
         uid: user.uid
@@ -636,10 +649,10 @@ function ComposeBox({user, onPost}) {
 
 // ─── MAIN APP ────────────────────────────────────────────────────
 function UnrestFeed() {
-  const [user, setUser] = useState(undefined); 
+  const [user, setUser] = useState(undefined);
   const [posts, setPosts] = useState([]);
-  const [pendingPosts, setPendingPosts] = useState([]); 
-  const [pendingVerifications, setPendingVerifications] = useState([]); 
+  const [pendingPosts, setPendingPosts] = useState([]);
+  const [pendingVerifications, setPendingVerifications] = useState([]);
   const [feedLoading, setFeedLoading] = useState(true);
   const [tab, setTab] = useState("du");
   const [voted, setVoted] = useState({});
@@ -648,15 +661,19 @@ function UnrestFeed() {
   const [searchQ, setSearchQ] = useState("");
   const [searchCollege, setSearchCollege] = useState("");
 
-  const ADMIN_EMAIL = "manaspandeya@gmail.com"; 
   const isAdmin = user && user.email === ADMIN_EMAIL;
 
+  // FIX 2: admin email allowed through — no longer force-signed-out
   useEffect(() => {
     return onAuthStateChanged(fb().auth, async u => {
-      if (u && !u.email.endsWith(".du.ac.in") && !u.email.endsWith("@du.ac.in") && u.email !== ADMIN_EMAIL) {
-        await fb().signOut(fb().auth);
-        setUser(null);
-        return;
+      if (u) {
+        const isDU = u.email.endsWith(".du.ac.in") || u.email.endsWith("@du.ac.in");
+        const isAdminUser = u.email === ADMIN_EMAIL;
+        if (!isDU && !isAdminUser) {
+          await signOut(fb().auth);  // FIX 4: use wrapper
+          setUser(null);
+          return;
+        }
       }
       setUser(u || null);
     });
@@ -677,8 +694,10 @@ function UnrestFeed() {
           l: parseInt(data.l ?? data.Ls ?? 0, 10) || 0,
         };
       });
-      
-      const publicFeed = all.filter(p => p.status === "approved" || !p.uid || p.uid === "legacy" || p.uid === user.uid);
+
+      const publicFeed = all.filter(p =>
+        p.status === "approved" || !p.uid || p.uid === "legacy" || p.uid === user.uid
+      );
       const moderationQueue = all.filter(p => p.status === "pending");
 
       setPosts(publicFeed);
@@ -696,7 +715,7 @@ function UnrestFeed() {
     if (!user || !isAdmin) return;
 
     const qVerif = query(
-      collection(fb().db, "manual_verifications"), 
+      collection(fb().db, "manual_verifications"),
       where("status", "==", "pending")
     );
 
@@ -722,7 +741,7 @@ function UnrestFeed() {
   async function rejectPost(id) {
     if(confirm("Delete this post permanently from queue?")) {
       try {
-        await fb().deleteDoc(doc(fb().db, "posts", id));
+        await deleteDoc(doc(fb().db, "posts", id));  // FIX 5: use wrapper
         notify("Post rejected & deleted.");
       } catch(e) { notify("Deletion failed."); }
     }
@@ -736,7 +755,7 @@ function UnrestFeed() {
   }
 
   async function handleVote(id, type) {
-    if (voted[id] === type) return; 
+    if (voted[id] === type) return;
     setVoted(p => ({...p, [id]: type}));
     try {
       await updateDoc(doc(fb().db, "posts", id), {
@@ -744,7 +763,7 @@ function UnrestFeed() {
       });
       notify(type === "w" ? "W noted 🔥" : "L noted");
     } catch(e) {
-      setVoted(p => ({...p, [id]: null})); 
+      setVoted(p => ({...p, [id]: null}));
       notify("Vote failed");
     }
   }
@@ -799,7 +818,6 @@ function UnrestFeed() {
         </div>
       )}
 
-      {/* NAV */}
       <nav style={{background:"rgba(242,239,232,0.96)", borderBottom:"1px solid var(--border)", padding:"0 2rem", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(10px)"}}>
         <div style={{maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", height:52, gap:0}}>
           <a style={{fontFamily:"var(--serif)", fontSize:"1.5rem", color:"var(--ink)", textDecoration:"none", letterSpacing:"-0.02em", marginRight:28, flexShrink:0}}>
@@ -819,15 +837,13 @@ function UnrestFeed() {
               <Avatar initials={initials(user.displayName)} college={userCollege} size={24}/>
               <span style={{fontSize:"0.78rem", fontWeight:500, color:"var(--ink2)"}}>{isAdmin ? "System Admin" : userCollege}</span>
             </div>
-            <button onClick={() => fb().signOut(fb().auth)} style={{fontSize:"0.72rem", color:"var(--ink3)", background:"none", border:"none", padding:"4px 6px"}}>Sign out</button>
+            <button onClick={() => signOut(fb().auth)} style={{fontSize:"0.72rem", color:"var(--ink3)", background:"none", border:"none", padding:"4px 6px"}}>Sign out</button>
           </div>
         </div>
       </nav>
 
-      {/* LAYOUT */}
       <div style={{maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"220px 1fr 210px", minHeight:"calc(100vh - 52px)"}}>
 
-        {/* LEFT SIDEBAR */}
         <aside style={{padding:"24px 20px 24px 0", borderRight:"1px solid var(--border)"}}>
           <div style={{marginBottom:24}}>
             <div style={{fontSize:"0.58rem", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"var(--ink4)", marginBottom:10}}>System Context</div>
@@ -855,7 +871,6 @@ function UnrestFeed() {
           </div>
         </aside>
 
-        {/* MAIN FEED */}
         <main style={{padding:"24px 28px", minWidth:0}}>
           {tab !== "mod" ? (
             <>
@@ -921,7 +936,7 @@ function UnrestFeed() {
                         <div style={{fontSize:"0.76rem", color:"var(--ink2)", marginBottom:2}}><strong>Email:</strong> {v.email}</div>
                         <div style={{fontSize:"0.76rem", color:"var(--ink2)", marginBottom:2}}><strong>College:</strong> {v.college} ({v.year})</div>
                         {v.note && <div style={{fontSize:"0.74rem", color:"var(--ink3)", fontStyle:"italic", marginTop:6}}>Note: "{v.note}"</div>}
-                        
+
                         <div style={{display:"flex", gap:10, marginTop:14}}>
                           <button onClick={() => resolveVerification(v.id, "approved")} style={{padding:"6px 12px", background:"var(--blue)", border:"none", color:"#fff", borderRadius:5, fontSize:"0.74rem", fontWeight:600}}>Verify Account</button>
                           <button onClick={() => resolveVerification(v.id, "rejected")} style={{padding:"6px 12px", background:"rgba(0,0,0,0.05)", border:"none", color:"var(--ink2)", borderRadius:5, fontSize:"0.74rem", fontWeight:500}}>Deny Access</button>
@@ -941,7 +956,6 @@ function UnrestFeed() {
           )}
         </main>
 
-        {/* RIGHT SIDEBAR */}
         <aside style={{padding:"24px 0 24px 20px", borderLeft:"1px solid var(--border)"}}>
           <div style={{marginBottom:24}}>
             <div style={{fontSize:"0.58rem", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"var(--ink4)", marginBottom:12}}>About Unrest</div>
