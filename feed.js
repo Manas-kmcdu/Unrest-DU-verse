@@ -819,7 +819,23 @@ function UnrestFeed(){
 
   async function approvePost(id){try{await updateDoc(doc(fb().db,"posts",id),{status:"approved"});notify("Approved!");}catch(e){notify("Failed.");}}
   async function rejectPost(id){if(confirm("Delete this post?")){try{await deleteDoc(doc(fb().db,"posts",id));notify("Deleted.");}catch(e){notify("Failed.");}}}
-  async function resolveVerification(id,s){try{await updateDoc(doc(fb().db,"manual_verifications",id),{status:s});notify(`Marked ${s}`);}catch(e){notify("Failed.");}}
+  async function resolveVerification(id,s){
+    try{
+      await updateDoc(doc(fb().db,"manual_verifications",id),{status:s});
+      if(s==="approved"){
+        const vSnap = pendingVerifications.find(v=>v.id===id);
+        if(vSnap?.email){
+          await fb().setDoc(doc(fb().db,"allowlisted_emails",vSnap.email.toLowerCase()),{
+            email:vSnap.email.toLowerCase(),
+            displayName:vSnap.displayName,
+            college:vSnap.college,
+            approvedAt:serverTimestamp()
+          });
+        }
+      }
+      notify(s==="approved"?"Verified & access granted!":"Marked rejected.");
+    }catch(e){notify("Failed: "+e.message);}
+  }
   async function resolveUsername(id,s){try{await updateDoc(doc(fb().db,"profiles",id),{usernameStatus:s});notify(s==="approved"?"Username approved!":"Username rejected.");}catch(e){notify("Failed.");}}
   async function handleVote(id,type){
     if(voted[id]===type) return;
