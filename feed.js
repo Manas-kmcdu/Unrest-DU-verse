@@ -200,11 +200,25 @@ function AuthGate({ onAuth }) {
   const [submitLoading, setSubmitLoading] = useState(false);
 
   useEffect(() => {
-    getRedirectResult(fb().auth).then(result => {
+    getRedirectResult(fb().auth).then(async (result) => {
       if (!result?.user) return;
-      const email = result.user.email;
+      const email = result.user.email.toLowerCase().trim();
       const isDU = email.endsWith(".du.ac.in") || email.endsWith("@du.ac.in");
+      
+      // Allow instantly if DU email or Admin account
       if (isDU || email === ADMIN_EMAIL) { onAuth(result.user); return; }
+      
+      // Check if this manual email has already been approved by an admin
+      const qAllow = query(collection(fb().db, "allowlisted_emails"), where("email", "==", email));
+      const snapAllow = await new Promise(res => {
+        const unsub = onSnapshot(qAllow, s => { unsub(); res(s); });
+      });
+
+      if (!snapAllow.empty) {
+        onAuth(result.user);
+        return;
+      }
+
       setPendingUser({ email, displayName: result.user.displayName });
       signOut(fb().auth); setStep("manual-form"); setManualName(result.user.displayName||"");
     }).catch(()=>{});
@@ -222,9 +236,22 @@ function AuthGate({ onAuth }) {
         }
         throw e;
       }
-      const email = result.user.email;
+      const email = result.user.email.toLowerCase().trim();
       const isDU = email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
+      
       if (isDU || email===ADMIN_EMAIL) { onAuth(result.user); return; }
+
+      // Check allowlist during immediate popup login route too
+      const qAllow = query(collection(fb().db, "allowlisted_emails"), where("email", "==", email));
+      const snapAllow = await new Promise(res => {
+        const unsub = onSnapshot(qAllow, s => { unsub(); res(s); });
+      });
+
+      if (!snapAllow.empty) {
+        onAuth(result.user);
+        return;
+      }
+
       setPendingUser({email, displayName: result.user.displayName});
       await signOut(fb().auth); setStep("manual-form"); setManualName(result.user.displayName||""); setLoading(false);
     } catch(e) { setError(e.message); setLoading(false); }
@@ -448,9 +475,7 @@ function PostCard({post,voted,onVote,saved,onSave,notify,user,categoryTag}){
         <p style={{fontSize:"0.9rem",color:"var(--ink)",lineHeight:1.7,marginBottom:10}}>{post.text}</p>
         {post.tags&&post.tags.length>0 && <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:10}}>{post.tags.map(t=><span key={t} style={{fontSize:"0.67rem",color:"var(--ink3)",fontWeight:500}}>#{t}</span>)}</div>}
         <div style={{display:"flex",alignItems:"center",gap:11,flexWrap:"wrap"}}>
-          <WLBar w={post.w} l={post.l} postId={post.id} onVote={onVote} voted={voted}/>
-          <span style={{fontSize:"0.67rem",color:"var(--ink4)"}}>·</span>
-          <button onClick={()=>{onSave(post.id);notify(saved?"Removed from saved":"Saved");}} style={{background:"none",border:"none",fontSize:"0.7rem",color:saved?"var(--blue)":"var(--ink3)",fontWeight:saved?600:500,padding:0}}>{saved?"Saved":"Save"}</button>
+          <button onClick={()=>onSave(post.id);notify(saved?"Removed from saved":"Saved");} style={{background:"none",border:"none",fontSize:"0.7rem",color:saved?"var(--blue)":"var(--ink3)",fontWeight:saved?600:500,padding:0}}>{saved?"Saved":"Save"}</button>
         </div>
       </div>
       <Comments postId={post.id} user={user}/>
@@ -585,7 +610,7 @@ function ProfileView({user,allPosts,notify}){
   const [saving,setSaving]=useState(false);
   const [friends,setFriends]=useState(0);
   const [form,setForm]=useState({username:"",college:"",course:"",year:""});
-  const [usernameStatus,setUsernameStatus]=useState(null); // null|"pending"|"approved"|"rejected"
+  const [usernameStatus,setUsernameStatus]=useState(null);
 
   const userCollege=collegeFromEmail(user.email);
 
@@ -604,39 +629,11 @@ function ProfileView({user,allPosts,notify}){
     return ()=>unsub();
   },[user.uid]);
 
-  useEffect(()=>{
-    // Count connections: posts by this user that got > 2 comments (proxy for engagement/friends)
-    // Real friends system would need its own collection; use saved mutual as proxy
-    setFriends(0); // placeholder — extend with real friends collection
-  },[]);
-
   async function saveProfile(){
     if(!form.username.trim()||!form.college||!form.course||!form.year){notify("Fill all fields.");return;}
     setSaving(true);
     try{
-      const isNewUsername = !profile||profile.username!==form.username.trim();
-      await updateDoc
-        ? await (async()=>{
-            const ref=doc(fb().db,"profiles",user.uid);
-            const {setDoc}=await Promise.resolve({setDoc:fb().setDoc||window.__firebase?.setDoc});
-            // Use updateDoc if exists, else create via addDoc-like approach
-            const snap=await new Promise(res=>{const u=onSnapshot(ref,s=>{u();res(s);});});
-            if(snap.exists()){
-              await updateDoc(ref,{
-                ...form, username:form.username.trim(),
-                displayName:user.displayName, email:user.email,
-                usernameStatus: isNewUsername?"pending":(profile?.usernameStatus||"pending"),
-                updatedAt:serverTimestamp()
-              });
-            } else {
-              await addDoc(collection(fb().db,"profiles_init")||collection(fb().db,"profiles"),{uid:user.uid});
-            }
-          })()
-        : null;
-    }catch(e){}
-    // Use addDoc-safe approach with setDoc polyfill
-    try{
-      const {setDoc:sd,getFirestore:gf}=window.__firebase||{};
+      const {setDoc:sd}=window.__firebase||{};
       if(sd){
         await sd(doc(fb().db,"profiles",user.uid),{
           ...form, username:form.username.trim(),
@@ -645,10 +642,6 @@ function ProfileView({user,allPosts,notify}){
           updatedAt:serverTimestamp()
         },{merge:true});
         notify((!profile||profile.username!==form.username.trim())?"Username submitted for mod approval!":"Profile saved!");
-        setEditing(false);
-      } else {
-        // fallback: create doc via workaround
-        notify("Saved (limited mode).");
         setEditing(false);
       }
     }catch(e){notify("Save failed: "+e.message);}
@@ -675,15 +668,11 @@ function ProfileView({user,allPosts,notify}){
     <div style={{animation:"fadeIn 0.25s ease both"}}>
       <Banner tab="profile"/>
       <div style={{display:"flex",flexDirection:"column",gap:16}}>
-
-        {/* PROFILE CARD */}
         <div style={{background:"var(--white)",border:"1px solid rgba(14,13,11,0.09)",borderRadius:14,overflow:"hidden"}}>
-          {/* Cover strip — summer gradient */}
           <div style={{height:64,background:"linear-gradient(135deg,#fde68a 0%,#f9a825 40%,#e67e5a 100%)",position:"relative"}}>
             <div style={{position:"absolute",inset:0,backgroundImage:"radial-gradient(circle at 70% 50%, rgba(255,255,255,0.18) 0%, transparent 60%)"}}/>
           </div>
           <div style={{padding:"0 20px 20px",position:"relative"}}>
-            {/* Avatar overlapping cover */}
             <div style={{marginTop:-28,marginBottom:10,display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
               <div style={{width:56,height:56,borderRadius:"50%",background:COL_COLOR[userCollege]||"#455a64",border:"3px solid var(--white)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.1rem",fontWeight:700,color:"#fff",boxShadow:"0 2px 8px rgba(0,0,0,0.12)"}}>
                 {initials(user.displayName)}
@@ -692,13 +681,10 @@ function ProfileView({user,allPosts,notify}){
                 {editing?"Cancel":"Edit Profile"}
               </button>
             </div>
-
             <div style={{marginBottom:14}}>
               <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}>
                 <span style={{fontFamily:"var(--serif)",fontSize:"1.25rem",color:"var(--ink)",fontWeight:600}}>{user.displayName}</span>
-                {profile?.username && (
-                  <span style={{fontSize:"0.76rem",color:"var(--ink3)",fontWeight:500}}>@{profile.username}</span>
-                )}
+                {profile?.username && <span style={{fontSize:"0.76rem",color:"var(--ink3)",fontWeight:500}}>@{profile.username}</span>}
                 {usernameStatus && <StatusBadge status={usernameStatus}/>}
               </div>
               <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
@@ -708,8 +694,6 @@ function ProfileView({user,allPosts,notify}){
               </div>
               <div style={{fontSize:"0.7rem",color:"var(--ink4)",marginTop:4}}>{user.email}</div>
             </div>
-
-            {/* STATS ROW */}
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom: editing?16:0}}>
               {[
                 {label:"Posts",val:userPosts.length,color:"var(--blue)"},
@@ -726,7 +710,6 @@ function ProfileView({user,allPosts,notify}){
           </div>
         </div>
 
-        {/* EDIT FORM */}
         {editing && (
           <div style={{background:"var(--white)",border:"1px solid rgba(14,13,11,0.09)",borderRadius:12,padding:"20px",animation:"fadeIn 0.2s ease both"}}>
             <div style={{fontFamily:"var(--serif)",fontSize:"1rem",color:"var(--ink)",marginBottom:16}}>Edit your profile</div>
@@ -734,20 +717,19 @@ function ProfileView({user,allPosts,notify}){
               <div>
                 <label style={lbl}>Username <span style={{textTransform:"none",fontWeight:400,color:"var(--ink4)"}}>— needs mod approval</span></label>
                 <input value={form.username} onChange={e=>setForm(p=>({...p,username:e.target.value.replace(/[^a-z0-9_.]/gi,"").toLowerCase()}))} placeholder="e.g. ragini.srcc" style={inp} maxLength={24}/>
-                <div style={{fontSize:"0.62rem",color:"var(--ink4)",marginTop:3}}>Lowercase, letters/numbers/dots/underscores. Max 24 chars.</div>
               </div>
               <div>
                 <label style={lbl}>College *</label>
                 <select value={form.college} onChange={e=>setForm(p=>({...p,college:e.target.value}))} style={inp}>
                   <option value="">Select college...</option>
-                  {COLLEGES.map(c=><option key={c}>{c}</option>)}
+                  {COLLEGES.map(c=><option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
                 <label style={lbl}>Course *</label>
                 <select value={form.course} onChange={e=>setForm(p=>({...p,course:e.target.value}))} style={inp}>
                   <option value="">Select course...</option>
-                  {COURSES.map(c=><option key={c}>{c}</option>)}
+                  {COURSES.map(c=><option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
@@ -769,7 +751,6 @@ function ProfileView({user,allPosts,notify}){
           </div>
         )}
 
-        {/* RECENT POSTS */}
         {userPosts.length>0&&(
           <div style={{background:"var(--white)",border:"1px solid rgba(14,13,11,0.09)",borderRadius:12,padding:"16px 18px"}}>
             <div style={{fontSize:"0.7rem",fontWeight:700,letterSpacing:"0.09em",textTransform:"uppercase",color:"var(--ink4)",marginBottom:12}}>Your Posts ({userPosts.length})</div>
@@ -800,7 +781,7 @@ function UnrestFeed(){
   const [voted,setVoted]=useState({});
   const [savedPosts,setSavedPosts]=useState(new Set());
   const [toast,setToast]=useState(null);
-  const [searchQ,setSearchQ] = useState("");
+  const [searchQ,setSearchQ]=useState("");
   const [searchCollege,setSearchCollege]=useState("");
   const [exploreCategory,setExploreCategory]=useState(null);
 
@@ -808,8 +789,22 @@ function UnrestFeed(){
 
   useEffect(()=>onAuthStateChanged(fb().auth,async u=>{
     if(u){
-      const isDU=u.email.endsWith(".du.ac.in")||u.email.endsWith("@du.ac.in");
-      if(!isDU&&u.email!==ADMIN_EMAIL){await signOut(fb().auth);setUser(null);return;}
+      const email = u.email.toLowerCase().trim();
+      const isDU = email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
+      
+      if(!isDU && email !== ADMIN_EMAIL){
+        // Dynamic live verification look up to allow manual users straight in
+        const qAllow = query(collection(fb().db, "allowlisted_emails"), where("email", "==", email));
+        const snapAllow = await new Promise(res => {
+          const unsub = onSnapshot(qAllow, s => { unsub(); res(s); });
+        });
+        
+        if (snapAllow.empty) {
+          await fb().signOut(fb().auth);
+          setUser(null);
+          return;
+        }
+      }
     }
     setUser(u||null);
   }),[]);
@@ -851,12 +846,36 @@ function UnrestFeed(){
       }catch(e){notify("Failed.");}
     }
   }
-  async function resolveVerification(id,s){
+  
+  async function resolveVerification(id, s){
     try{
+      // 1. Grab target user context item details out of current local state array
+      const targetClaim = pendingVerifications.find(v => v.id === id);
+      
+      // 2. Perform database entry update transaction
       await updateDoc(doc(fb().db,"manual_verifications",id),{status:s});
+      
+      // 3. 🌟 THE ACCESS BRIDGE 🌟
+      // If approved, dynamically record their email directly inside the allowlisted_emails index cluster
+      if (s === "approved" && targetClaim?.email) {
+        const cleanEmail = targetClaim.email.toLowerCase().trim();
+        const { setDoc } = fb();
+        
+        // Use setDoc polyfill to create a clean authorization node mapped directly on their email string path
+        await setDoc(doc(fb().db, "allowlisted_emails", cleanEmail), {
+          email: cleanEmail,
+          college: targetClaim.college,
+          approvedAt: serverTimestamp()
+        });
+      }
+
+      // 4. Extract item visually from active layout queues
       setPendingVerifications(prev => prev.filter(v => v.id !== id));
-      notify(`Marked ${s}`);
-    }catch(e){notify("Failed.");}
+      notify(`Marked as ${s}`);
+    }catch(e){
+      console.error("Mod verification transaction break log:", e);
+      notify("Failed to process.");
+    }
   }
 
   async function handleVote(id,type){
@@ -1076,7 +1095,7 @@ function UnrestFeed(){
                 </div>
               ))}
             </div>
-            <div style={{fontSize:"0.59rem",color:"var(--ink4)",lineHeight:1.8}}>
+            <div style={{fontSize:"0.59rem",color:"var(--ink4)",lineHeight:1.75}}>
               <div>unrestdu.in</div>
               <div style={{display:"flex",gap:8,marginTop:3}}>
                 <a href="/privacy.html" style={{color:"var(--ink3)",textDecoration:"none"}}>Privacy</a>
