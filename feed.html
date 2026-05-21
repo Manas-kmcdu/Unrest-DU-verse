@@ -24,7 +24,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
       getFirestore, collection, addDoc, onSnapshot,
-      query, orderBy, where, updateDoc, doc, increment, serverTimestamp, setDoc, getDoc
+      query, orderBy, where, updateDoc, doc, getDoc, deleteDoc, increment, serverTimestamp, setDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import {
       getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged
@@ -49,7 +49,7 @@
       getDownloadURL: getDownloadURL,
       googleProvider: Object.assign(new GoogleAuthProvider(), { hd: undefined }),
       collection, addDoc, onSnapshot, query, orderBy, where,
-      updateDoc, doc, increment, serverTimestamp, setDoc, getDoc,
+      updateDoc, doc, getDoc, deleteDoc, increment, serverTimestamp, setDoc,
       signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged
     };
 
