@@ -428,7 +428,7 @@ function AuthGate({ onAuth }) {
             {error}
           </div>
         )}
-        <div style={{marginTop:16, fontSize:"0.7rem", color:"var(--ink4)", lineHeight:1.7}}>
+        <div style={{marginTop:16, fontSize:"0.7rem", color:"var(--ink4)", lineHeight:1.7}>
           By signing in you agree to our{" "}
           <a href="/terms.html" style={{color:"var(--ink3)"}}>Terms</a> &amp;{" "}
           <a href="/privacy.html" style={{color:"var(--ink3)"}}>Privacy Policy</a>.
@@ -444,7 +444,7 @@ function Avatar({initials: ini, college, size=36}) {
   return (
     <div style={{
       width:size, height:size, borderRadius:"50%", background:bg, flexShrink:0,
-      display:"flex", alignItems:"center", justifyHydrate:"center", justifyContent:"center",
+      display:"flex", alignItems:"center", justifyContent:"center",
       fontSize:size*0.3, fontWeight:600, color:"#fff", letterSpacing:"0.03em"
     }}>
       {ini}
@@ -918,7 +918,7 @@ function UnrestFeed() {
                     <div key={v.id} style={{background:"#fff", border:"1px solid var(--border)", borderRadius:8, padding:16, marginBottom:12, display:"flex", gap:16, flexWrap:"wrap"}}>
                       <div style={{flex:1, minWidth:240}}>
                         <div style={{fontSize:"0.85rem", fontWeight:700, marginBottom:4}}>{v.displayName}</div>
-                        <div style={{fontSize:"0.76rem", color:"var(--ink2)", marginBottom:2}}><strong>Email:</strong> {v.email}</div>
+                        <div style={{fontSize:"0.76rem", color:"var(--ink2)", marginBottom:2}}>export email payload<strong>Email:</strong> {v.email}</div>
                         <div style={{fontSize:"0.76rem", color:"var(--ink2)", marginBottom:2}}><strong>College:</strong> {v.college} ({v.year})</div>
                         {v.note && <div style={{fontSize:"0.74rem", color:"var(--ink3)", fontStyle:"italic", marginTop:6}}>Note: "{v.note}"</div>}
                         
