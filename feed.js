@@ -223,7 +223,7 @@ function AuthGate({ onAuth }) {
     }).catch(()=>{});
   }, []);
 
-  async function handleLogin() {
+ async function handleLogin() {
   setLoading(true); setError("");
   try {
     const provider = fb().googleProvider;
@@ -237,7 +237,7 @@ function AuthGate({ onAuth }) {
     }
     const email = result.user.email.toLowerCase().trim();
     const isDU = email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
-    if (isDU || email === ADMIN_EMAIL) { onAuth(result.user); return; }
+    if (isDU || email===ADMIN_EMAIL) { onAuth(result.user); return; }
 
     const snap = await fb().getDoc(fb().doc(fb().db, "allowlisted_emails", email));
     if (snap.exists()) { onAuth(result.user); return; }
