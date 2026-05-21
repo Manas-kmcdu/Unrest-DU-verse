@@ -224,33 +224,28 @@ function AuthGate({ onAuth }) {
   }, []);
 
   async function handleLogin() {
-    setLoading(true); setError("");
-    try {
-      const provider = fb().googleProvider;
-      let result;
-      try { result = await signInWithPopup(fb().auth, provider); }
-      catch(e) {
-        if (e.code==="auth/popup-blocked"||e.code==="auth/popup-closed-by-user"||e.message?.includes("Cross-Origin")||e.message?.includes("window.closed")) {
-          await signInWithRedirect(fb().auth, provider); return;
-        }
-        throw e;
+  setLoading(true); setError("");
+  try {
+    const provider = fb().googleProvider;
+    let result;
+    try { result = await signInWithPopup(fb().auth, provider); }
+    catch(e) {
+      if (e.code==="auth/popup-blocked"||e.code==="auth/popup-closed-by-user"||e.message?.includes("Cross-Origin")||e.message?.includes("window.closed")) {
+        await signInWithRedirect(fb().auth, provider); return;
       }
-      const email = result.user.email.toLowerCase().trim();
-      const isDU = email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
-      const { db, collection, doc, getDoc } = ... // need getDoc
-      const snap = await getDoc(doc(fb().db, "allowlisted_emails", email.toLowerCase()));
-      if (isDU || email === ADMIN_EMAIL || snap.exists()) { onAuth(result.user); return; }
-     
+      throw e;
+    }
+    const email = result.user.email.toLowerCase().trim();
+    const isDU = email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
+    if (isDU || email === ADMIN_EMAIL) { onAuth(result.user); return; }
 
-      const qAllow = query(collection(fb().db, "allowlisted_emails"), where("email", "==", email));
-      const snapAllow = await new Promise(res => {
-        const unsub = onSnapshot(qAllow, s => { unsub(); res(s); });
-      });
+    const snap = await fb().getDoc(fb().doc(fb().db, "allowlisted_emails", email));
+    if (snap.exists()) { onAuth(result.user); return; }
 
-      if (!snapAllow.empty) {
-        onAuth(result.user);
-        return;
-      }
+    setPendingUser({email, displayName: result.user.displayName});
+    await signOut(fb().auth); setStep("manual-form"); setManualName(result.user.displayName||""); setLoading(false);
+  } catch(e) { setError(e.message); setLoading(false); }
+}
 
       setPendingUser({email, displayName: result.user.displayName});
       setStep("manual-form"); setManualName(result.user.displayName||""); setLoading(false);
