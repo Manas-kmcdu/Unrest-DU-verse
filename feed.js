@@ -237,8 +237,10 @@ function AuthGate({ onAuth }) {
       }
       const email = result.user.email.toLowerCase().trim();
       const isDU = email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
-      
-      if (isDU || email===ADMIN_EMAIL) { onAuth(result.user); return; }
+      const { db, collection, doc, getDoc } = ... // need getDoc
+      const snap = await getDoc(doc(fb().db, "allowlisted_emails", email.toLowerCase()));
+      if (isDU || email === ADMIN_EMAIL || snap.exists()) { onAuth(result.user); return; }
+     
 
       const qAllow = query(collection(fb().db, "allowlisted_emails"), where("email", "==", email));
       const snapAllow = await new Promise(res => {
