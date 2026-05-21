@@ -918,7 +918,7 @@ function UnrestFeed() {
                     <div key={v.id} style={{background:"#fff", border:"1px solid var(--border)", borderRadius:8, padding:16, marginBottom:12, display:"flex", gap:16, flexWrap:"wrap"}}>
                       <div style={{flex:1, minWidth:240}}>
                         <div style={{fontSize:"0.85rem", fontWeight:700, marginBottom:4}}>{v.displayName}</div>
-                        <div style={{fontSize:"0.76rem", color:"var(--ink2)", marginBottom:2}}>export email payload<strong>Email:</strong> {v.email}</div>
+                        <div style={{fontSize:"0.76rem", color:"var(--ink2)", marginBottom:2}}><strong>Email:</strong> {v.email}</div>
                         <div style={{fontSize:"0.76rem", color:"var(--ink2)", marginBottom:2}}><strong>College:</strong> {v.college} ({v.year})</div>
                         {v.note && <div style={{fontSize:"0.74rem", color:"var(--ink3)", fontStyle:"italic", marginTop:6}}>Note: "{v.note}"</div>}
                         
