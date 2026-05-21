@@ -834,15 +834,19 @@
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     W = canvas.parentElement.offsetWidth;
-    H = Math.max(220, Math.min(300, W * 0.20));
+    const isMobile = W < 600;
+    const pad = isMobile ? 20 : PAD;
+    H = isMobile ? Math.max(160, W * 0.32) : Math.max(220, Math.min(300, W * 0.20));
     canvas.width  = W * dpr;
     canvas.height = H * dpr;
     canvas.style.width  = W + 'px';
     canvas.style.height = H + 'px';
     ctx.scale(dpr, dpr);
     LY      = H * LY_F;
-    spacing = (W - PAD * 2) / (N - 1);
-    stnX    = STATIONS.map((_, i) => PAD + i * spacing);
+    spacing = (W - pad * 2) / (N - 1);
+    stnX    = STATIONS.map((_, i) => pad + i * spacing);
+    canvas._pad = pad;
+    canvas._mobile = isMobile;
   }
 
   /* ── "Live" Network Pulse System ── */
@@ -870,14 +874,15 @@
   /* ── Clean, Minimal Rail & Stations ── */
   function drawRail() {
     ctx.save();
+    const _pad = canvas._pad || PAD;
     ctx.beginPath();
-    ctx.moveTo(PAD, LY); ctx.lineTo(W - PAD, LY);
+    ctx.moveTo(_pad, LY); ctx.lineTo(W - _pad, LY);
     ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.stroke();
     ctx.restore();
 
     // The glowing trail of the "data" stream
-    const tx2 = Math.min(W - PAD, Math.max(PAD, tx));
-    if (tx2 > PAD) {
+    const tx2 = Math.min(W - _pad, Math.max(_pad, tx));
+    if (tx2 > _pad) {
       ctx.save();
       ctx.shadowColor = 'rgba(200, 75, 47, 0.4)';
       ctx.shadowBlur = 8;
@@ -903,21 +908,24 @@
     ctx.fillStyle = current ? C.dotActive : passed ? (hl ? C.dotHL : C.dotPassed) : C.dot;
     ctx.fill();
 
-    // Text labels - sharp and clean typography
-    const stemUp = s.above;
-    const gap    = r + 10;
-    const baseY  = stemUp ? LY - gap : LY + gap + 4;
-    ctx.textAlign = (i === 0) ? 'left' : (i === N-1) ? 'right' : 'center';
-    
-    ctx.font = hl ? '600 10px "DM Sans", sans-serif' : '500 9px "DM Sans", sans-serif';
-    ctx.fillStyle = current ? '#ffffff' : passed ? (hl ? C.labelHL : C.labelPass) : C.labelDim;
-    ctx.fillText(s.name, x, baseY);
+    // Text labels - skip non-highlight on mobile to prevent overlap
+    const isMobile = canvas._mobile;
+    if (!isMobile || hl || current) {
+      const stemUp = s.above;
+      const gap    = r + 10;
+      const baseY  = stemUp ? LY - gap : LY + gap + 4;
+      ctx.textAlign = (i === 0) ? 'left' : (i === N-1) ? 'right' : 'center';
+      
+      ctx.font = hl ? '600 10px "DM Sans", sans-serif' : '500 9px "DM Sans", sans-serif';
+      ctx.fillStyle = current ? '#ffffff' : passed ? (hl ? C.labelHL : C.labelPass) : C.labelDim;
+      ctx.fillText(s.name, x, baseY);
 
-    // Minimal tags for major stations
-    if (s.tag && (current || passed)) {
-      ctx.font = '500 8px "DM Sans", sans-serif';
-      ctx.fillStyle = current ? 'rgba(255,255,255,0.7)' : 'rgba(200, 75, 47, 0.7)';
-      ctx.fillText(s.tag, x, baseY + (stemUp ? -12 : 12));
+      // Minimal tags for major stations
+      if (s.tag && (current || passed)) {
+        ctx.font = '500 8px "DM Sans", sans-serif';
+        ctx.fillStyle = current ? 'rgba(255,255,255,0.7)' : 'rgba(200, 75, 47, 0.7)';
+        ctx.fillText(s.tag, x, baseY + (stemUp ? -12 : 12));
+      }
     }
   }
 
