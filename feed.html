@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#f2efe8; }
+    body { background:#faf7f0; }
     #root { min-height:100vh; }
   </style>
 </head>
@@ -24,7 +24,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
       getFirestore, collection, addDoc, onSnapshot,
-      query, orderBy, where, updateDoc, doc, increment, serverTimestamp
+      query, orderBy, where, updateDoc, doc, increment, serverTimestamp, setDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import {
       getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged
@@ -49,7 +49,7 @@
       getDownloadURL: getDownloadURL,
       googleProvider: Object.assign(new GoogleAuthProvider(), { hd: undefined }),
       collection, addDoc, onSnapshot, query, orderBy, where,
-      updateDoc, doc, increment, serverTimestamp,
+      updateDoc, doc, increment, serverTimestamp, setDoc,
       signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged
     };
 
