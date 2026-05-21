@@ -150,6 +150,7 @@ function AuthGate({ onAuth }) {
         setLoading(false);
       }
     } catch (e) {
+      console.error("🔥 ACTUAL AUTH ERROR DETECTED:", e);
       setError(e.message);
       setLoading(false);
     }
