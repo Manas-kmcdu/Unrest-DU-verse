@@ -205,10 +205,8 @@ function AuthGate({ onAuth }) {
       const email = result.user.email.toLowerCase().trim();
       const isDU = email.endsWith(".du.ac.in") || email.endsWith("@du.ac.in");
       
-      // Allow instantly if DU email or Admin account
       if (isDU || email === ADMIN_EMAIL) { onAuth(result.user); return; }
       
-      // Check if this manual email has already been approved by an admin
       const qAllow = query(collection(fb().db, "allowlisted_emails"), where("email", "==", email));
       const snapAllow = await new Promise(res => {
         const unsub = onSnapshot(qAllow, s => { unsub(); res(s); });
@@ -220,7 +218,7 @@ function AuthGate({ onAuth }) {
       }
 
       setPendingUser({ email, displayName: result.user.displayName });
-      signOut(fb().auth); setStep("manual-form"); setManualName(result.user.displayName||"");
+      setStep("manual-form"); setManualName(result.user.displayName||"");
     }).catch(()=>{});
   }, []);
 
@@ -241,7 +239,6 @@ function AuthGate({ onAuth }) {
       
       if (isDU || email===ADMIN_EMAIL) { onAuth(result.user); return; }
 
-      // Check allowlist during immediate popup login route too
       const qAllow = query(collection(fb().db, "allowlisted_emails"), where("email", "==", email));
       const snapAllow = await new Promise(res => {
         const unsub = onSnapshot(qAllow, s => { unsub(); res(s); });
@@ -253,7 +250,7 @@ function AuthGate({ onAuth }) {
       }
 
       setPendingUser({email, displayName: result.user.displayName});
-      await signOut(fb().auth); setStep("manual-form"); setManualName(result.user.displayName||""); setLoading(false);
+      setStep("manual-form"); setManualName(result.user.displayName||""); setLoading(false);
     } catch(e) { setError(e.message); setLoading(false); }
   }
 
@@ -349,7 +346,7 @@ function AuthGate({ onAuth }) {
         </div>
         <button onClick={handleLogin} disabled={loading} style={{width:"100%",padding:"12px 20px",background:loading?"var(--ink3)":"var(--ink)",color:"#fff",border:"none",borderRadius:8,fontSize:"0.9rem",fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
           {loading ? <span style={{display:"inline-block",width:16,height:16,border:"2px solid rgba(255,255,255,0.3)",borderTopColor:"#fff",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/> : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.44 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
           )}
           {loading?"Signing in...":"Continue with Google"}
         </button>
@@ -471,23 +468,20 @@ function PostCard({post,voted,onVote,saved,onSave,notify,user,categoryTag}){
         </div>
       )}
 
-<button 
-  onClick={() => { onSave(post.id); notify(saved ? "Removed from saved" : "Saved"); }} 
-  style={{background:"none", border:"none", fontSize:"0.7rem", color:saved ? "var(--blue)" : "var(--ink3)", fontWeight:saved ? 600 : 500, padding:0}}
->
-  {saved ? "Saved" : "Save"}
-</button>
-        
       <div style={{paddingLeft:46}}>
         <p style={{fontSize:"0.9rem",color:"var(--ink)",lineHeight:1.7,marginBottom:10}}>{post.text}</p>
         {post.tags&&post.tags.length>0 && <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:10}}>{post.tags.map(t=><span key={t} style={{fontSize:"0.67rem",color:"var(--ink3)",fontWeight:500}}>#{t}</span>)}</div>}
+        
+        {/* ─── FIXED ACTION ROW SECTIONS ─── */}
         <div style={{display:"flex",alignItems:"center",gap:11,flexWrap:"wrap"}}>
-         <button 
-  onClick={() => { onSave(post.id); notify(saved ? "Removed from saved" : "Saved"); }} 
-  style={{background:"none", border:"none", fontSize:"0.7rem", color:saved ? "var(--blue)" : "var(--ink3)", fontWeight:saved ? 600 : 500, padding:0}}
->
-  {saved ? "Saved" : "Save"}
-</button>
+          <WLBar w={post.w} l={post.l} postId={post.id} onVote={onVote} voted={voted}/>
+          <span style={{fontSize:"0.67rem",color:"var(--ink4)"}}>·</span>
+          <button 
+            onClick={() => { onSave(post.id); notify(saved ? "Removed from saved" : "Saved"); }} 
+            style={{background:"none",border:"none",fontSize:"0.7rem",color:saved?"var(--blue)":"var(--ink3)",fontWeight:saved?600:500,padding:0}}
+          >
+            {saved?"Saved":"Save"}
+          </button>
         </div>
       </div>
       <Comments postId={post.id} user={user}/>
@@ -722,6 +716,7 @@ function ProfileView({user,allPosts,notify}){
           </div>
         </div>
 
+        {/* EDIT FORM */}
         {editing && (
           <div style={{background:"var(--white)",border:"1px solid rgba(14,13,11,0.09)",borderRadius:12,padding:"20px",animation:"fadeIn 0.2s ease both"}}>
             <div style={{fontFamily:"var(--serif)",fontSize:"1rem",color:"var(--ink)",marginBottom:16}}>Edit your profile</div>
@@ -734,14 +729,14 @@ function ProfileView({user,allPosts,notify}){
                 <label style={lbl}>College *</label>
                 <select value={form.college} onChange={e=>setForm(p=>({...p,college:e.target.value}))} style={inp}>
                   <option value="">Select college...</option>
-                  {COLLEGES.map(c=><option key={c} value={c}>{c}</option>)}
+                  {COLLEGES.map(c=><option key={c}>{c}</option>)}
                 </select>
               </div>
               <div>
                 <label style={lbl}>Course *</label>
                 <select value={form.course} onChange={e=>setForm(p=>({...p,course:e.target.value}))} style={inp}>
                   <option value="">Select course...</option>
-                  {COURSES.map(c=><option key={c} value={c}>{c}</option>)}
+                  {COURSES.map(c=><option key={c}>{c}</option>)}
                 </select>
               </div>
               <div>
@@ -805,14 +800,12 @@ function UnrestFeed(){
       const isDU = email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
       
       if(!isDU && email !== ADMIN_EMAIL){
-        // Dynamic live verification look up to allow manual users straight in
         const qAllow = query(collection(fb().db, "allowlisted_emails"), where("email", "==", email));
         const snapAllow = await new Promise(res => {
           const unsub = onSnapshot(qAllow, s => { unsub(); res(s); });
         });
         
         if (snapAllow.empty) {
-          await fb().signOut(fb().auth);
           setUser(null);
           return;
         }
@@ -861,19 +854,13 @@ function UnrestFeed(){
   
   async function resolveVerification(id, s){
     try{
-      // 1. Grab target user context item details out of current local state array
       const targetClaim = pendingVerifications.find(v => v.id === id);
-      
-      // 2. Perform database entry update transaction
       await updateDoc(doc(fb().db,"manual_verifications",id),{status:s});
       
-      // 3. 🌟 THE ACCESS BRIDGE 🌟
-      // If approved, dynamically record their email directly inside the allowlisted_emails index cluster
       if (s === "approved" && targetClaim?.email) {
         const cleanEmail = targetClaim.email.toLowerCase().trim();
         const { setDoc } = fb();
         
-        // Use setDoc polyfill to create a clean authorization node mapped directly on their email string path
         await setDoc(doc(fb().db, "allowlisted_emails", cleanEmail), {
           email: cleanEmail,
           college: targetClaim.college,
@@ -881,7 +868,6 @@ function UnrestFeed(){
         });
       }
 
-      // 4. Extract item visually from active layout queues
       setPendingVerifications(prev => prev.filter(v => v.id !== id));
       notify(`Marked as ${s}`);
     }catch(e){
