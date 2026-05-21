@@ -88,7 +88,7 @@ const COL_COLOR = {
 };
 
 const EXPLORE_CATEGORIES = [
-  { id:"about-du",         label:"About DU",          accent:"#c84b2f", desc:"History, structure, admissions",     type:"info" },
+  { id:"about-du",         label:"About DU",           accent:"#c84b2f", desc:"History, structure, admissions",     type:"info" },
   { id:"research-surveys", label:"Research Surveys",   accent:"#1e4f8c", desc:"Participate in student research",    type:"post" },
   { id:"ai",               label:"AI",                 accent:"#3a3a5c", desc:"Artificial intelligence discourse",   type:"post" },
   { id:"tech",             label:"Tech",               accent:"#0097a7", desc:"Code, startups, innovation",         type:"post" },
@@ -740,14 +740,14 @@ function ProfileView({user,allPosts,notify}){
                 <label style={lbl}>College *</label>
                 <select value={form.college} onChange={e=>setForm(p=>({...p,college:e.target.value}))} style={inp}>
                   <option value="">Select college...</option>
-                  {COLLEGES.map(c=><option key={c} value={c}>{c}</option>)}
+                  {COLLEGES.map(c=><option key={c}>{c}</option>)}
                 </select>
               </div>
               <div>
                 <label style={lbl}>Course *</label>
                 <select value={form.course} onChange={e=>setForm(p=>({...p,course:e.target.value}))} style={inp}>
                   <option value="">Select course...</option>
-                  {COURSES.map(c=><option key={c} value={c}>{c}</option>)}
+                  {COURSES.map(c=><option key={c}>{c}</option>)}
                 </select>
               </div>
               <div>
@@ -800,7 +800,7 @@ function UnrestFeed(){
   const [voted,setVoted]=useState({});
   const [savedPosts,setSavedPosts]=useState(new Set());
   const [toast,setToast]=useState(null);
-  const [searchQ,setSearchQ]=useState("");
+  const [searchQ,setSearchQ] = useState("");
   const [searchCollege,setSearchCollege]=useState("");
   const [exploreCategory,setExploreCategory]=useState(null);
 
@@ -835,9 +835,29 @@ function UnrestFeed(){
 
   function notify(msg){setToast(msg);setTimeout(()=>setToast(null),2600);}
 
-  async function approvePost(id){try{await updateDoc(doc(fb().db,"posts",id),{status:"approved"});notify("Approved!");}catch(e){notify("Failed.");}}
-  async function rejectPost(id){if(confirm("Delete this post?")){try{await deleteDoc(doc(fb().db,"posts",id));notify("Deleted.");}catch(e){notify("Failed.");}}}
-  async function resolveVerification(id,s){try{await updateDoc(doc(fb().db,"manual_verifications",id),{status:s});notify(`Marked ${s}`);}catch(e){notify("Failed.");}}
+  async function approvePost(id){
+    try{
+      await updateDoc(doc(fb().db,"posts",id),{status:"approved"});
+      setPendingPosts(prev => prev.filter(post => post.id !== id));
+      notify("Approved!");
+    }catch(e){notify("Failed.");}
+  }
+  async function rejectPost(id){
+    if(confirm("Delete this post?")){
+      try{
+        await deleteDoc(doc(fb().db,"posts",id));
+        setPendingPosts(prev => prev.filter(post => post.id !== id));
+        notify("Deleted.");
+      }catch(e){notify("Failed.");}
+    }
+  }
+  async function resolveVerification(id,s){
+    try{
+      await updateDoc(doc(fb().db,"manual_verifications",id),{status:s});
+      setPendingVerifications(prev => prev.filter(v => v.id !== id));
+      notify(`Marked ${s}`);
+    }catch(e){notify("Failed.");}
+  }
 
   async function handleVote(id,type){
     if(voted[id]===type) return;
@@ -937,7 +957,7 @@ function UnrestFeed(){
         ))}
       </div>
       <div>
-        <h3 style={{fontFamily:"var(--serif)",fontSize:"1.7rem",marginBottom:12,color:"var(--blue)"}}>Profile Claims ({pendingVerifications.length})</h3>
+        <h3 style={{fontFamily:"var(--serif)",fontSize:"1.7rem",marginBottom:12,color:"var(--blue)"}}>Manual Profile Claims ({pendingVerifications.length})</h3>
         {pendingVerifications.length===0?<p style={{fontSize:"0.83rem",color:"var(--ink3)"}}>No claims pending.</p>:pendingVerifications.map(v=>(
           <div key={v.id} style={{background:"#fff",border:"1px solid rgba(14,13,11,0.08)",borderRadius:9,padding:14,marginBottom:10,display:"flex",gap:14,flexWrap:"wrap"}}>
             <div style={{flex:1,minWidth:220}}>
@@ -982,7 +1002,7 @@ function UnrestFeed(){
               <Avatar initials={initials(user.displayName)} college={userCollege} size={24}/>
               <span style={{fontSize:"0.76rem",fontWeight:500,color:"var(--ink2)",marginLeft:4}}>{isAdmin?"Admin":userCollege}</span>
             </div>
-            <button onClick={()=>signOut(fb().auth)} style={{fontSize:"0.7rem",color:"var(--ink3)",background:"none",border:"none",padding:"4px 6px"}}>Sign out</button>
+            <button onClick={()=>signOut(fb().auth)} style={{fontSize:"0.72rem",color:"var(--ink3)",background:"none",border:"none",padding:"4px 6px"}}>Sign out</button>
           </div>
         </div>
       </nav>
