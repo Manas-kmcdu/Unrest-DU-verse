@@ -471,11 +471,23 @@ function PostCard({post,voted,onVote,saved,onSave,notify,user,categoryTag}){
         </div>
       )}
 
+<button 
+  onClick={() => { onSave(post.id); notify(saved ? "Removed from saved" : "Saved"); }} 
+  style={{background:"none", border:"none", fontSize:"0.7rem", color:saved ? "var(--blue)" : "var(--ink3)", fontWeight:saved ? 600 : 500, padding:0}}
+>
+  {saved ? "Saved" : "Save"}
+</button>
+        
       <div style={{paddingLeft:46}}>
         <p style={{fontSize:"0.9rem",color:"var(--ink)",lineHeight:1.7,marginBottom:10}}>{post.text}</p>
         {post.tags&&post.tags.length>0 && <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:10}}>{post.tags.map(t=><span key={t} style={{fontSize:"0.67rem",color:"var(--ink3)",fontWeight:500}}>#{t}</span>)}</div>}
         <div style={{display:"flex",alignItems:"center",gap:11,flexWrap:"wrap"}}>
-          <button onClick={()=>onSave(post.id);notify(saved?"Removed from saved":"Saved");} style={{background:"none",border:"none",fontSize:"0.7rem",color:saved?"var(--blue)":"var(--ink3)",fontWeight:saved?600:500,padding:0}}>{saved?"Saved":"Save"}</button>
+         <button 
+  onClick={() => { onSave(post.id); notify(saved ? "Removed from saved" : "Saved"); }} 
+  style={{background:"none", border:"none", fontSize:"0.7rem", color:saved ? "var(--blue)" : "var(--ink3)", fontWeight:saved ? 600 : 500, padding:0}}
+>
+  {saved ? "Saved" : "Save"}
+</button>
         </div>
       </div>
       <Comments postId={post.id} user={user}/>
