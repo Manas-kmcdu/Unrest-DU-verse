@@ -825,25 +825,17 @@ function UnrestFeed(){
 
   const isAdmin=user&&user.email===ADMIN_EMAIL;
 
-  useEffect(()=>onAuthStateChanged(fb().auth,async u=>{
-    if(u){
-      const email = u.email.toLowerCase().trim();
-      const isDU = email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
-      
-      if(!isDU && email !== ADMIN_EMAIL){
-        const qAllow = query(collection(fb().db, "allowlisted_emails"), where("email", "==", email));
-        const snapAllow = await new Promise(res => {
-          const unsub = onSnapshot(qAllow, s => { unsub(); res(s); });
-        });
-        
-        if (snapAllow.empty) {
-          setUser(null);
-          return;
-        }
-      }
+ useEffect(()=>onAuthStateChanged(fb().auth, async u=>{
+  if(u){
+    const email = u.email.toLowerCase().trim();
+    const isDU = email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
+    if(!isDU && email !== ADMIN_EMAIL){
+      const snap = await fb().getDoc(fb().doc(fb().db, "allowlisted_emails", email));
+      if (!snap.exists()) { setUser(null); return; }
     }
-    setUser(u||null);
-  }),[]);
+  }
+  setUser(u||null);
+}),[]);
 
   useEffect(() => {
     if (!user) {
