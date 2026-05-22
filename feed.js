@@ -673,7 +673,7 @@ function UnrestFeed() {
           // Check Firestore allowlist — approved manual users land here
           try {
             const snap = await fb().getDoc(
-              fb().doc(fb().db, "allowlisted_emails", u.email.toLowerCase())
+              fb().doc(fb().db, "allowlisted_emails", u.email)
             );
             if (!snap.exists()) {
               await signOut(fb().auth);
@@ -769,8 +769,8 @@ function UnrestFeed() {
       await updateDoc(doc(fb().db, "manual_verifications", id), { status: actionStatus });
 
       if (actionStatus === "approved" && data?.email) {
-        await setDoc(doc(fb().db, "allowlisted_emails", data.email.toLowerCase()), {
-          email: data.email.toLowerCase(),
+        await setDoc(doc(fb().db, "allowlisted_emails", data.email), {
+          email: data.email,
           displayName: data.displayName || "",
           college: data.college || "",
           year: data.year || "",
