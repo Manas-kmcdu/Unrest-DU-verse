@@ -12,7 +12,7 @@ const updateDoc       = (...a) => fb().updateDoc(...a);
 const deleteDoc       = (...a) => fb().deleteDoc(...a);         // FIX 5: was missing
 const doc             = (...a) => fb().doc(...a);
 const increment       = (...a) => fb().increment(...a);
-const serverTimestamp = ()     => fb().serverTimestamp();a
+const serverTimestamp = ()     => fb().serverTimestamp();
 const signInWithPopup = (...a) => fb().signInWithPopup(...a);
 const signOut         = (...a) => fb().signOut(...a);
 const onAuthStateChanged    = (...a) => fb().onAuthStateChanged(...a);
