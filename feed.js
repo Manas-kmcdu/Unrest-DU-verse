@@ -791,7 +791,7 @@ function UnrestFeed(){
           if(!snap.exists()){ await signOut(fb().auth); setUser(null); return; }
         } catch(e) {}
       }
-    // ← missing closing brace for if(u)
+    }
     setUser(u||null);
   }),[]);
 
