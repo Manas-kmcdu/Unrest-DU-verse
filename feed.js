@@ -210,6 +210,7 @@ function AuthGate({ onAuth }) {
     }).catch(()=>{});
   }, []);
 
+
   async function handleLogin() {
     setLoading(true); setError("");
     try {
@@ -224,9 +225,14 @@ function AuthGate({ onAuth }) {
       }
       const email = result.user.email;
       const isDU = email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
-      if (isDU || email===ADMIN_EMAIL) { onAuth(result.user); return; }
-      setPendingUser({email, displayName: result.user.displayName});
-      await signOut(fb().auth); setStep("manual-form"); setManualName(result.user.displayName||""); setLoading(false);
+        if (isDU || email===ADMIN_EMAIL) { onAuth(result.user); return; }
+try {
+  const snap = await fb().getDoc(fb().doc(fb().db,"allowlisted_emails",email.toLowerCase()));
+  if(snap.exists()){ onAuth(result.user); return; } 
+} catch(e){}
+
+setPendingUser({email, displayName: result.user.displayName});
+await signOut(fb().auth); setStep("manual-form"); setManualName(result.user.displayName||""); setLoading(false);
     } catch(e) { setError(e.message); setLoading(false); }
   }
 
