@@ -20,6 +20,8 @@ const getRedirectResult     = (...a) => fb().getRedirectResult(...a);
 const storageRef      = (...a) => fb().storageRef(...a);
 const uploadBytes     = (...a) => fb().uploadBytes(...a);
 const getDownloadURL  = (...a) => fb().getDownloadURL(...a);
+const getDoc          = (...a) => fb().getDoc(...a);
+const setDoc          = (...a) => fb().setDoc(...a);
 
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
@@ -362,7 +364,7 @@ function WLBar({w,l,postId,onVote,voted}){
 }
 
 // ─── COMMENTS ─────────────────────────────────────────────────────
-function Comments({postId,user}){
+function Comments({postId,user,isAdmin}){
   const [comments,setComments]=useState([]);
   const [text,setText]=useState("");
   const [loading,setLoading]=useState(false);
@@ -388,10 +390,15 @@ function Comments({postId,user}){
     finally{setLoading(false);}
   }
 
+  async function deleteComment(cid){
+    if(!confirm("Delete this comment?")) return;
+    try{ await deleteDoc(doc(fb().db,"posts",postId,"comments",cid)); }catch(e){}
+  }
+
   return (
     <div style={{paddingLeft:49,marginTop:4}}>
       <button onClick={()=>setOpen(p=>!p)} style={{background:"none",border:"none",fontSize:"0.71rem",color:"var(--ink3)",fontWeight:500,padding:"2px 0",cursor:"pointer"}}>
-        {open?"Hide comments":"Comments"}
+        {open?`Hide comments`:`Comments${comments.length&&!open?" ("+comments.length+")":""}`}
       </button>
       {open && (
         <div style={{marginTop:10,animation:"fadeIn 0.2s ease both"}}>
@@ -399,11 +406,14 @@ function Comments({postId,user}){
           {comments.map(c=>(
             <div key={c.id} style={{display:"flex",gap:8,marginBottom:10,alignItems:"flex-start"}}>
               <Avatar initials={initials(c.author)} college={c.college} size={24}/>
-              <div style={{background:"rgba(14,13,11,0.04)",borderRadius:8,padding:"6px 10px",flex:1,minWidth:0}}>
+              <div style={{background:"rgba(14,13,11,0.04)",borderRadius:8,padding:"6px 10px",flex:1,minWidth:0,position:"relative"}}>
                 <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:2,flexWrap:"wrap"}}>
                   <span style={{fontSize:"0.74rem",fontWeight:600,color:"var(--ink)"}}>{c.author}</span>
                   <Pill name={c.college}/>
                   <span style={{fontSize:"0.61rem",color:"var(--ink4)"}}>{timeAgo(c.createdAt)}</span>
+                  {(isAdmin||c.uid===user.uid)&&(
+                    <button onClick={()=>deleteComment(c.id)} style={{marginLeft:"auto",background:"none",border:"none",fontSize:"0.62rem",color:"var(--ink4)",cursor:"pointer",padding:"0 2px",lineHeight:1}} title="Delete comment">x</button>
+                  )}
                 </div>
                 <p style={{fontSize:"0.8rem",color:"var(--ink2)",lineHeight:1.5}}>{c.text}</p>
               </div>
@@ -426,9 +436,24 @@ function Comments({postId,user}){
 }
 
 // ─── POST CARD ────────────────────────────────────────────────────
-function PostCard({post,voted,onVote,saved,onSave,notify,user,categoryTag}){
+function PostCard({post,voted,onVote,saved,onSave,notify,user,categoryTag,isAdmin}){
+  const [menuOpen,setMenuOpen]=useState(false);
+
+  async function adminDelete(){
+    setMenuOpen(false);
+    if(!confirm("Delete this post permanently?")) return;
+    try{ await deleteDoc(doc(fb().db,"posts",post.id)); notify("Deleted."); }
+    catch(e){ notify("Failed: "+e.message); }
+  }
+  async function adminToggleStatus(){
+    setMenuOpen(false);
+    const next=post.status==="approved"?"pending":"approved";
+    try{ await updateDoc(doc(fb().db,"posts",post.id),{status:next}); notify(next==="approved"?"Published.":"Unpublished."); }
+    catch(e){ notify("Failed."); }
+  }
+
   return (
-    <article style={{borderBottom:"1px solid rgba(14,13,11,0.08)",padding:"20px 0",animation:"fadeIn 0.3s ease both"}}>
+    <article style={{borderBottom:"1px solid rgba(14,13,11,0.08)",padding:"20px 0",animation:"fadeIn 0.3s ease both",position:"relative"}}>
       <div style={{display:"flex",gap:10,alignItems:"flex-start",marginBottom:10}}>
         <Avatar initials={initials(post.author)} college={post.college} size={36}/>
         <div style={{flex:1,minWidth:0}}>
@@ -442,6 +467,25 @@ function PostCard({post,voted,onVote,saved,onSave,notify,user,categoryTag}){
             <span style={{fontSize:"0.66rem",color:"var(--ink4)"}}>· {timeAgo(post.createdAt)}</span>
           </div>
         </div>
+        {isAdmin && (
+          <div style={{position:"relative",flexShrink:0}}>
+            <button
+              onClick={()=>setMenuOpen(p=>!p)}
+              style={{background:"none",border:"none",padding:"2px 7px",borderRadius:4,color:"var(--ink4)",fontSize:"1.1rem",lineHeight:1,cursor:"pointer",letterSpacing:"0.05em"}}
+            >···</button>
+            {menuOpen && (
+              <>
+                <div onClick={()=>setMenuOpen(false)} style={{position:"fixed",inset:0,zIndex:40}}/>
+                <div style={{position:"absolute",right:0,top:"110%",background:"var(--white)",border:"1px solid rgba(14,13,11,0.1)",borderRadius:8,boxShadow:"0 4px 18px rgba(0,0,0,0.1)",zIndex:50,minWidth:148,overflow:"hidden"}}>
+                  <button onClick={adminToggleStatus} style={{display:"block",width:"100%",padding:"9px 14px",background:"none",border:"none",textAlign:"left",fontSize:"0.77rem",color:"var(--ink2)",fontWeight:500,cursor:"pointer",borderBottom:"1px solid rgba(14,13,11,0.07)"}}>
+                    {post.status==="approved"?"Unpublish":"Publish"}
+                  </button>
+                  <button onClick={adminDelete} style={{display:"block",width:"100%",padding:"9px 14px",background:"none",border:"none",textAlign:"left",fontSize:"0.77rem",color:"var(--accent)",fontWeight:600,cursor:"pointer"}}>Delete post</button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {post.status==="pending" && (
@@ -451,16 +495,95 @@ function PostCard({post,voted,onVote,saved,onSave,notify,user,categoryTag}){
       )}
 
       <div style={{paddingLeft:46}}>
-        <p style={{fontSize:"0.9rem",color:"var(--ink)",lineHeight:1.7,marginBottom:10}}>{post.text}</p>
+        <p style={{fontSize:"0.9rem",color:"var(--ink)",lineHeight:1.7,marginBottom:10,wordBreak:"break-word"}}>{post.text}</p>
         {post.tags&&post.tags.length>0 && <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:10}}>{post.tags.map(t=><span key={t} style={{fontSize:"0.67rem",color:"var(--ink3)",fontWeight:500}}>#{t}</span>)}</div>}
         <div style={{display:"flex",alignItems:"center",gap:11,flexWrap:"wrap"}}>
           <WLBar w={post.w} l={post.l} postId={post.id} onVote={onVote} voted={voted}/>
           <span style={{fontSize:"0.67rem",color:"var(--ink4)"}}>·</span>
-          <button onClick={()=>{onSave(post.id);notify(saved?"Removed from saved":"Saved");}} style={{background:"none",border:"none",fontSize:"0.7rem",color:saved?"var(--blue)":"var(--ink3)",fontWeight:saved?600:500,padding:0}}>{saved?"Saved":"Save"}</button>
+          <button onClick={()=>{onSave(post.id);notify(saved?"Removed from saved":"Saved");}} style={{background:"none",border:"none",fontSize:"0.7rem",color:saved?"var(--blue)":"var(--ink3)",fontWeight:saved?600:500,padding:0,cursor:"pointer"}}>{saved?"Saved":"Save"}</button>
         </div>
       </div>
-      <Comments postId={post.id} user={user}/>
+      <Comments postId={post.id} user={user} isAdmin={isAdmin}/>
     </article>
+  );
+}
+
+// ─── SUGGESTION BOX ──────────────────────────────────────────────
+function SuggestionBox({user}){
+  const [open,setOpen]=useState(false);
+  const [text,setText]=useState("");
+  const [sent,setSent]=useState(false);
+  const [loading,setLoading]=useState(false);
+
+  async function submit(){
+    if(!text.trim()||loading) return;
+    setLoading(true);
+    try{
+      await addDoc(collection(fb().db,"suggestions"),{
+        text:text.trim(),
+        author:user.displayName,
+        college:collegeFromEmail(user.email),
+        uid:user.uid,
+        createdAt:serverTimestamp()
+      });
+      setSent(true); setText("");
+      setTimeout(()=>{setSent(false);setOpen(false);},2400);
+    }catch(e){}
+    finally{setLoading(false);}
+  }
+
+  if(!open) return (
+    <div onClick={()=>setOpen(true)} style={{
+      borderBottom:"1px solid rgba(14,13,11,0.06)",
+      padding:"13px 0",
+      display:"flex",alignItems:"center",gap:10,
+      cursor:"pointer",marginBottom:4,
+      animation:"fadeIn 0.3s ease both"
+    }}>
+      <div style={{
+        width:28,height:28,borderRadius:"50%",
+        border:"1.5px dashed rgba(14,13,11,0.18)",
+        display:"flex",alignItems:"center",justifyContent:"center",
+        flexShrink:0,color:"var(--ink4)",fontSize:"1rem",lineHeight:1
+      }}>+</div>
+      <span style={{fontSize:"0.78rem",color:"var(--ink4)",fontStyle:"italic",letterSpacing:"0.01em"}}>
+        Have a suggestion for Unrest?
+      </span>
+    </div>
+  );
+
+  if(sent) return (
+    <div style={{borderBottom:"1px solid rgba(14,13,11,0.06)",padding:"16px 0",animation:"fadeIn 0.2s ease both"}}>
+      <span style={{fontSize:"0.8rem",color:"var(--green)",fontWeight:500}}>Noted. Thank you.</span>
+    </div>
+  );
+
+  return (
+    <div style={{borderBottom:"1px solid rgba(14,13,11,0.06)",padding:"14px 0 18px",animation:"fadeIn 0.2s ease both"}}>
+      <div style={{fontSize:"0.65rem",fontWeight:600,letterSpacing:"0.09em",textTransform:"uppercase",color:"var(--ink4)",marginBottom:10}}>Suggestion</div>
+      <textarea
+        autoFocus
+        value={text}
+        onChange={e=>setText(e.target.value)}
+        placeholder="What should we build, fix, or reconsider?"
+        rows={3}
+        style={{
+          width:"100%",border:"none",borderBottom:"1.5px solid rgba(14,13,11,0.14)",
+          padding:"4px 0",resize:"none",fontSize:"0.85rem",
+          color:"var(--ink)",background:"transparent",outline:"none",
+          lineHeight:1.6,fontFamily:"var(--sans)",fontStyle:"italic"
+        }}
+      />
+      <div style={{display:"flex",justifyContent:"flex-end",gap:10,marginTop:10,alignItems:"center"}}>
+        <button onClick={()=>{setOpen(false);setText("");}} style={{background:"none",border:"none",fontSize:"0.72rem",color:"var(--ink4)",cursor:"pointer",padding:0}}>cancel</button>
+        <button onClick={submit} disabled={loading||!text.trim()} style={{
+          background:"none",border:"1px solid rgba(14,13,11,0.18)",
+          borderRadius:4,padding:"4px 13px",
+          fontSize:"0.72rem",fontWeight:600,color:loading||!text.trim()?"var(--ink4)":"var(--ink)",
+          cursor:loading||!text.trim()?"default":"pointer",transition:"all 0.15s"
+        }}>{loading?"sending...":"send"}</button>
+      </div>
+    </div>
   );
 }
 
@@ -569,7 +692,7 @@ function ExploreCategoryView({category,user,voted,onVote,savedPosts,onSave,notif
           <ComposeBox user={user} onPost={()=>notify("Posted! Pending approval.")} categoryId={category.id}/>
           {loading?<div style={{textAlign:"center",padding:"3rem 0"}}><span style={{display:"inline-block",width:22,height:22,border:"2px solid rgba(14,13,11,0.1)",borderTopColor:"var(--ink)",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/></div>
           :posts.length===0?<div style={{textAlign:"center",padding:"3rem 0",color:"var(--ink3)",fontSize:"0.84rem"}}>No posts in {category.label} yet. Start the conversation!</div>
-          :posts.map(p=><PostCard key={p.id} post={p} voted={voted[p.id]||null} onVote={onVote} saved={savedPosts.has(p.id)} onSave={onSave} notify={notify} user={user} categoryTag={category}/>)}
+          :posts.map(p=><PostCard key={p.id} post={p} voted={voted[p.id]||null} onVote={onVote} saved={savedPosts.has(p.id)} onSave={onSave} notify={notify} user={user} categoryTag={category} isAdmin={user?.email===ADMIN_EMAIL}/>)}
         </>
       )}
     </div>
@@ -926,64 +1049,139 @@ function UnrestFeed(){
       </div>
       {feedLoading?<div style={{textAlign:"center",padding:"3rem 0"}}><span style={{display:"inline-block",width:22,height:22,border:"2px solid rgba(14,13,11,0.1)",borderTopColor:"var(--ink)",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/></div>
       :visible.length===0?<div style={{textAlign:"center",padding:"3rem 0",color:"var(--ink3)",fontSize:"0.84rem"}}>{tab==="saved"?"Nothing saved yet.":searchQ||searchCollege?"No posts match.":"No posts yet. Be the first!"}</div>
-      :visible.map(p=><PostCard key={p.id} post={p} voted={voted[p.id]||null} onVote={handleVote} saved={savedPosts.has(p.id)} onSave={handleSave} notify={notify} user={user}/>)}
+      :visible.map(p=><PostCard key={p.id} post={p} voted={voted[p.id]||null} onVote={handleVote} saved={savedPosts.has(p.id)} onSave={handleSave} notify={notify} user={user} isAdmin={isAdmin}/>)}
+      {!feedLoading&&<SuggestionBox user={user}/>}
     </>
   );
 
-  const ModContent = () => (
-    <div style={{display:"flex",flexDirection:"column",gap:28}}>
-      <Banner tab="mod"/>
-      <div>
-        <h3 style={{fontFamily:"var(--serif)",fontSize:"1.7rem",marginBottom:12,color:"var(--accent)"}}>Post Submissions ({pendingPosts.length})</h3>
-        {pendingPosts.length===0?<p style={{fontSize:"0.83rem",color:"var(--ink3)"}}>Queue empty.</p>:pendingPosts.map(p=>(
-          <div key={p.id} style={{background:"#fff",border:"1px solid rgba(14,13,11,0.08)",borderRadius:9,padding:14,marginBottom:10}}>
-            <div style={{fontSize:"0.7rem",color:"var(--ink3)",fontWeight:600,marginBottom:5}}>{p.author} · {p.college}{p.category?` · #${p.category}`:""}</div>
-            <p style={{fontSize:"0.88rem",marginBottom:11,color:"var(--ink)"}}>{p.text}</p>
-            <div style={{display:"flex",gap:9}}>
-              <button onClick={()=>approvePost(p.id)} style={{padding:"5px 13px",background:"var(--green)",border:"none",color:"#fff",borderRadius:5,fontSize:"0.74rem",fontWeight:600}}>Approve</button>
-              <button onClick={()=>rejectPost(p.id)} style={{padding:"5px 13px",background:"transparent",border:"1px solid var(--accent)",color:"var(--accent)",borderRadius:5,fontSize:"0.74rem",fontWeight:600}}>Delete</button>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div>
-        <h3 style={{fontFamily:"var(--serif)",fontSize:"1.7rem",marginBottom:12,color:"var(--blue)"}}>Profile Claims ({pendingVerifications.length})</h3>
-        {pendingVerifications.length===0?<p style={{fontSize:"0.83rem",color:"var(--ink3)"}}>No claims pending.</p>:pendingVerifications.map(v=>(
-          <div key={v.id} style={{background:"#fff",border:"1px solid rgba(14,13,11,0.08)",borderRadius:9,padding:14,marginBottom:10,display:"flex",gap:14,flexWrap:"wrap"}}>
-            <div style={{flex:1,minWidth:220}}>
-              <div style={{fontSize:"0.84rem",fontWeight:700,marginBottom:4}}>{v.displayName}</div>
-              <div style={{fontSize:"0.74rem",color:"var(--ink2)",marginBottom:2}}><strong>Email:</strong> {v.email}</div>
-              <div style={{fontSize:"0.74rem",color:"var(--ink2)",marginBottom:2}}><strong>College:</strong> {v.college} ({v.year})</div>
-              {v.note&&<div style={{fontSize:"0.72rem",color:"var(--ink3)",fontStyle:"italic",marginTop:5}}>Note: "{v.note}"</div>}
-              <div style={{display:"flex",gap:9,marginTop:12}}>
-                <button onClick={()=>resolveVerification(v.id,"approved")} style={{padding:"5px 11px",background:"var(--blue)",border:"none",color:"#fff",borderRadius:5,fontSize:"0.73rem",fontWeight:600}}>Verify</button>
-                <button onClick={()=>resolveVerification(v.id,"rejected")} style={{padding:"5px 11px",background:"rgba(0,0,0,0.05)",border:"none",color:"var(--ink2)",borderRadius:5,fontSize:"0.73rem",fontWeight:500}}>Deny</button>
+  const ModContent = () => {
+    const [suggestions,setSuggestions]=useState([]);
+    const [livePosts,setLivePosts]=useState([]);
+    const [modSection,setModSection]=useState("pending");
+
+    useEffect(()=>{
+      const q=query(collection(fb().db,"suggestions"),orderBy("createdAt","desc"));
+      const unsub=onSnapshot(q,snap=>setSuggestions(snap.docs.map(d=>({id:d.id,...d.data()}))),()=>{});
+      return ()=>unsub();
+    },[]);
+
+    useEffect(()=>{
+      if(modSection!=="live") return;
+      const q=query(collection(fb().db,"posts"),where("status","==","approved"),orderBy("createdAt","desc"));
+      const unsub=onSnapshot(q,snap=>setLivePosts(snap.docs.map(d=>({id:d.id,...d.data()}))),()=>{});
+      return ()=>unsub();
+    },[modSection]);
+
+    async function deleteSuggestion(id){
+      try{ await deleteDoc(doc(fb().db,"suggestions",id)); }catch(e){}
+    }
+
+    const tabs=[
+      {id:"pending",label:`Pending (${pendingPosts.length})`},
+      {id:"live",label:"Live posts"},
+      {id:"claims",label:`Claims (${pendingVerifications.length})`},
+      {id:"usernames",label:`Usernames (${pendingUsernames.length})`},
+      {id:"suggestions",label:`Suggestions (${suggestions.length})`},
+    ];
+
+    return (
+      <div style={{display:"flex",flexDirection:"column",gap:20}}>
+        <Banner tab="mod"/>
+        {/* sub-tabs */}
+        <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+          {tabs.map(t=>(
+            <button key={t.id} onClick={()=>setModSection(t.id)} style={{padding:"5px 12px",borderRadius:100,border:"1px solid",borderColor:modSection===t.id?"var(--ink)":"rgba(14,13,11,0.12)",background:modSection===t.id?"var(--ink)":"transparent",fontSize:"0.72rem",fontWeight:modSection===t.id?600:400,color:modSection===t.id?"#fff":"var(--ink2)",cursor:"pointer"}}>{t.label}</button>
+          ))}
+        </div>
+
+        {modSection==="pending" && (
+          <div>
+            {pendingPosts.length===0
+              ?<p style={{fontSize:"0.83rem",color:"var(--ink3)"}}>Queue empty.</p>
+              :pendingPosts.map(p=>(
+              <div key={p.id} style={{background:"#fff",border:"1px solid rgba(14,13,11,0.08)",borderRadius:9,padding:14,marginBottom:10}}>
+                <div style={{fontSize:"0.7rem",color:"var(--ink3)",fontWeight:600,marginBottom:5}}>{p.author} · {p.college}{p.category?` · #${p.category}`:""} · {timeAgo(p.createdAt)}</div>
+                <p style={{fontSize:"0.88rem",marginBottom:11,color:"var(--ink)",lineHeight:1.65,wordBreak:"break-word"}}>{p.text}</p>
+                <div style={{display:"flex",gap:9}}>
+                  <button onClick={()=>approvePost(p.id)} style={{padding:"5px 13px",background:"var(--green)",border:"none",color:"#fff",borderRadius:5,fontSize:"0.74rem",fontWeight:600,cursor:"pointer"}}>Approve</button>
+                  <button onClick={()=>rejectPost(p.id)} style={{padding:"5px 13px",background:"transparent",border:"1px solid var(--accent)",color:"var(--accent)",borderRadius:5,fontSize:"0.74rem",fontWeight:600,cursor:"pointer"}}>Delete</button>
+                </div>
               </div>
-            </div>
-            <div style={{flexShrink:0,width:130,height:90,border:"1px solid rgba(14,13,11,0.08)",borderRadius:6,overflow:"hidden",background:"#f9f9f9"}}>
-              <a href={v.proofUrl} target="_blank" rel="noopener noreferrer"><img src={v.proofUrl} alt="ID Proof" style={{width:"100%",height:"100%",objectFit:"cover"}}/></a>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <div>
-        <h3 style={{fontFamily:"var(--serif)",fontSize:"1.7rem",marginBottom:12,color:"var(--summer2)"}}>Username Requests ({pendingUsernames.length})</h3>
-        {pendingUsernames.length===0?<p style={{fontSize:"0.83rem",color:"var(--ink3)"}}>No usernames pending.</p>:pendingUsernames.map(u=>(
-          <div key={u.id} style={{background:"#fff",border:"1px solid rgba(14,13,11,0.08)",borderRadius:9,padding:14,marginBottom:10,display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
-            <div>
-              <div style={{fontSize:"0.84rem",fontWeight:700,marginBottom:3}}>@{u.username}</div>
-              <div style={{fontSize:"0.72rem",color:"var(--ink3)"}}>{u.displayName} · {u.college} · {u.course} · {u.year}</div>
-              <div style={{fontSize:"0.68rem",color:"var(--ink4)",marginTop:2}}>{u.email}</div>
-            </div>
-            <div style={{display:"flex",gap:9}}>
-              <button onClick={()=>resolveUsername(u.id,"approved")} style={{padding:"5px 13px",background:"var(--green)",border:"none",color:"#fff",borderRadius:5,fontSize:"0.74rem",fontWeight:600}}>Approve</button>
-              <button onClick={()=>resolveUsername(u.id,"rejected")} style={{padding:"5px 13px",background:"transparent",border:"1px solid var(--accent)",color:"var(--accent)",borderRadius:5,fontSize:"0.74rem",fontWeight:600}}>Reject</button>
-            </div>
+        )}
+
+        {modSection==="live" && (
+          <div>
+            <p style={{fontSize:"0.72rem",color:"var(--ink4)",marginBottom:12}}>All approved posts. Delete or unpublish any.</p>
+            {livePosts.length===0?<p style={{fontSize:"0.83rem",color:"var(--ink3)"}}>No live posts.</p>:livePosts.map(p=>(
+              <div key={p.id} style={{background:"#fff",border:"1px solid rgba(14,13,11,0.08)",borderRadius:9,padding:14,marginBottom:10}}>
+                <div style={{fontSize:"0.7rem",color:"var(--ink3)",fontWeight:600,marginBottom:4}}>{p.author} · {p.college}{p.category?` · #${p.category}`:""} · {timeAgo(p.createdAt)}</div>
+                <p style={{fontSize:"0.85rem",marginBottom:10,color:"var(--ink)",lineHeight:1.6,wordBreak:"break-word"}}>{p.text}</p>
+                <div style={{display:"flex",gap:9}}>
+                  <button onClick={async()=>{if(confirm("Unpublish?"))try{await updateDoc(doc(fb().db,"posts",p.id),{status:"pending"});notify("Unpublished.");}catch(e){notify("Failed.");}}} style={{padding:"5px 11px",background:"transparent",border:"1px solid rgba(14,13,11,0.18)",color:"var(--ink2)",borderRadius:5,fontSize:"0.72rem",fontWeight:500,cursor:"pointer"}}>Unpublish</button>
+                  <button onClick={async()=>{if(confirm("Delete permanently?"))try{await deleteDoc(doc(fb().db,"posts",p.id));notify("Deleted.");}catch(e){notify("Failed.");}}} style={{padding:"5px 11px",background:"transparent",border:"1px solid var(--accent)",color:"var(--accent)",borderRadius:5,fontSize:"0.72rem",fontWeight:600,cursor:"pointer"}}>Delete</button>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
+
+        {modSection==="claims" && (
+          <div>
+            {pendingVerifications.length===0?<p style={{fontSize:"0.83rem",color:"var(--ink3)"}}>No claims pending.</p>:pendingVerifications.map(v=>(
+              <div key={v.id} style={{background:"#fff",border:"1px solid rgba(14,13,11,0.08)",borderRadius:9,padding:14,marginBottom:10,display:"flex",gap:14,flexWrap:"wrap"}}>
+                <div style={{flex:1,minWidth:220}}>
+                  <div style={{fontSize:"0.84rem",fontWeight:700,marginBottom:4}}>{v.displayName}</div>
+                  <div style={{fontSize:"0.74rem",color:"var(--ink2)",marginBottom:2}}><strong>Email:</strong> {v.email}</div>
+                  <div style={{fontSize:"0.74rem",color:"var(--ink2)",marginBottom:2}}><strong>College:</strong> {v.college} ({v.year})</div>
+                  {v.note&&<div style={{fontSize:"0.72rem",color:"var(--ink3)",fontStyle:"italic",marginTop:5}}>Note: "{v.note}"</div>}
+                  <div style={{display:"flex",gap:9,marginTop:12}}>
+                    <button onClick={()=>resolveVerification(v.id,"approved")} style={{padding:"5px 11px",background:"var(--blue)",border:"none",color:"#fff",borderRadius:5,fontSize:"0.73rem",fontWeight:600,cursor:"pointer"}}>Verify</button>
+                    <button onClick={()=>resolveVerification(v.id,"rejected")} style={{padding:"5px 11px",background:"rgba(0,0,0,0.05)",border:"none",color:"var(--ink2)",borderRadius:5,fontSize:"0.73rem",fontWeight:500,cursor:"pointer"}}>Deny</button>
+                  </div>
+                </div>
+                <div style={{flexShrink:0,width:130,height:90,border:"1px solid rgba(14,13,11,0.08)",borderRadius:6,overflow:"hidden",background:"#f9f9f9"}}>
+                  <a href={v.proofUrl} target="_blank" rel="noopener noreferrer"><img src={v.proofUrl} alt="ID Proof" style={{width:"100%",height:"100%",objectFit:"cover"}}/></a>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {modSection==="usernames" && (
+          <div>
+            {pendingUsernames.length===0?<p style={{fontSize:"0.83rem",color:"var(--ink3)"}}>No usernames pending.</p>:pendingUsernames.map(u=>(
+              <div key={u.id} style={{background:"#fff",border:"1px solid rgba(14,13,11,0.08)",borderRadius:9,padding:14,marginBottom:10,display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+                <div>
+                  <div style={{fontSize:"0.84rem",fontWeight:700,marginBottom:3}}>@{u.username}</div>
+                  <div style={{fontSize:"0.72rem",color:"var(--ink3)"}}>{u.displayName} · {u.college} · {u.course} · {u.year}</div>
+                  <div style={{fontSize:"0.68rem",color:"var(--ink4)",marginTop:2}}>{u.email}</div>
+                </div>
+                <div style={{display:"flex",gap:9}}>
+                  <button onClick={()=>resolveUsername(u.id,"approved")} style={{padding:"5px 13px",background:"var(--green)",border:"none",color:"#fff",borderRadius:5,fontSize:"0.74rem",fontWeight:600,cursor:"pointer"}}>Approve</button>
+                  <button onClick={()=>resolveUsername(u.id,"rejected")} style={{padding:"5px 13px",background:"transparent",border:"1px solid var(--accent)",color:"var(--accent)",borderRadius:5,fontSize:"0.74rem",fontWeight:600,cursor:"pointer"}}>Reject</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {modSection==="suggestions" && (
+          <div>
+            <p style={{fontSize:"0.72rem",color:"var(--ink4)",marginBottom:12}}>User suggestions for the platform.</p>
+            {suggestions.length===0?<p style={{fontSize:"0.83rem",color:"var(--ink3)"}}>No suggestions yet.</p>:suggestions.map(s=>(
+              <div key={s.id} style={{background:"#fff",border:"1px solid rgba(14,13,11,0.08)",borderRadius:9,padding:14,marginBottom:10}}>
+                <div style={{fontSize:"0.7rem",color:"var(--ink3)",fontWeight:600,marginBottom:6}}>{s.author} · {s.college} · {timeAgo(s.createdAt)}</div>
+                <p style={{fontSize:"0.87rem",color:"var(--ink)",lineHeight:1.65,marginBottom:10,wordBreak:"break-word",fontStyle:"italic"}}>"{s.text}"</p>
+                <button onClick={()=>deleteSuggestion(s.id)} style={{padding:"4px 11px",background:"transparent",border:"1px solid rgba(14,13,11,0.12)",color:"var(--ink3)",borderRadius:5,fontSize:"0.7rem",cursor:"pointer"}}>Dismiss</button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div style={{fontFamily:"var(--sans)",background:"var(--paper)",minHeight:"100vh"}}>
@@ -994,7 +1192,7 @@ function UnrestFeed(){
       {/* ── TOP NAV ── */}
       <nav style={{background:"rgba(242,239,232,0.97)",borderBottom:"1px solid rgba(14,13,11,0.09)",padding:"0 1.5rem",position:"sticky",top:0,zIndex:100,backdropFilter:"blur(12px)",height:"var(--nav-h)",display:"flex",alignItems:"center"}}>
         <div style={{maxWidth:1100,margin:"0 auto",display:"flex",alignItems:"center",width:"100%",gap:0}}>
-          <a style={{fontFamily:"var(--serif)",fontSize:"1.45rem",color:"var(--ink)",textDecoration:"none",marginRight:24,flexShrink:0}}>
+          <a href="/" style={{fontFamily:"var(--serif)",fontSize:"1.45rem",color:"var(--ink)",textDecoration:"none",marginRight:24,flexShrink:0}}>
             Un<em style={{fontStyle:"italic",color:"var(--accent)"}}>rest</em>
           </a>
           {/* desktop tab pills */}
