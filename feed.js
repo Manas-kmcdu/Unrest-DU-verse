@@ -23,6 +23,7 @@ const storageRef      = (...a) => fb().storageRef(...a);
 const uploadBytes     = (...a) => fb().uploadBytes(...a);
 const getDownloadURL  = (...a) => fb().getDownloadURL(...a);
 const getDoc          = (...a) => fb().getDoc(...a);
+const setDoc          = (...a) => fb().setDoc(...a);
 
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
@@ -762,9 +763,27 @@ function UnrestFeed() {
 
   async function resolveVerification(id, actionStatus) {
     try {
+      const snap = await getDoc(doc(fb().db, "manual_verifications", id));
+      const data = snap.data();
+
       await updateDoc(doc(fb().db, "manual_verifications", id), { status: actionStatus });
-      notify(`Registration marked as ${actionStatus}`);
-    } catch(e) { notify("Status update failed."); }
+
+      if (actionStatus === "approved" && data?.email) {
+        await setDoc(doc(fb().db, "allowlisted_emails", data.email.toLowerCase()), {
+          email: data.email.toLowerCase(),
+          displayName: data.displayName || "",
+          college: data.college || "",
+          year: data.year || "",
+          approvedAt: serverTimestamp()
+        });
+        notify("Account verified & allowlisted ✓");
+      } else {
+        notify(`Registration marked as ${actionStatus}`);
+      }
+    } catch(e) {
+      console.error("resolveVerification error:", e);
+      notify("Status update failed: " + e.message);
+    }
   }
 
   async function handleVote(id, type) {
