@@ -9,7 +9,7 @@ const query           = (...a) => fb().query(...a);
 const orderBy         = (...a) => fb().orderBy(...a);
 const where           = (...a) => fb().where(...a);
 const updateDoc       = (...a) => fb().updateDoc(...a);
-const deleteDoc       = (...a) => fb().deleteDoc(...a);         // FIX 5: was missing
+const deleteDoc       = (...a) => fb().deleteDoc(...a);
 const doc             = (...a) => fb().doc(...a);
 const increment       = (...a) => fb().increment(...a);
 const serverTimestamp = ()     => fb().serverTimestamp();
@@ -19,10 +19,10 @@ const onAuthStateChanged    = (...a) => fb().onAuthStateChanged(...a);
 const signInWithRedirect    = (...a) => fb().signInWithRedirect(...a);
 const getRedirectResult     = (...a) => fb().getRedirectResult(...a);
 
-// FIX 8: Storage helpers — guarded so they only call if storage is wired up
 const storageRef      = (...a) => fb().storageRef(...a);
 const uploadBytes     = (...a) => fb().uploadBytes(...a);
 const getDownloadURL  = (...a) => fb().getDownloadURL(...a);
+const getDoc          = (...a) => fb().getDoc(...a);
 
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
@@ -110,7 +110,6 @@ function AuthGate({ onAuth }) {
   const [proofFile, setProofFile] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  // FIX 7: use wrapper instead of fb().getRedirectResult(fb().auth)
   useEffect(() => {
     getRedirectResult(fb().auth).then(result => {
       if (!result?.user) return;
@@ -120,8 +119,8 @@ function AuthGate({ onAuth }) {
       if (isDU || isAdminUser) {
         onAuth(result.user);
       } else {
+        // FIX: do NOT signOut here — user must stay authed to write manual_verifications
         setPendingUser({ email, displayName: result.user.displayName });
-        signOut(fb().auth);
         setStep("manual-form");
         setManualName(result.user.displayName || "");
       }
@@ -141,7 +140,7 @@ function AuthGate({ onAuth }) {
             popupErr.code === "auth/popup-closed-by-user" ||
             popupErr.message?.includes("Cross-Origin") ||
             popupErr.message?.includes("window.closed")) {
-          await signInWithRedirect(fb().auth, provider);  // FIX 6: use wrapper
+          await signInWithRedirect(fb().auth, provider);
           return;
         }
         throw popupErr;
@@ -149,11 +148,11 @@ function AuthGate({ onAuth }) {
       const email = result.user.email;
       const isDU = email.endsWith(".du.ac.in") || email.endsWith("@du.ac.in");
       const isAdminUser = email === ADMIN_EMAIL;
-      if (isDU || isAdminUser) {  // FIX 2: admin bypasses DU check
+      if (isDU || isAdminUser) {
         onAuth(result.user);
       } else {
         setPendingUser({ email, displayName: result.user.displayName });
-        await signOut(fb().auth);
+        // FIX: do NOT signOut here — user must stay authed to write manual_verifications
         setStep("manual-form");
         setManualName(result.user.displayName || "");
         setLoading(false);
@@ -177,7 +176,6 @@ function AuthGate({ onAuth }) {
     setSubmitLoading(true);
     setError("");
     try {
-      // FIX 8: Guard storage calls — if storage not wired, skip upload and note in doc
       let authenticatedProofUrl = "no-storage-configured";
       if (fb().storageRef && fb().storage) {
         const uniquePathName = `${Date.now()}_${proofFile.name}`;
@@ -196,6 +194,10 @@ function AuthGate({ onAuth }) {
         status: "pending",
         submittedAt: serverTimestamp()
       });
+
+      // Sign out after submit — they're not approved yet so no feed access.
+      // Once you add them to allowlisted_emails, they sign in again and pass the check.
+      await signOut(fb().auth);
       setStep("manual-sent");
     } catch(e) {
       setError("Submission failed: " + e.message);
@@ -439,7 +441,6 @@ function AuthGate({ onAuth }) {
             {error}
           </div>
         )}
-        {/* FIX 1: was lineHeight:1.7}> — stray > broke JSX */}
         <div style={{marginTop:16, fontSize:"0.7rem", color:"var(--ink4)", lineHeight:1.7}}>
           By signing in you agree to our{" "}
           <a href="/terms.html" style={{color:"var(--ink3)"}}>Terms</a> &amp;{" "}
@@ -476,7 +477,6 @@ function Pill({name, color}) {
   );
 }
 
-// FIX 3: wFinal/lFinal now reflect optimistic voted state
 function WLBar({w, l, postId, onVote, voted}) {
   const wFinal = w + (voted === "w" ? 1 : 0);
   const lFinal = l + (voted === "l" ? 1 : 0);
@@ -663,16 +663,29 @@ function UnrestFeed() {
 
   const isAdmin = user && user.email === ADMIN_EMAIL;
 
-  // FIX 2: admin email allowed through — no longer force-signed-out
   useEffect(() => {
     return onAuthStateChanged(fb().auth, async u => {
       if (u) {
         const isDU = u.email.endsWith(".du.ac.in") || u.email.endsWith("@du.ac.in");
         const isAdminUser = u.email === ADMIN_EMAIL;
         if (!isDU && !isAdminUser) {
-          await signOut(fb().auth);  // FIX 4: use wrapper
-          setUser(null);
-          return;
+          // Check Firestore allowlist — approved manual users land here
+          try {
+            const snap = await fb().getDoc(
+              fb().doc(fb().db, "allowlisted_emails", u.email.toLowerCase())
+            );
+            if (!snap.exists()) {
+              await signOut(fb().auth);
+              setUser(null);
+              return;
+            }
+            // Allowlisted — fall through to setUser(u)
+          } catch(e) {
+            console.error("Allowlist check failed:", e);
+            await signOut(fb().auth);
+            setUser(null);
+            return;
+          }
         }
       }
       setUser(u || null);
@@ -741,7 +754,7 @@ function UnrestFeed() {
   async function rejectPost(id) {
     if(confirm("Delete this post permanently from queue?")) {
       try {
-        await deleteDoc(doc(fb().db, "posts", id));  // FIX 5: use wrapper
+        await deleteDoc(doc(fb().db, "posts", id));
         notify("Post rejected & deleted.");
       } catch(e) { notify("Deletion failed."); }
     }
