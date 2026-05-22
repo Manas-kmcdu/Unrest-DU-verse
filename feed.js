@@ -473,7 +473,7 @@ function ComposeBox({user,onPost,categoryId}){
         ...(categoryId?{category:categoryId}:{})
       });
       setText(""); onPost();
-    } catch(e){ alert("Failed: "+e.message); }
+      } catch(e){ alert("Failed: "+e.message+"\nCode: "+e.code); }
     finally{ setLoading(false); }
   }
   return (
