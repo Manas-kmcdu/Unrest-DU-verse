@@ -1,0 +1,134 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == 'SnHPeFTi87bWdtepY4QOvc0A8aJ3';
+    }
+
+    function isDUStudent() {
+      return request.auth != null
+        && (request.auth.token.email.matches('.*\\.du\\.ac\\.in$')
+            || request.auth.token.email.matches('.*@du\\.ac\\.in$'))
+        && request.auth.token.email_verified == true;
+    }
+
+    // ✅ FIXED: Isolated the lowercase transformation outside of the path string template evaluation wrapper loop
+    function isAllowlisted() {
+      let emailLower = request.auth.token.email.toLowerCase();
+      return request.auth != null && exists(/databases/$(database)/documents/allowlisted_emails/$(emailLower));
+    }
+
+    function isAuthorizedStudent() {
+      return isDUStudent() || isAllowlisted();
+    }
+
+    // ─── ALLOWLISTED EMAILS ──────────────────────────────────────────
+    match /allowlisted_emails/{email} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ─── MANUAL VERIFICATIONS ────────────────────────────────────────
+    match /manual_verifications/{document} {
+      allow create: if request.resource.data.status == 'pending';
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ─── WAITLIST ───────────────────────────────────────────────────
+    match /waitlist/{document} {
+      allow create: if true;
+      allow read:   if isAdmin();
+    }
+
+    // ─── ECHOES (Echo Wall) ─────────────────────────────────────────
+    match /echoes/{document} {
+      allow read:   if resource.data.status == 'approved'
+                    || !('uid' in resource.data)
+                    || isAdmin()
+                    || (request.auth != null && resource.data.uid == request.auth.uid);
+      allow create: if true;
+      allow update: if isAdmin()
+                    || (
+                      request.auth != null
+                      && resource.data.status == 'approved'
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['w','l'])
+                      && request.resource.data.w >= resource.data.w
+                      && request.resource.data.l >= resource.data.l
+                    );
+      allow delete: if isAdmin();
+    }
+
+    // ─── POSTS (Feed & Sub-Collections) ──────────────────────────────
+    match /posts/{postId} {
+      allow read: if resource.data.status == 'approved'
+                  || !('uid' in resource.data)
+                  || isAdmin()
+                  || (request.auth != null && resource.data.uid == request.auth.uid);
+
+      allow create: if (isAuthorizedStudent() || isAdmin())
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.status == 'pending';
+
+      allow update: if isAdmin()
+                    || (
+                      request.auth != null
+                      && resource.data.status == 'approved'
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['w','l'])
+                      && (request.resource.data.w == resource.data.w + 1 || request.resource.data.w == resource.data.w)
+                      && (request.resource.data.l == resource.data.l + 1 || request.resource.data.l == resource.data.l)
+                    );
+
+      allow delete: if isAdmin();
+
+      match /comments/{commentId} {
+        allow read: if request.auth != null;
+        allow create: if (isAuthorizedStudent() || isAdmin())
+                      && request.resource.data.uid == request.auth.uid;
+        allow update, delete: if isAdmin();
+      }
+    }
+
+    // ─── USERS (points + suspension) ────────────────────────────────
+    match /users/{userId} {
+      allow read:   if request.auth != null && request.auth.uid == userId || isAdmin();
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if isAdmin()
+                    || (
+                      request.auth != null
+                      && request.auth.uid == userId
+                      && !request.resource.data.diff(resource.data)
+                          .affectedKeys().hasAny(['violations','status','suspendedUntil','points'])
+                    );
+    }
+
+    // ─── REPORTS ────────────────────────────────────────────────────
+    match /reports/{document} {
+      allow create: if request.auth != null
+                    && request.resource.data.reporterUid == request.auth.uid;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ─── CHATS ─────────────────────────────────────────────────────
+    match /chats/{chatId} {
+      allow read, create, update: if request.auth != null
+                                  && request.auth.uid in resource.data.participants;
+      allow delete: if isAdmin();
+    }
+
+    // ─── MESSAGES ──────────────────────────────────────────────────
+    match /messages/{msgId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.senderUid == request.auth.uid;
+      allow update: if isAdmin()
+                    || (
+                      request.auth != null
+                      && request.resource.data.diff(resource.data)
+                          .affectedKeys().hasOnly(['reported','reportReason'])
+                    );
+      allow delete: if isAdmin();
+    }
+
+  }
+}
