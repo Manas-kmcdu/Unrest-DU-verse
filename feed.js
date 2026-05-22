@@ -786,12 +786,12 @@ function UnrestFeed(){
       const email=u.email.toLowerCase().trim();
       const isDU=email.endsWith(".du.ac.in")||email.endsWith("@du.ac.in");
       if(!isDU&&email!==ADMIN_EMAIL){
-        try{
-          const snap=await fb().getDoc(fb().doc(fb().db,"allowlisted_emails",email));
-          if(!snap.exists()){await signOut(fb().auth);setUser(null);return;}
-        }catch(e){await signOut(fb().auth);setUser(null);return;}
+        try {
+          const snap = await fb().getDoc(fb().doc(fb().db,"allowlisted_emails",email));
+          if(!snap.exists()){ await signOut(fb().auth); setUser(null); return; }
+        } catch(e) {}
       }
-    }
+    // ← missing closing brace for if(u)
     setUser(u||null);
   }),[]);
 
