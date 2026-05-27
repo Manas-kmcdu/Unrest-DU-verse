@@ -17,24 +17,51 @@ export function isGmail(email) {
 export const SUBMIT_EARLY_ACCESS_URL =
   "https://asia-south1-du-verse-e75db.cloudfunctions.net/submitEarlyAccessWeb";
 
+/** Normalize callable `{ data }` or HTTP JSON body. */
+export function normalizeEarlyAccessResult(raw) {
+  const payload = raw?.data ?? raw ?? {};
+  const codeId = payload.codeId ?? payload.code_id ?? null;
+  return {
+    status: payload.status,
+    message: payload.message ?? "",
+    codeId: codeId ? String(codeId).trim() : null,
+    requestId: payload.requestId ?? payload.request_id ?? null,
+  };
+}
+
 export async function postSubmitEarlyAccess(payload) {
   const res = await fetch(SUBMIT_EARLY_ACCESS_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  let data = {};
+  let body = {};
   try {
-    data = await res.json();
+    body = await res.json();
   } catch {
     /* non-JSON body */
   }
   if (!res.ok) {
-    const err = new Error(data.message || data.error || "Request failed");
-    err.code = data.error ? `functions/${data.error}` : "";
+    const err = new Error(body.message || body.error || "Request failed");
+    err.code = body.error ? `functions/${body.error}` : "";
     throw err;
   }
-  return { data };
+  return normalizeEarlyAccessResult(body);
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+const ACCESS_CODE_RE = /\b(EA-[A-Z]+-[A-F0-9]{4}-[A-F0-9]{4})\b/i;
+
+function codeFromMessage(message) {
+  const m = String(message || "").match(ACCESS_CODE_RE);
+  return m ? m[1].toUpperCase() : null;
 }
 
 export function initEarlyAccessUI({
@@ -189,26 +216,25 @@ export function initEarlyAccessUI({
             fullName,
             proofUrls: [],
           });
-          if (first.data.status === "awaiting_proof") {
-            pendingRequestId = first.data.requestId;
+          if (first.status === "awaiting_proof") {
+            pendingRequestId = first.requestId;
             pendingEmail = email;
             pendingName = fullName;
-          } else if (first.data.status === "code_sent") {
-            showSuccess(first.data.message, first.data.codeId);
+          } else if (first.status === "code_sent") {
+            showSuccess(first.message, first.codeId);
             return;
           }
         }
         proofUrls = await uploadProofs(pendingRequestId, proofInput.files);
       }
 
-      const result = await submitFn({
+      const data = await submitFn({
         type: selectedType,
         email: pendingEmail || email,
         fullName: pendingName || fullName,
         proofUrls,
       });
 
-      const data = result.data;
       if (data.status === "awaiting_proof") {
         pendingRequestId = data.requestId;
         pendingEmail = email;
@@ -257,11 +283,37 @@ export function initEarlyAccessUI({
     showStep("done");
     const doneText = document.getElementById("ea-done-text");
     const codeBox = document.getElementById("ea-code-display");
-    if (doneText) doneText.textContent = message;
+    const code = String(codeId || codeFromMessage(message) || "").trim();
+
+    const codeBlockHtml = code
+      ? `<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink3);margin-bottom:6px">Your access code</div><div id="ea-code-value" style="font-family:monospace;font-size:1.35rem;font-weight:700;color:var(--accent);letter-spacing:0.06em;margin:4px 0 8px">${escapeHtml(code)}</div><button type="button" id="ea-copy-code" style="font-size:0.8rem;font-weight:600;padding:8px 14px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer">Copy code</button><div style="font-size:0.78rem;color:var(--ink3);margin-top:10px">Open the Unrest app → enter this code → sign in with the same email.</div>`
+      : "";
+
+    if (doneText) {
+      if (code && codeBox) {
+        doneText.textContent = message.replace(ACCESS_CODE_RE, "").trim() || "You're in — use your code below.";
+      } else if (code) {
+        doneText.innerHTML = `<p style="margin:0 0 12px">${escapeHtml(message)}</p>${codeBlockHtml}`;
+      } else {
+        doneText.textContent = message;
+      }
+    }
+
     if (codeBox) {
-      if (codeId) {
+      if (code) {
         codeBox.style.display = "block";
-        codeBox.innerHTML = `<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink3);margin-bottom:6px">Your access code</div><div style="font-family:monospace;font-size:1.25rem;font-weight:700;color:var(--accent);letter-spacing:0.05em">${codeId}</div><div style="font-size:0.78rem;color:var(--ink3);margin-top:8px">Open the Unrest app → enter this code → sign in with the same email.</div>`;
+        codeBox.innerHTML = codeBlockHtml;
+        const copyBtn = document.getElementById("ea-copy-code");
+        if (copyBtn) {
+          copyBtn.onclick = () => {
+            void navigator.clipboard.writeText(code).then(() => {
+              copyBtn.textContent = "Copied!";
+              setTimeout(() => {
+                copyBtn.textContent = "Copy code";
+              }, 2000);
+            });
+          };
+        }
       } else {
         codeBox.style.display = "none";
         codeBox.innerHTML = "";
