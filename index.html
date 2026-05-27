@@ -1494,18 +1494,19 @@
     <h3 id="ea-title">Early access</h3>
     <p id="ea-sub">Request a one-time code for the Unrest app. Use the same email when you sign in.</p>
 
-    <div id="ea-step-type">
-      <div class="ea-type-grid">
-        <button type="button" class="ea-type-card" onclick="pickEarlyAccessType('du_student')">
-          <strong>DU student</strong>
-          Official @college.du.ac.in → code by email instantly. Gmail → upload ID / fee slip / selfie for review.
-        </button>
-        <button type="button" class="ea-type-card" onclick="pickEarlyAccessType('aspirant')">
-          <strong>DU aspirant</strong>
-          Gmail + full name. One code per person — explore mentors and the aspirant lounge in the app.
-        </button>
-      </div>
-    </div>
+
+<div id="ea-step-type">
+  <div class="ea-type-grid">
+    <button type="button" class="ea-type-card" onclick="pickEarlyAccessType('du_student')">
+      <strong>DU Student</strong>
+      <p>Official @college.du.ac.in → instant code. Gmail → upload ID, fee slip, or selfie for review.</p>
+    </button>
+    <button type="button" class="ea-type-card" onclick="pickEarlyAccessType('aspirant')">
+      <strong>DU Aspirant</strong>
+      <p>Gmail + full name. One code per person - access mentors and the aspirant lounge in the app.</p>
+    </button>
+  </div>
+</div>
 
     <div id="ea-step-form" style="display:none">
       <label class="ea-label" for="ea-name">Full name</label>
