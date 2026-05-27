@@ -13,6 +13,30 @@ export function isGmail(email) {
   return domain === "gmail.com" || domain === "googlemail.com";
 }
 
+/** Website signup (plain HTTP — avoids callable CORS / Cloud Run IAM issues). */
+export const SUBMIT_EARLY_ACCESS_URL =
+  "https://asia-south1-du-verse-e75db.cloudfunctions.net/submitEarlyAccessWeb";
+
+export async function postSubmitEarlyAccess(payload) {
+  const res = await fetch(SUBMIT_EARLY_ACCESS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  let data = {};
+  try {
+    data = await res.json();
+  } catch {
+    /* non-JSON body */
+  }
+  if (!res.ok) {
+    const err = new Error(data.message || data.error || "Request failed");
+    err.code = data.error ? `functions/${data.error}` : "";
+    throw err;
+  }
+  return { data };
+}
+
 export function initEarlyAccessUI({
   db,
   storage,
@@ -23,7 +47,7 @@ export function initEarlyAccessUI({
   where,
   onSnapshot,
 }) {
-  const submitFn = httpsCallable(functions, "submitEarlyAccess");
+  const submitFn = postSubmitEarlyAccess;
   const approveFn = httpsCallable(functions, "approveEarlyAccessRequest");
   const rejectFn = httpsCallable(functions, "rejectEarlyAccessRequest");
 
@@ -170,7 +194,7 @@ export function initEarlyAccessUI({
             pendingEmail = email;
             pendingName = fullName;
           } else if (first.data.status === "code_sent") {
-            showSuccess(first.data.message);
+            showSuccess(first.data.message, first.data.codeId);
             return;
           }
         }
@@ -197,23 +221,52 @@ export function initEarlyAccessUI({
         return;
       }
 
-      showSuccess(data.message);
+      showSuccess(data.message, data.codeId);
     } catch (err) {
-      const msg =
-        err?.message ||
-        err?.details ||
-        "Something went wrong. Try again or email contact@unrestdu.in";
-      if (statusEl) statusEl.textContent = msg.replace(/^FirebaseError:\s*/i, "");
+      const code = err?.code || "";
+      let msg = err?.message || err?.details || "";
+      const isNetwork =
+        /failed to fetch|networkerror|load failed|cors/i.test(String(msg)) ||
+        (err?.name === "FirebaseError" && !code && /fetch/i.test(String(msg)));
+      if (isNetwork) {
+        msg =
+          "Could not reach the signup server (connection blocked). Try again in a minute, or email contact@unrestdu.in with your name and email.";
+      } else if (
+        code === "functions/internal" ||
+        code === "functions/not-found" ||
+        code === "functions/unavailable" ||
+        /^internal$/i.test(String(msg))
+      ) {
+        msg =
+          "Signup server error. Try again, or email contact@unrestdu.in with your name and email — we will send your code manually within 24h.";
+      } else if (code === "functions/already-exists") {
+        msg = err.message || msg;
+      } else if (code === "functions/invalid-argument") {
+        msg = err.message || msg;
+      } else if (!msg || /^internal$/i.test(String(msg))) {
+        msg = "Something went wrong. Email contact@unrestdu.in with your name and email.";
+      }
+      if (statusEl) statusEl.textContent = String(msg).replace(/^FirebaseError:\s*/i, "");
     } finally {
       btn.disabled = false;
       if (btn.textContent === "Sending…") btn.textContent = "Get my access code";
     }
   };
 
-  function showSuccess(message) {
+  function showSuccess(message, codeId) {
     showStep("done");
     const doneText = document.getElementById("ea-done-text");
+    const codeBox = document.getElementById("ea-code-display");
     if (doneText) doneText.textContent = message;
+    if (codeBox) {
+      if (codeId) {
+        codeBox.style.display = "block";
+        codeBox.innerHTML = `<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink3);margin-bottom:6px">Your access code</div><div style="font-family:monospace;font-size:1.25rem;font-weight:700;color:var(--accent);letter-spacing:0.05em">${codeId}</div><div style="font-size:0.78rem;color:var(--ink3);margin-top:8px">Open the Unrest app → enter this code → sign in with the same email.</div>`;
+      } else {
+        codeBox.style.display = "none";
+        codeBox.innerHTML = "";
+      }
+    }
     if (statusEl) statusEl.textContent = "";
     document.querySelectorAll(".hero-form, .waitlist-form").forEach((el) => {
       el.style.display = "none";
