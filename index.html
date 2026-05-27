@@ -3,7 +3,6 @@
  <script data-goatcounter="https://manas-pandeya.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 <head>
-<meta name="google-site-verification" content="XVNQZFle01kmf56Vkzm6ZikcYsalC3pScC9NtOhB7Us" />
 <meta name="google-site-verification" content="CqsB2Vkk5AJFPb8OLxOyUm1mlGNZdYGBCL6Ia0CUvGY" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -466,6 +465,25 @@
   .waitlist h2 em { color: var(--accent2); }
   .waitlist p { color: rgba(245,242,235,0.6); margin: 1rem auto 2rem; max-width: 440px; font-size: 1rem; line-height: 1.6; }
   .waitlist-count { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: rgba(245,242,235,0.5); margin-top: 1.5rem; }
+  .ea-paths { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-bottom: 1rem; max-width: 520px; margin-left: auto; margin-right: auto; }
+  .ea-path-btn { flex: 1; min-width: 140px; background: rgba(245,242,235,0.08); border: 1px solid rgba(245,242,235,0.2); color: var(--paper); border-radius: 14px; padding: 0.85rem 1rem; font-family: var(--sans); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+  .ea-path-btn:hover { background: rgba(200,75,47,0.25); transform: scale(1.02); }
+  .ea-path-btn strong { display: block; font-size: 0.95rem; margin-bottom: 4px; }
+  .ea-modal { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(14,13,11,0.75); align-items: center; justify-content: center; padding: 1.5rem; }
+  .ea-box { background: var(--paper); color: var(--ink); border-radius: 20px; max-width: 440px; width: 100%; padding: 1.75rem; position: relative; box-shadow: 0 24px 60px rgba(0,0,0,0.35); }
+  .ea-close { position: absolute; top: 12px; right: 14px; cursor: pointer; font-size: 1.2rem; color: var(--ink3); }
+  .ea-box h3 { font-family: var(--serif); font-size: 1.6rem; margin: 0 0 0.5rem; }
+  .ea-box p { font-size: 0.85rem; color: var(--ink3); line-height: 1.5; margin: 0 0 1rem; }
+  .ea-input { width: 100%; box-sizing: border-box; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-family: var(--sans); font-size: 0.9rem; margin-bottom: 0.65rem; }
+  .ea-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink3); margin-bottom: 6px; display: block; }
+  .ea-submit { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 12px; padding: 14px; font-weight: 700; font-family: var(--sans); cursor: pointer; margin-top: 0.5rem; }
+  .ea-submit:disabled { opacity: 0.6; cursor: wait; }
+  .ea-status { font-size: 0.82rem; color: var(--accent); margin-top: 0.75rem; min-height: 1.2em; }
+  .ea-type-grid { display: grid; gap: 10px; }
+  .ea-type-card { text-align: left; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--cream); cursor: pointer; font-family: var(--sans); }
+  .ea-type-card:hover { border-color: var(--accent); }
+  .ea-type-card strong { display: block; font-size: 1rem; margin-bottom: 4px; }
+  .ea-done-icon { font-size: 2.5rem; text-align: center; margin-bottom: 0.5rem; }
   .count-avatars { display: flex; }
   .count-av { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--ink); margin-left: -6px; font-size: 0.55rem; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; }
   .count-av:first-child { margin-left: 0; }
@@ -682,10 +700,14 @@
     <h1>Delhi University's<br><em>campus network</em><br>finally <span class="under">exists</span></h1>
     <p class="hero-sub">A verified social network, marketplace, and community hub - built exclusively for DU students.</p>
     <div class="hero-form" id="hero-form">
-      <input type="email" placeholder="Enter your DU email" id="hero-email">
-      <button onclick="joinWaitlist('hero')">Get early access</button>
+      <input type="email" placeholder="Your email (DU or Gmail)" id="hero-email">
+      <button onclick="startEarlyAccess('hero')">Get early access</button>
     </div>
-    <div class="success-msg" id="hero-success"> You're on the list! Check below to unlock your pass.</div>
+    <div class="ea-paths" id="hero-ea-paths">
+      <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','du_student')"><strong>DU student</strong>@du.ac.in or Gmail + proof</button>
+      <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','aspirant')"><strong>DU aspirant</strong>Gmail + name</button>
+    </div>
+    <div class="success-msg" id="hero-success">Check your email for your app access code, then open Unrest on your phone.</div>
   </div>
 </section>
 
@@ -1218,10 +1240,17 @@
 
         <div id="admin-panel" class="mod-queue-wrap">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="font-family: var(--serif); color: var(--accent); margin:0;">Admin Mod Queue</h3>
+            <h3 style="font-family: var(--serif); color: var(--accent); margin:0;">Echo queue</h3>
             <span style="font-size: 0.8rem; background: var(--accent); color: white; padding: 2px 8px; border-radius: 100px;" id="mod-count">0 Pending</span>
           </div>
           <div id="mod-items-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
+          <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h3 style="font-family: var(--serif); color: var(--accent); margin:0;">Early access — Gmail DU proof</h3>
+              <span style="font-size: 0.8rem; background: var(--green); color: white; padding: 2px 8px; border-radius: 100px;" id="ea-mod-count">0 Pending</span>
+            </div>
+            <div id="ea-mod-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
+          </div>
         </div>
 
       </div>
@@ -1443,6 +1472,66 @@
   </div>
 </section>
 
+<section class="waitlist" id="waitlist">
+  <div class="section-label" style="color:rgba(245,242,235,0.5)">Early access</div>
+  <h2>Get your <em>app code</em></h2>
+  <p>One code per person. DU students with a college email get instant delivery. Gmail students upload affiliation proof. Aspirants use Gmail and your full name.</p>
+  <div class="waitlist-form" id="waitlist-form">
+    <input type="email" placeholder="Your email" id="waitlist-email">
+    <button type="button" onclick="startEarlyAccess('waitlist')">Get code</button>
+  </div>
+  <div class="ea-paths">
+    <button type="button" class="ea-path-btn" onclick="startEarlyAccess('waitlist','du_student')"><strong>DU student</strong></button>
+    <button type="button" class="ea-path-btn" onclick="startEarlyAccess('waitlist','aspirant')"><strong>DU aspirant</strong></button>
+  </div>
+  <div class="success-msg" id="waitlist-success" style="display:none;color:rgba(245,242,235,0.85)">Check your inbox for your Unrest access code.</div>
+  <div class="waitlist-count"><span>●</span> Codes are validated in the Unrest app with the same email</div>
+</section>
+
+<div class="ea-modal" id="ea-modal" role="dialog" aria-modal="true">
+  <div class="ea-box">
+    <span class="ea-close" onclick="closeEarlyAccessModal()" aria-label="Close">✕</span>
+    <h3 id="ea-title">Early access</h3>
+    <p id="ea-sub">Request a one-time code for the Unrest app. Use the same email when you sign in.</p>
+
+    <div id="ea-step-type">
+      <div class="ea-type-grid">
+        <button type="button" class="ea-type-card" onclick="pickEarlyAccessType('du_student')">
+          <strong>DU student</strong>
+          Official @college.du.ac.in → code by email instantly. Gmail → upload ID / fee slip / selfie for review.
+        </button>
+        <button type="button" class="ea-type-card" onclick="pickEarlyAccessType('aspirant')">
+          <strong>DU aspirant</strong>
+          Gmail + full name. One code per person — explore mentors and the aspirant lounge in the app.
+        </button>
+      </div>
+    </div>
+
+    <div id="ea-step-form" style="display:none">
+      <label class="ea-label" for="ea-name">Full name</label>
+      <input class="ea-input" id="ea-name" type="text" placeholder="As on your ID or application" autocomplete="name">
+      <label class="ea-label" for="ea-email">Email</label>
+      <input class="ea-input" id="ea-email" type="email" placeholder="Email" autocomplete="email">
+      <p id="ea-email-hint" style="font-size:0.78rem;color:var(--ink3);margin:-0.25rem 0 0.75rem"></p>
+      <div id="ea-proof-block" style="display:none">
+        <label class="ea-label" for="ea-proof-files">Affiliation proof (1–3 photos)</label>
+        <input class="ea-input" id="ea-proof-files" type="file" accept="image/*" multiple>
+      </div>
+      <button type="button" class="ea-submit" id="ea-submit-btn" onclick="submitEarlyAccessForm()">Get my access code</button>
+      <div class="ea-status" id="ea-status"></div>
+    </div>
+
+    <div id="ea-step-proof" style="display:none">
+      <p>Upload proof, then submit again.</p>
+    </div>
+
+    <div id="ea-step-done" style="display:none;text-align:center">
+      <div class="ea-done-icon">✉️</div>
+      <p id="ea-done-text">If your email is configured, your code is on the way. Open the Unrest app and enter it with the same address.</p>
+    </div>
+  </div>
+</div>
+
 <footer>
   <div class="foot-logo">Un<span>rest</span></div>
   <p>© 2026 Unrest · Built by a DU student, for DU students</p>
@@ -1469,7 +1558,10 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, collection, addDoc, query, where, onSnapshot, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getAuth, signInWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
+  import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
   import * as firebase from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { initEarlyAccessUI } from "./early-access.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDBJ0hHjVyEnwg7mV7ECeG163K7fs1fsiE",
@@ -1484,6 +1576,18 @@
   const app = initializeApp(firebaseConfig);
   window.db = getFirestore(app);
   window.auth = getAuth(app);
+  const functions = getFunctions(app, "asia-south1");
+  const storage = getStorage(app);
+  initEarlyAccessUI({
+    db: window.db,
+    storage,
+    functions,
+    httpsCallable,
+    collection,
+    query,
+    where,
+    onSnapshot,
+  });
   window.firebase = firebase;
   window.RecaptchaVerifier = RecaptchaVerifier;
   window.signInWithPhoneNumber = signInWithPhoneNumber;
@@ -1621,6 +1725,8 @@ async function adminLogin() {
       document.getElementById('mod-items-container').innerHTML = pendingHtml || '<div style="font-size:0.8rem;color:#888;">Queue is empty.</div>';
     });
 
+    window.watchEarlyAccessQueue();
+
   } catch (error) {
     alert("Login failed: " + error.message);
   }
@@ -1637,33 +1743,7 @@ window.rejectEcho = async function(id) {
 }
 
 function joinWaitlist(source) {
-  const emailEl = document.getElementById(source === 'hero' ? 'hero-email' : 'waitlist-email');
-  const email = emailEl.value.trim().toLowerCase();
-  
-  if (!email || !email.includes('@')) { 
-    emailEl.style.outline = '2px solid #c84b2f'; 
-    setTimeout(() => emailEl.style.outline = '', 2000); 
-    return; 
-  }
-
-  if (!email.endsWith('.du.ac.in') && !window.isAdmin) {
-      alert("Access Denied: Unrest is exclusively for verified Delhi University students. Please enter your official @college.du.ac.in email address.");
-      return;
-  }
-
-  const domainPart = email.split('@')[1]; 
-  const abbr = domainPart.split('.')[0]; 
-  let matchedCollege = COLLEGES.find(c => c.domains && c.domains.includes(abbr)) || COLLEGES.find(c => c.id === 'Other');
-
-  // Open demo modal to capture Name
-  document.querySelectorAll('.hero-form, .waitlist-form').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('.success-msg').forEach(el => el.style.display = 'block');
-
-  document.getElementById('rollcall').scrollIntoView({ behavior: 'smooth' });
-  setTimeout(() => {
-    document.getElementById('demo-email').value = email; 
-    openShareModal(matchedCollege, true, "YOUR NAME");
-  }, 800);
+  startEarlyAccess(source);
 }
 
 async function submitEcho() {
