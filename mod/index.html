@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unrest — Moderation</title>
+    <link rel="stylesheet" href="mod.css" />
+  </head>
+  <body>
+    <div id="mobile-block" class="mobile-block" hidden>
+      <p class="mobile-block-title">Desktop only</p>
+      <p class="mobile-block-text">
+        The moderation panel works on a laptop or desktop browser (window at least 960px wide).
+      </p>
+    </div>
+
+    <div id="app" class="app" hidden>
+      <header class="topbar">
+        <div class="topbar-left">
+          <span class="brand">Unrest moderation</span>
+          <span id="user-email" class="user-email"></span>
+        </div>
+        <div class="topbar-right">
+          <button type="button" id="btn-refresh" class="btn btn-ghost">Refresh</button>
+          <button type="button" id="btn-signout" class="btn btn-ghost">Sign out</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <nav class="sidebar" aria-label="Sections">
+          <button type="button" class="nav-item active" data-tab="posts">Posts</button>
+          <button type="button" class="nav-item" data-tab="profiles">Profiles</button>
+          <button type="button" class="nav-item" data-tab="reports">Reports</button>
+          <button type="button" class="nav-item nav-admin" data-tab="team" hidden>Team</button>
+        </nav>
+
+        <main class="main">
+          <!-- POSTS -->
+          <section id="panel-posts" class="panel active">
+            <div class="panel-head">
+              <h1>Posts</h1>
+              <p class="panel-desc">Review pending posts before they go live.</p>
+            </div>
+            <div class="toolbar">
+              <input
+                type="search"
+                id="posts-search"
+                class="search"
+                placeholder="Search author, college, text…"
+                autocomplete="off"
+              />
+              <span id="posts-count" class="count-pill">0 pending</span>
+            </div>
+            <div id="posts-list" class="card-list"></div>
+            <p id="posts-empty" class="empty" hidden>No pending posts.</p>
+          </section>
+
+          <!-- PROFILES -->
+          <section id="panel-profiles" class="panel">
+            <div class="panel-head">
+              <h1>Profiles</h1>
+              <p class="panel-desc">Verifications, usernames, and display name changes.</p>
+            </div>
+            <div class="subtabs">
+              <button type="button" class="subtab active" data-profile-sub="verify">Verification</button>
+              <button type="button" class="subtab" data-profile-sub="usernames">Usernames</button>
+              <button type="button" class="subtab" data-profile-sub="names">Display names</button>
+            </div>
+            <div id="profile-verify" class="profile-sub active"></div>
+            <div id="profile-usernames" class="profile-sub" hidden></div>
+            <div id="profile-names" class="profile-sub" hidden></div>
+          </section>
+
+          <!-- REPORTS -->
+          <section id="panel-reports" class="panel">
+            <div class="panel-head">
+              <h1>Reports</h1>
+              <p class="panel-desc">User-reported posts. Dismiss or remove the post.</p>
+            </div>
+            <div id="reports-list" class="card-list"></div>
+            <p id="reports-empty" class="empty" hidden>No open reports.</p>
+          </section>
+
+          <!-- TEAM (admin) -->
+          <section id="panel-team" class="panel">
+            <div class="panel-head">
+              <h1>Moderator access</h1>
+              <p class="panel-desc">
+                Add reviewer emails (lowercase). They sign in here with the same Firebase account.
+                Max ~15 people.
+              </p>
+            </div>
+            <form id="team-form" class="team-form">
+              <textarea
+                id="team-emails"
+                class="team-textarea"
+                rows="12"
+                placeholder="one@example.com&#10;two@example.com"
+              ></textarea>
+              <div class="team-actions">
+                <button type="submit" class="btn btn-primary">Save list</button>
+                <span id="team-status" class="team-status"></span>
+              </div>
+            </form>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div id="login" class="login">
+      <div class="login-card">
+        <h1>Unrest moderation</h1>
+        <p class="login-desc">Sign in with your moderator account. Desktop or laptop only.</p>
+        <form id="login-form">
+          <label class="field">
+            <span>Email</span>
+            <input type="email" id="login-email" required autocomplete="username" />
+          </label>
+          <label class="field">
+            <span>Password</span>
+            <input type="password" id="login-password" required autocomplete="current-password" />
+          </label>
+          <p id="login-error" class="login-error" hidden></p>
+          <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" hidden></div>
+
+    <script type="module" src="mod.js"></script>
+  </body>
+</html>
