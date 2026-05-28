@@ -30,12 +30,21 @@ body {
 
 .mobile-block {
   min-height: 100vh;
-  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 2rem;
   text-align: center;
+}
+
+.mobile-block:not([hidden]) {
+  display: flex;
+}
+
+.mobile-block[hidden],
+.app[hidden],
+.login[hidden] {
+  display: none !important;
 }
 
 .mobile-block-title {
@@ -383,11 +392,11 @@ body {
 }
 
 @media (max-width: 767px) {
-  .login,
-  .app {
+  .login:not([hidden]),
+  .app:not([hidden]) {
     display: none !important;
   }
-  .mobile-block {
+  .mobile-block:not([hidden]) {
     display: flex !important;
   }
 }

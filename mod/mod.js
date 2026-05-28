@@ -443,6 +443,7 @@ async function saveTeamEmails(raw) {
 }
 
 function showApp() {
+  $("mobile-block").hidden = true;
   $("login").hidden = true;
   $("app").hidden = false;
   $("user-email").textContent = state.user?.email || "";
@@ -459,6 +460,7 @@ function showLogin() {
   clearSubscriptions();
   $("app").hidden = true;
   $("login").hidden = false;
+  if (checkViewport()) $("mobile-block").hidden = true;
 }
 
 async function handleAuth(user) {
