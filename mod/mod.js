@@ -80,9 +80,13 @@ function formatTs(ts) {
   });
 }
 
+const MIN_MOD_WIDTH = 768;
+
 function checkViewport() {
-  const narrow = window.innerWidth < 960;
+  const narrow = window.innerWidth < MIN_MOD_WIDTH;
   $("mobile-block").hidden = !narrow;
+  const w = $("viewport-width");
+  if (w) w.textContent = String(window.innerWidth);
   if (narrow) {
     $("app").hidden = true;
     $("login").hidden = true;
@@ -481,7 +485,9 @@ async function handleAuth(user) {
 
 function bindUi() {
   window.addEventListener("resize", () => {
-    if (state.user && checkViewport()) showApp();
+    const ok = checkViewport();
+    if (state.user && ok) showApp();
+    else if (!state.user && ok) showLogin();
   });
 
   $("login-form").addEventListener("submit", async (e) => {
