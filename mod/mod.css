@@ -654,6 +654,10 @@ body {
   z-index: 220;
 }
 
+.fo-detail-modal[hidden] {
+  display: none !important;
+}
+
 .fo-detail-card {
   width: min(480px, 100%);
   background: #fffef8;
