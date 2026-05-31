@@ -114,13 +114,13 @@ export function initEarlyAccessUI({
       showStep("form");
       document.getElementById("ea-email").placeholder = "you@gmail.com";
       document.getElementById("ea-email-hint").textContent =
-        "Gmail only · one code per person";
+        "Gmail only · reviewed by moderators before code is emailed";
       document.getElementById("ea-proof-block").style.display = "none";
     } else {
       showStep("form");
       document.getElementById("ea-email").placeholder = "you@college.du.ac.in or Gmail";
       document.getElementById("ea-email-hint").textContent =
-        "@du.ac.in = instant code · Gmail = upload affiliation proof";
+        "@du.ac.in = moderator review · Gmail = upload affiliation proof";
       document.getElementById("ea-proof-block").style.display = "none";
     }
     if (statusEl) statusEl.textContent = "";
@@ -243,7 +243,7 @@ export function initEarlyAccessUI({
         document.getElementById("ea-proof-block").style.display = "block";
         if (statusEl) statusEl.textContent = data.message;
         btn.disabled = false;
-        btn.textContent = "Submit proof & request code";
+        btn.textContent = "Submit proof for review";
         return;
       }
 
@@ -275,7 +275,7 @@ export function initEarlyAccessUI({
       if (statusEl) statusEl.textContent = String(msg).replace(/^FirebaseError:\s*/i, "");
     } finally {
       btn.disabled = false;
-      if (btn.textContent === "Sending…") btn.textContent = "Get my access code";
+      if (btn.textContent === "Sending…") btn.textContent = "Request access review";
     }
   };
 
@@ -350,7 +350,7 @@ export function initEarlyAccessUI({
   window.watchEarlyAccessQueue = function () {
     const q = query(
       collection(db, "early_access_requests"),
-      where("status", "==", "pending_affiliation")
+      where("status", "in", ["pending_affiliation", "pending_review"])
     );
     onSnapshot(q, (snap) => {
       const container = document.getElementById("ea-mod-container");

@@ -3,7 +3,11 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     function isAdmin() {
-      return request.auth != null && request.auth.uid == 'SnHPeFTi87bWdtepY4QOvc0A8aJ3';
+      return request.auth != null
+        && (
+          request.auth.uid == 'SnHPeFTi87bWdtepY4QOvc0A8aJ3'
+          || request.auth.token.email == 'manaspandeya@gmail.com'
+        );
     }
 
     function isDUStudent() {
@@ -41,6 +45,20 @@ service cloud.firestore {
       allow read:   if isAdmin();
     }
 
+    match /early_access_codes/{codeId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /early_access_requests/{requestId} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /early_access_registry/{emailKey} {
+      allow read, write: if false;
+    }
+
     // ─── ECHOES (Echo Wall) ─────────────────────────────────────────
     match /echoes/{document} {
       allow read:   if resource.data.status == 'approved'
@@ -73,13 +91,62 @@ service cloud.firestore {
       allow update: if isAdmin()
                     || (
                       request.auth != null
+                      && resource.data.uid == request.auth.uid
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['archived'])
+                      && request.resource.data.archived == true
+                    )
+                    || (
+                      request.auth != null
+                      && resource.data.uid == request.auth.uid
+                      && request.resource.data.diff(resource.data).affectedKeys()
+                          .hasOnly(['archived', 'archivedAt', 'archivedBy'])
+                      && request.resource.data.archived == true
+                    )
+                    || (
+                      request.auth != null
                       && resource.data.status == 'approved'
-                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['w','l'])
-                      && (request.resource.data.w == resource.data.w + 1 || request.resource.data.w == resource.data.w)
-                      && (request.resource.data.l == resource.data.l + 1 || request.resource.data.l == resource.data.l)
+                      && (
+                        (
+                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['w','l'])
+                          && (request.resource.data.w == resource.data.w + 1 || request.resource.data.w == resource.data.w)
+                          && (request.resource.data.l == resource.data.l + 1 || request.resource.data.l == resource.data.l)
+                        )
+                        || (
+                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['commentCount'])
+                          && request.resource.data.commentCount == int(resource.data.get('commentCount', 0)) + 1
+                        )
+                        || (
+                          request.resource.data.diff(resource.data).affectedKeys()
+                              .hasOnly(['commentCount', 'ratioed', 'ratioedAt'])
+                          && request.resource.data.commentCount == int(resource.data.get('commentCount', 0)) + 1
+                          && request.resource.data.ratioed == true
+                        )
+                        || (
+                          'pollVotes' in resource.data
+                          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['pollVotes'])
+                          && request.resource.data.pollVotes.size() == resource.data.pollVotes.size()
+                        )
+                        || (
+                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['pollV0'])
+                          && request.resource.data.pollV0 == int(resource.data.get('pollV0', 0)) + 1
+                        )
+                        || (
+                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['pollV1'])
+                          && request.resource.data.pollV1 == int(resource.data.get('pollV1', 0)) + 1
+                        )
+                        || (
+                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['pollV2'])
+                          && request.resource.data.pollV2 == int(resource.data.get('pollV2', 0)) + 1
+                        )
+                        || (
+                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['pollV3'])
+                          && request.resource.data.pollV3 == int(resource.data.get('pollV3', 0)) + 1
+                        )
+                      )
                     );
 
-      allow delete: if isAdmin();
+      allow delete: if isAdmin()
+                    || (request.auth != null && resource.data.uid == request.auth.uid);
 
       match /comments/{commentId} {
         allow read: if request.auth != null;
@@ -102,8 +169,34 @@ service cloud.firestore {
                     );
     }
 
-    // ─── REPORTS ────────────────────────────────────────────────────
+    // ─── USERNAME REQUESTS ───────────────────────────────────────────
+    match /username_requests/{requestId} {
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.status == 'pending';
+      allow read: if request.auth != null
+                  && (resource.data.uid == request.auth.uid || isAdmin());
+      allow update: if isAdmin()
+                    || (
+                      request.auth != null
+                      && resource.data.uid == request.auth.uid
+                      && resource.data.status == 'pending'
+                      && request.resource.data.status == 'pending'
+                      && request.resource.data.uid == request.auth.uid
+                      && request.resource.data.diff(resource.data).affectedKeys()
+                          .hasOnly(['requestedUsername', 'updatedAt'])
+                    );
+      allow delete: if isAdmin();
+    }
+
+    // ─── REPORTS (web + mobile) ─────────────────────────────────────
     match /reports/{document} {
+      allow create: if request.auth != null
+                    && request.resource.data.reporterUid == request.auth.uid;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /post_reports/{document} {
       allow create: if request.auth != null
                     && request.resource.data.reporterUid == request.auth.uid;
       allow read, update, delete: if isAdmin();
