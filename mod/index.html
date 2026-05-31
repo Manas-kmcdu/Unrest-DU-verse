@@ -33,6 +33,7 @@
           <button type="button" class="nav-item" data-tab="profiles">Profiles</button>
           <button type="button" class="nav-item" data-tab="reports">Reports</button>
           <button type="button" class="nav-item nav-admin" data-tab="team" hidden>Team</button>
+          <button type="button" class="nav-item nav-admin" data-tab="founder" hidden>Founder's Office</button>
         </nav>
 
         <main class="main">
@@ -66,10 +67,12 @@
               <button type="button" class="subtab active" data-profile-sub="verify">Verification</button>
               <button type="button" class="subtab" data-profile-sub="usernames">Usernames</button>
               <button type="button" class="subtab" data-profile-sub="names">Display names</button>
+              <button type="button" class="subtab" data-profile-sub="early-access">Early access</button>
             </div>
             <div id="profile-verify" class="profile-sub active"></div>
             <div id="profile-usernames" class="profile-sub" hidden></div>
             <div id="profile-names" class="profile-sub" hidden></div>
+            <div id="profile-early-access" class="profile-sub" hidden></div>
           </section>
 
           <!-- REPORTS -->
@@ -103,6 +106,90 @@
                 <span id="team-status" class="team-status"></span>
               </div>
             </form>
+          </section>
+
+          <!-- FOUNDER'S OFFICE (admin) -->
+          <section id="panel-founder" class="panel">
+            <div class="panel-head">
+              <h1>Founder's office</h1>
+              <p class="panel-desc">
+                Keep priorities, references, ideas, and operating notes in one place.
+              </p>
+            </div>
+
+            <form id="founder-form" class="founder-form">
+              <div class="founder-form-grid">
+                <label class="field">
+                  <span>Board lane</span>
+                  <select id="fo-lane" required>
+                    <option value="tasks">Priority tasks</option>
+                    <option value="references">References</option>
+                    <option value="ideas">Ideas</option>
+                    <option value="notes">Notes</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Priority</span>
+                  <select id="fo-priority">
+                    <option value="high">High</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="low">Low</option>
+                  </select>
+                </label>
+              </div>
+              <label class="field">
+                <span>Title</span>
+                <input id="fo-title" type="text" placeholder="Add the key task or idea..." required />
+              </label>
+              <label class="field">
+                <span>Details</span>
+                <textarea
+                  id="fo-details"
+                  class="team-textarea"
+                  rows="3"
+                  placeholder="Context, owner, deadline, next step..."
+                ></textarea>
+              </label>
+              <label class="field">
+                <span>Reference link (optional)</span>
+                <input id="fo-link" type="url" placeholder="https://..." />
+              </label>
+              <div class="team-actions">
+                <button type="submit" class="btn btn-primary">Add to board</button>
+                <span id="founder-status" class="team-status"></span>
+              </div>
+            </form>
+
+            <div class="founder-board">
+              <article class="founder-lane">
+                <div class="founder-lane-head">
+                  <h3>Priority tasks</h3>
+                  <span id="fo-count-tasks" class="count-pill">0</span>
+                </div>
+                <div id="fo-lane-tasks" class="founder-lane-list"></div>
+              </article>
+              <article class="founder-lane">
+                <div class="founder-lane-head">
+                  <h3>References</h3>
+                  <span id="fo-count-references" class="count-pill">0</span>
+                </div>
+                <div id="fo-lane-references" class="founder-lane-list"></div>
+              </article>
+              <article class="founder-lane">
+                <div class="founder-lane-head">
+                  <h3>Ideas</h3>
+                  <span id="fo-count-ideas" class="count-pill">0</span>
+                </div>
+                <div id="fo-lane-ideas" class="founder-lane-list"></div>
+              </article>
+              <article class="founder-lane">
+                <div class="founder-lane-head">
+                  <h3>Notes</h3>
+                  <span id="fo-count-notes" class="count-pill">0</span>
+                </div>
+                <div id="fo-lane-notes" class="founder-lane-list"></div>
+              </article>
+            </div>
           </section>
         </main>
       </div>
