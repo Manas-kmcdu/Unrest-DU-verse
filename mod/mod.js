@@ -56,6 +56,7 @@ const state = {
   profileChanges: [],
   earlyAccessRequests: [],
   founderItems: [],
+  selectedFounderItemId: null,
   unsubs: [],
 };
 
@@ -114,6 +115,25 @@ function laneLabel(lane) {
   if (lane === "references") return "References";
   if (lane === "ideas") return "Ideas";
   return "Notes";
+}
+
+function laneClass(lane) {
+  if (lane === "tasks") return "lane-tasks";
+  if (lane === "references") return "lane-references";
+  if (lane === "ideas") return "lane-ideas";
+  return "lane-notes";
+}
+
+function priorityRank(priority) {
+  if (priority === "high") return 0;
+  if (priority === "medium") return 1;
+  return 2;
+}
+
+function priorityLabel(priority) {
+  if (priority === "high") return "High";
+  if (priority === "medium") return "Medium";
+  return "Low";
 }
 
 function loadFounderFromLocalStorage() {
@@ -425,49 +445,33 @@ function renderProfileSections() {
 function renderFounderOffice() {
   const panel = $("panel-founder");
   if (!panel) return;
+  const gridEl = $("fo-wall-grid");
+  if (!gridEl) return;
+  const capacity = 40;
+  const sortedItems = [...state.founderItems].sort((a, b) => {
+    const pa = priorityRank(a.priority);
+    const pb = priorityRank(b.priority);
+    if (pa !== pb) return pa - pb;
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return b.updatedAt - a.updatedAt;
+  });
 
-  const groups = {
-    tasks: [],
-    references: [],
-    ideas: [],
-    notes: [],
-  };
+  const visibleItems = sortedItems.slice(0, capacity);
+  const capEl = $("fo-capacity");
+  if (capEl) capEl.textContent = `${visibleItems.length} / ${capacity}`;
 
-  for (const item of state.founderItems) {
-    groups[item.lane].push(item);
-  }
-
-  for (const lane of FOUNDER_LANES) {
-    const countEl = $(`fo-count-${lane}`);
-    const laneEl = $(`fo-lane-${lane}`);
-    if (!countEl || !laneEl) continue;
-    countEl.textContent = String(groups[lane].length);
-    laneEl.innerHTML =
-      groups[lane].length === 0
-        ? `<p class="founder-empty">No ${laneLabel(lane).toLowerCase()} yet.</p>`
-        : groups[lane]
-            .sort((a, b) => b.updatedAt - a.updatedAt)
-            .map((item) => {
-              const link = item.link
-                ? `<a class="founder-item-link" href="${escapeHtml(item.link)}" target="_blank" rel="noopener">Open reference</a>`
-                : "";
-              return `<article class="founder-item ${item.done ? "done" : ""}">
-                <h4 class="founder-item-title">${escapeHtml(item.title)}</h4>
-                ${item.details ? `<p class="founder-item-body">${escapeHtml(item.details)}</p>` : ""}
-                <div class="founder-item-meta">
-                  <span class="founder-priority ${escapeHtml(item.priority)}">${escapeHtml(item.priority)}</span>
-                  <span class="card-meta">${formatTs(item.updatedAt)}</span>
-                </div>
-                ${link}
-                <div class="founder-actions">
-                  <button type="button" class="btn" data-action="founder-toggle-done" data-id="${escapeHtml(item.id)}">${item.done ? "Mark open" : "Mark done"}</button>
-                  <button type="button" class="btn" data-action="founder-edit" data-id="${escapeHtml(item.id)}">Edit</button>
-                  <button type="button" class="btn btn-danger" data-action="founder-delete" data-id="${escapeHtml(item.id)}">Delete</button>
-                </div>
-              </article>`;
-            })
-            .join("");
-  }
+  gridEl.innerHTML = Array.from({ length: capacity }, (_, idx) => {
+    const item = visibleItems[idx];
+    if (!item) return `<div class="fo-slot empty" aria-hidden="true"></div>`;
+    const lane = laneLabel(item.lane);
+    return `<div class="fo-slot">
+      <button type="button" class="postit ${laneClass(item.lane)} pin-${escapeHtml(item.priority)} ${item.done ? "done" : ""}" data-action="founder-open-detail" data-id="${escapeHtml(item.id)}" title="${escapeHtml(item.title)}">
+        <span class="postit-pin"></span>
+        <p class="postit-title">${escapeHtml(item.title)}</p>
+        <span class="postit-meta">${escapeHtml(lane)} · ${escapeHtml(priorityLabel(item.priority))}</span>
+      </button>
+    </div>`;
+  }).join("");
 }
 
 async function approvePost(id) {
@@ -661,6 +665,8 @@ async function toggleFounderDone(id) {
     item.id === id ? { ...item, done: !item.done, updatedAt: Date.now() } : item
   );
   await saveFounderItems(next);
+  const selected = state.selectedFounderItemId;
+  if (selected === id) openFounderDetail(id);
 }
 
 async function editFounderItem(id) {
@@ -697,12 +703,45 @@ async function editFounderItem(id) {
       : row
   );
   await saveFounderItems(next);
+  openFounderDetail(id);
 }
 
 async function deleteFounderItem(id) {
   if (!confirm("Remove this item from Founder's Office?")) return;
   const next = state.founderItems.filter((item) => item.id !== id);
   await saveFounderItems(next);
+  closeFounderDetail();
+}
+
+function closeFounderDetail() {
+  state.selectedFounderItemId = null;
+  const modal = $("fo-detail-modal");
+  if (modal) modal.hidden = true;
+}
+
+function openFounderDetail(id) {
+  const item = state.founderItems.find((row) => row.id === id);
+  if (!item) return;
+  state.selectedFounderItemId = id;
+  const modal = $("fo-detail-modal");
+  if (!modal) return;
+  const priorityEl = $("fo-detail-priority");
+  priorityEl.className = `founder-priority ${item.priority}`;
+  priorityEl.textContent = priorityLabel(item.priority);
+  $("fo-detail-lane").textContent = laneLabel(item.lane);
+  $("fo-detail-title").textContent = item.title;
+  $("fo-detail-body").textContent = item.details || "No details added yet.";
+  $("fo-detail-updated").textContent = `Updated ${formatTs(item.updatedAt)}`;
+  const linkEl = $("fo-detail-link");
+  if (item.link) {
+    linkEl.hidden = false;
+    linkEl.href = item.link;
+  } else {
+    linkEl.hidden = true;
+    linkEl.removeAttribute("href");
+  }
+  $("fo-detail-done-btn").textContent = item.done ? "Mark open" : "Mark done";
+  modal.hidden = false;
 }
 
 async function loadTeamEmails() {
@@ -864,6 +903,14 @@ function bindUi() {
       if (action === "founder-toggle-done") await toggleFounderDone(btn.dataset.id);
       if (action === "founder-edit") await editFounderItem(btn.dataset.id);
       if (action === "founder-delete") await deleteFounderItem(btn.dataset.id);
+      if (action === "founder-open-detail") openFounderDetail(btn.dataset.id);
+      if (action === "founder-close-detail") closeFounderDetail();
+      if (action === "founder-detail-toggle-done" && state.selectedFounderItemId)
+        await toggleFounderDone(state.selectedFounderItemId);
+      if (action === "founder-detail-edit" && state.selectedFounderItemId)
+        await editFounderItem(state.selectedFounderItemId);
+      if (action === "founder-detail-delete" && state.selectedFounderItemId)
+        await deleteFounderItem(state.selectedFounderItemId);
     } catch (err) {
       showToast(err?.message || "Action failed");
     }

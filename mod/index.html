@@ -117,19 +117,35 @@
               </p>
             </div>
 
+            <div class="founder-legend">
+              <span class="founder-legend-item lane-tasks">Priority task</span>
+              <span class="founder-legend-item lane-references">Reference</span>
+              <span class="founder-legend-item lane-ideas">Idea</span>
+              <span class="founder-legend-item lane-notes">Note</span>
+              <span id="fo-capacity" class="count-pill">0 / 40</span>
+            </div>
+
+            <section class="founder-wall-shell">
+              <div class="founder-wall-head">
+                <h3>Founder wall</h3>
+                <p>High-priority notes pin to the top first. Click any post-it for details.</p>
+              </div>
+              <div id="fo-wall-grid" class="founder-wall-grid"></div>
+            </section>
+
             <form id="founder-form" class="founder-form">
               <div class="founder-form-grid">
                 <label class="field">
-                  <span>Board lane</span>
+                  <span>Type</span>
                   <select id="fo-lane" required>
-                    <option value="tasks">Priority tasks</option>
-                    <option value="references">References</option>
-                    <option value="ideas">Ideas</option>
-                    <option value="notes">Notes</option>
+                    <option value="tasks">Priority task</option>
+                    <option value="references">Reference</option>
+                    <option value="ideas">Idea</option>
+                    <option value="notes">Note</option>
                   </select>
                 </label>
                 <label class="field">
-                  <span>Priority</span>
+                  <span>Priority pin</span>
                   <select id="fo-priority">
                     <option value="high">High</option>
                     <option value="medium" selected>Medium</option>
@@ -155,40 +171,28 @@
                 <input id="fo-link" type="url" placeholder="https://..." />
               </label>
               <div class="team-actions">
-                <button type="submit" class="btn btn-primary">Add to board</button>
+                <button type="submit" class="btn btn-primary">Pin post-it</button>
                 <span id="founder-status" class="team-status"></span>
               </div>
             </form>
 
-            <div class="founder-board">
-              <article class="founder-lane">
-                <div class="founder-lane-head">
-                  <h3>Priority tasks</h3>
-                  <span id="fo-count-tasks" class="count-pill">0</span>
+            <div id="fo-detail-modal" class="fo-detail-modal" hidden>
+              <div class="fo-detail-card">
+                <button type="button" class="fo-modal-close" data-action="founder-close-detail">×</button>
+                <div class="fo-detail-head">
+                  <span id="fo-detail-priority" class="founder-priority medium">medium</span>
+                  <span id="fo-detail-lane" class="count-pill">Note</span>
                 </div>
-                <div id="fo-lane-tasks" class="founder-lane-list"></div>
-              </article>
-              <article class="founder-lane">
-                <div class="founder-lane-head">
-                  <h3>References</h3>
-                  <span id="fo-count-references" class="count-pill">0</span>
+                <h3 id="fo-detail-title">Task title</h3>
+                <p id="fo-detail-body" class="founder-item-body"></p>
+                <a id="fo-detail-link" class="founder-item-link" href="#" target="_blank" rel="noopener" hidden>Open reference</a>
+                <div class="card-meta" id="fo-detail-updated">Updated —</div>
+                <div class="founder-actions">
+                  <button type="button" class="btn" id="fo-detail-done-btn" data-action="founder-detail-toggle-done">Mark done</button>
+                  <button type="button" class="btn" id="fo-detail-edit-btn" data-action="founder-detail-edit">Edit</button>
+                  <button type="button" class="btn btn-danger" id="fo-detail-delete-btn" data-action="founder-detail-delete">Delete</button>
                 </div>
-                <div id="fo-lane-references" class="founder-lane-list"></div>
-              </article>
-              <article class="founder-lane">
-                <div class="founder-lane-head">
-                  <h3>Ideas</h3>
-                  <span id="fo-count-ideas" class="count-pill">0</span>
-                </div>
-                <div id="fo-lane-ideas" class="founder-lane-list"></div>
-              </article>
-              <article class="founder-lane">
-                <div class="founder-lane-head">
-                  <h3>Notes</h3>
-                  <span id="fo-count-notes" class="count-pill">0</span>
-                </div>
-                <div id="fo-lane-notes" class="founder-lane-list"></div>
-              </article>
+              </div>
             </div>
           </section>
         </main>
