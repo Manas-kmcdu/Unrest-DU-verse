@@ -57,13 +57,6 @@ function escapeHtml(text) {
     .replace(/"/g, "&quot;");
 }
 
-const ACCESS_CODE_RE = /\b(EA-[A-Z]+-[A-F0-9]{4}-[A-F0-9]{4})\b/i;
-
-function codeFromMessage(message) {
-  const m = String(message || "").match(ACCESS_CODE_RE);
-  return m ? m[1].toUpperCase() : null;
-}
-
 export function initEarlyAccessUI({
   db,
   storage,
@@ -221,7 +214,7 @@ export function initEarlyAccessUI({
             pendingEmail = email;
             pendingName = fullName;
           } else if (first.status === "code_sent") {
-            showSuccess(first.message, first.codeId);
+            showSuccess(first.message);
             return;
           }
         }
@@ -247,7 +240,7 @@ export function initEarlyAccessUI({
         return;
       }
 
-      showSuccess(data.message, data.codeId);
+      showSuccess(data.message);
     } catch (err) {
       const code = err?.code || "";
       let msg = err?.message || err?.details || "";
@@ -279,45 +272,18 @@ export function initEarlyAccessUI({
     }
   };
 
-  function showSuccess(message, codeId) {
+  function showSuccess(message) {
     showStep("done");
     const doneText = document.getElementById("ea-done-text");
     const codeBox = document.getElementById("ea-code-display");
-    const code = String(codeId || codeFromMessage(message) || "").trim();
-
-    const codeBlockHtml = code
-      ? `<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink3);margin-bottom:6px">Your access code</div><div id="ea-code-value" style="font-family:monospace;font-size:1.35rem;font-weight:700;color:var(--accent);letter-spacing:0.06em;margin:4px 0 8px">${escapeHtml(code)}</div><button type="button" id="ea-copy-code" style="font-size:0.8rem;font-weight:600;padding:8px 14px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer">Copy code</button><div style="font-size:0.78rem;color:var(--ink3);margin-top:10px">Open the Unrest app → enter this code → sign in with the same email.</div>`
-      : "";
 
     if (doneText) {
-      if (code && codeBox) {
-        doneText.textContent = message.replace(ACCESS_CODE_RE, "").trim() || "You're in — use your code below.";
-      } else if (code) {
-        doneText.innerHTML = `<p style="margin:0 0 12px">${escapeHtml(message)}</p>${codeBlockHtml}`;
-      } else {
-        doneText.textContent = message;
-      }
+      doneText.textContent = message;
     }
 
     if (codeBox) {
-      if (code) {
-        codeBox.style.display = "block";
-        codeBox.innerHTML = codeBlockHtml;
-        const copyBtn = document.getElementById("ea-copy-code");
-        if (copyBtn) {
-          copyBtn.onclick = () => {
-            void navigator.clipboard.writeText(code).then(() => {
-              copyBtn.textContent = "Copied!";
-              setTimeout(() => {
-                copyBtn.textContent = "Copy code";
-              }, 2000);
-            });
-          };
-        }
-      } else {
-        codeBox.style.display = "none";
-        codeBox.innerHTML = "";
-      }
+      codeBox.style.display = "none";
+      codeBox.innerHTML = "";
     }
     if (statusEl) statusEl.textContent = "";
     document.querySelectorAll(".hero-form, .waitlist-form").forEach((el) => {
@@ -358,6 +324,12 @@ export function initEarlyAccessUI({
       let html = "";
       snap.forEach((docSnap) => {
         const p = docSnap.data();
+        const typeLabel =
+          p.type === "aspirant"
+            ? "DU aspirant"
+            : p.emailChannel === "du_ac_in"
+              ? "DU student (official email)"
+              : "DU student (Gmail + proof)";
         const proofs = (p.proofUrls || [])
           .map(
             (u) =>
@@ -368,10 +340,10 @@ export function initEarlyAccessUI({
           <div class="mod-item">
             <div class="mod-info">
               <div class="mod-info-college">${p.fullName || "—"} · ${p.email}</div>
-              <div class="mod-info-text">Gmail DU student · ${proofs || "No files"}</div>
+              <div class="mod-info-text">${typeLabel} · ${proofs || "No proof files"}</div>
             </div>
             <div class="mod-actions">
-              <button class="btn-approve" onclick="approveEarlyAccess('${docSnap.id}')">Send code</button>
+              <button class="btn-approve" onclick="approveEarlyAccess('${docSnap.id}')">Approve & email code</button>
               <button class="btn-reject" onclick="rejectEarlyAccess('${docSnap.id}')">Reject</button>
             </div>
           </div>`;
