@@ -296,8 +296,9 @@ export function initEarlyAccessUI({
 
   window.approveEarlyAccess = async function (requestId) {
     try {
-      await approveFn({ requestId });
-      alert("Code issued and emailed.");
+      const res = await approveFn({ requestId });
+      const emailed = res?.data?.emailed === true;
+      alert(emailed ? "Code issued and emailed." : "Code issued, but email delivery failed.");
     } catch (e) {
       alert("Approve failed: " + (e.message || e));
     }
