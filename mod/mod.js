@@ -616,7 +616,12 @@ async function approveEarlyAccess(requestId) {
   if (!state.isAdmin) throw new Error("Admin only");
   const result = await approveEarlyAccessFn({ requestId });
   const email = result?.data?.email || "";
-  showToast(email ? `Code emailed to ${email}` : "Code issued and emailed");
+  const emailed = result?.data?.emailed === true;
+  if (emailed) {
+    showToast(email ? `Code emailed to ${email}` : "Code issued and emailed");
+  } else {
+    showToast(email ? `Code created for ${email}, but email delivery failed` : "Code created, but email delivery failed");
+  }
 }
 
 async function rejectEarlyAccess(requestId) {
