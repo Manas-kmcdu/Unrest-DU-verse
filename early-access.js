@@ -97,6 +97,8 @@ export function initEarlyAccessUI({
   function openModal(type) {
     selectedType = type;
     pendingRequestId = null;
+    pendingEmail = "";
+    pendingName = "";
     if (modal) modal.style.display = "flex";
     document.body.style.overflow = "hidden";
     if (titleEl) {
@@ -123,6 +125,9 @@ export function initEarlyAccessUI({
     if (modal) modal.style.display = "none";
     document.body.style.overflow = "";
     showStep("type");
+    pendingRequestId = null;
+    pendingEmail = "";
+    pendingName = "";
   };
 
   window.startEarlyAccess = function (source, presetType) {
@@ -188,6 +193,18 @@ export function initEarlyAccessUI({
     const needsProof =
       selectedType === "du_student" && !isDuAcInEmail(email) && isGmail(email);
 
+    // If user changed email/type between attempts, never reuse old pending email state.
+    if (pendingEmail && pendingEmail !== email) {
+      pendingRequestId = null;
+      pendingEmail = "";
+      pendingName = "";
+    }
+    if (!needsProof) {
+      pendingRequestId = null;
+      pendingEmail = "";
+      pendingName = "";
+    }
+
     if (needsProof && proofInput.files.length === 0 && !pendingRequestId) {
       document.getElementById("ea-proof-block").style.display = "block";
       if (statusEl)
@@ -221,10 +238,13 @@ export function initEarlyAccessUI({
         proofUrls = await uploadProofs(pendingRequestId, proofInput.files);
       }
 
+      const submitEmail = needsProof ? pendingEmail || email : email;
+      const submitName = needsProof ? pendingName || fullName : fullName;
+
       const data = await submitFn({
         type: selectedType,
-        email: pendingEmail || email,
-        fullName: pendingName || fullName,
+        email: submitEmail,
+        fullName: submitName,
         proofUrls,
       });
 
