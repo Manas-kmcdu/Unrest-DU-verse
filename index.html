@@ -169,7 +169,7 @@
   }
 
   .float-cards { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
-  .fc { position: absolute; background: rgba(255,255,255,0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 0.5px solid rgba(255,255,255,0.9); border-radius: 16px; padding: 10px 14px; box-shadow: 0 8px 32px rgba(14,13,11,0.10), 0 1px 0 rgba(255,255,255,0.8) inset; display: flex; align-items: center; gap: 10px; animation: cardFloat linear infinite; white-space: nowrap; }
+  .fc { position: absolute; background: #fff; border: 1px solid rgba(14,13,11,0.14); border-radius: 14px; padding: 10px 14px; box-shadow: 0 6px 22px rgba(14,13,11,0.12); display: flex; align-items: center; gap: 10px; animation: cardFloat linear infinite; white-space: nowrap; }
   .fc-icon { font-size: 1.4rem; line-height: 1; flex-shrink: 0; }
   .fc-text { display: flex; flex-direction: column; }
   .fc-title { font-size: 0.72rem; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
@@ -193,13 +193,13 @@
   @keyframes badgePop { from{opacity:0;transform:scale(0.7) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
   @keyframes statFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 
-  .promo-strip { display: inline-flex; gap: 12px; align-items: center; background: rgba(255,255,255,0.92); border: 1px solid rgba(14,13,11,0.10); border-radius: 100px; padding: 8px 20px; animation: fadeUp 0.6s 0.1s ease both; white-space: nowrap; box-shadow: 0 4px 20px rgba(14,13,11,0.08); margin-bottom: 1.5rem; backdrop-filter: blur(8px); }
+  .promo-strip { display: inline-flex; gap: 12px; align-items: center; background: #fff; border: 1px solid rgba(14,13,11,0.12); border-radius: 100px; padding: 8px 20px; animation: fadeUp 0.6s 0.1s ease both; white-space: nowrap; box-shadow: 0 4px 18px rgba(14,13,11,0.08); margin-bottom: 1.5rem; }
   .promo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; animation: pulse 2s infinite; }
   .promo-text { font-size: 0.72rem; font-weight: 600; color: var(--ink); letter-spacing: 0.02em; transition: opacity 0.3s, transform 0.3s; }
   .promo-text strong { color: var(--accent); }
 
   .hero-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; }
-  .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.8); border: 0.5px solid rgba(255,255,255,0.95); border-radius: 100px; padding: 0.3rem 0.9rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; color: var(--accent); text-transform: uppercase; margin-bottom: 1.5rem; animation: fadeUp 0.6s ease both; backdrop-filter: blur(8px); }
+  .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: #fff; border: 1px solid rgba(14,13,11,0.1); border-radius: 100px; padding: 0.3rem 0.9rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; color: var(--accent); text-transform: uppercase; margin-bottom: 1.5rem; animation: fadeUp 0.6s ease both; box-shadow: 0 2px 12px rgba(14,13,11,0.06); }
   .hero-badge::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
 
@@ -211,7 +211,7 @@
 
   .hero-sub { font-size: clamp(1rem, 2vw, 1.15rem); color: var(--ink2); font-weight: 400; max-width: 520px; line-height: 1.65; margin: 1.5rem auto; animation: fadeUp 0.6s 0.2s ease both; }
 
-  .hero-form { display: flex; gap: 0.5rem; background: rgba(255,255,255,0.85); border: 0.5px solid rgba(255,255,255,0.95); border-radius: 100px; padding: 0.35rem; width: 100%; max-width: 440px; margin: 0 auto 1rem; animation: fadeUp 0.6s 0.3s ease both; box-shadow: 0 2px 24px rgba(14,13,11,0.10); backdrop-filter: blur(10px); }
+  .hero-form { display: flex; gap: 0.5rem; background: #fff; border: 1px solid rgba(14,13,11,0.12); border-radius: 100px; padding: 0.35rem; width: 100%; max-width: 440px; margin: 0 auto 1rem; animation: fadeUp 0.6s 0.3s ease both; box-shadow: 0 4px 20px rgba(14,13,11,0.1); }
   .waitlist-form { display: flex; gap: 0.5rem; background: rgba(245,242,235,0.08); border: 0.5px solid rgba(245,242,235,0.15); border-radius: 100px; padding: 0.35rem; width: 100%; max-width: 440px; margin: 0 auto 1rem; }
   .hero-form input, .waitlist-form input { flex: 1; background: none; border: none; outline: none; padding: 0.5rem 0.75rem; font-family: var(--sans); font-size: 0.9rem; color: var(--ink); }
   .waitlist-form input { color: var(--paper); }
@@ -466,9 +466,22 @@
   .waitlist p { color: rgba(245,242,235,0.6); margin: 1rem auto 2rem; max-width: 440px; font-size: 1rem; line-height: 1.6; }
   .waitlist-count { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: rgba(245,242,235,0.5); margin-top: 1.5rem; }
   .ea-paths { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-bottom: 1rem; max-width: 520px; margin-left: auto; margin-right: auto; }
-  .ea-path-btn { flex: 1; min-width: 140px; background: rgba(245,242,235,0.08); border: 1px solid rgba(245,242,235,0.2); color: var(--paper); border-radius: 14px; padding: 0.85rem 1rem; font-family: var(--sans); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+  .ea-path-btn { flex: 1; min-width: 140px; background: rgba(245,242,235,0.08); border: 1px solid rgba(245,242,235,0.2); color: var(--paper); border-radius: 14px; padding: 0.85rem 1rem; font-family: var(--sans); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s; }
   .ea-path-btn:hover { background: rgba(200,75,47,0.25); transform: scale(1.02); }
   .ea-path-btn strong { display: block; font-size: 0.95rem; margin-bottom: 4px; }
+  /* Hero sits on light paper — dark waitlist styles made these buttons invisible */
+  .hero .ea-path-btn {
+    background: #fff;
+    border: 1px solid rgba(14,13,11,0.14);
+    color: var(--ink2);
+    box-shadow: 0 4px 18px rgba(14,13,11,0.08);
+  }
+  .hero .ea-path-btn:hover {
+    background: #fff;
+    border-color: rgba(200,75,47,0.45);
+    box-shadow: 0 6px 22px rgba(200,75,47,0.14);
+  }
+  .hero .ea-path-btn strong { color: var(--ink); }
   .ea-modal { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(14,13,11,0.75); align-items: center; justify-content: center; padding: 1.5rem; }
   .ea-box { background: var(--paper); color: var(--ink); border-radius: 20px; max-width: 440px; width: 100%; padding: 1.75rem; position: relative; box-shadow: 0 24px 60px rgba(0,0,0,0.35); }
   .ea-close { position: absolute; top: 12px; right: 14px; cursor: pointer; font-size: 1.2rem; color: var(--ink3); }
@@ -701,8 +714,8 @@
       <button onclick="startEarlyAccess('hero')">Get early access</button>
     </div>
     <div class="ea-paths" id="hero-ea-paths">
-      <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','du_student')"><strong>DU Student</strong>@du.ac.in or Gmail + proof</button>
-      <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','aspirant')"><strong>DU Aspirant</strong>Gmail + name</button>
+      <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','du_student')"><strong>DU student</strong>@du.ac.in or Gmail + proof</button>
+      <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','aspirant')"><strong>DU aspirant</strong>Gmail + name</button>
     </div>
     <div class="success-msg" id="hero-success">Request received. We will email your app access code after moderator approval.</div>
   </div>
