@@ -1,71 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Feed · Unrest</title>
-  <meta name="description" content="Delhi University's verified student feed. Real talk, W/L votes, campus culture."/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#faf7f0; }
-    #root { min-height:100vh; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta http-equiv="refresh" content="0; url=/#waitlist" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Early access · Unrest</title>
+  <link rel="canonical" href="/#waitlist" />
+  <script>location.replace("/#waitlist");</script>
 </head>
 <body>
-  <div id="root"></div>
-
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, onSnapshot,
-      query, orderBy, where, updateDoc, doc, increment, serverTimestamp, setDoc, getDoc, deleteDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import {
-      getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-    const app = initializeApp({
-      apiKey: "AIzaSyDBJ0hHjVyEnwg7mV7ECeG163K7fs1fsiE",
-      authDomain: "du-verse-e75db.firebaseapp.com",
-      projectId: "du-verse-e75db",
-      storageBucket: "du-verse-e75db.firebasestorage.app",
-      messagingSenderId: "84735746102",
-      appId: "1:84735746102:web:6fe5353a0586db71323897"
-    });
-
-    window.__firebase = {
-      db: getFirestore(app),
-      auth: getAuth(app),
-      storage: getStorage(app),       
-      storageRef: ref,                
-      uploadBytes: uploadBytes,  
-      getDownloadURL: getDownloadURL,
-      googleProvider: Object.assign(new GoogleAuthProvider(), { hd: undefined }),
-      collection, addDoc, onSnapshot, query, orderBy, where,
-      updateDoc, doc, increment, serverTimestamp, setDoc, getDoc, deleteDoc,
-      signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged
-    };
-
-    // Restrict to du.ac.in
-  
-    // No hd restriction — non-DU users handled client-side with manual verification flow
-
-    // Load feed component AFTER firebase is ready, trigger Babel AFTER script loads
-    const s = document.createElement("script");
-    s.type = "text/babel";
-    s.setAttribute("data-type", "module");
-    s.src = "./feed.js";
-    s.onload = () => {
-      Babel.transformScriptTags();
-    };
-    document.body.appendChild(s);
-  </script>
+  <p><a href="/#waitlist">Request early access on Unrest</a></p>
 </body>
 </html>

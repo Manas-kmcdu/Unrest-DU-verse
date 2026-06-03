@@ -18,13 +18,13 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://unrestdu.in/">
 <meta property="og:title" content="Unrest - Delhi University's Campus Network">
-<meta property="og:description" content="Verified social network for DU students. Fests, sports, internships & more. Join the waitlist.">
+<meta property="og:description" content="Verified social network for DU students. Fests, sports, internships & more. Request early access.">
 <meta property="og:image" content="https://unrestdu.in/og-cover.png">
   
 <meta property="twitter:card" content="summary_large_image">
 <meta property="twitter:url" content="https://unrestdu.in/">
 <meta property="twitter:title" content="Unrest - Delhi University's Campus Network">
-<meta property="twitter:description" content="Verified social network for DU students. Fests, sports, internships & more. Join the waitlist.">
+<meta property="twitter:description" content="Verified social network for DU students. Fests, sports, internships & more. Request early access.">
 <meta property="twitter:image" content="https://unrestdu.in/og-cover.png">
 
 <script type="application/ld+json">
@@ -666,10 +666,7 @@
   <a href="#" class="nav-logo">Un<span>rest</span></a>
   <div class="nav-links">
     <a href="#rollcall">Roll Call</a>
-    <a href="feed.html" class="nav-cta"> Un<span>rest</span> Feed </a>
-    <a href="/feed/">Sneak Peek</a>
-    <a onclick="scrollToEchoWall()">Echo Wall</a>
-    <a href="#waitlist" class="nav-cta">Join waitlist</a>
+    <a href="#waitlist" class="nav-cta">Early access</a>
   </div>
 </nav>
 
@@ -692,7 +689,7 @@
 
   <div class="stat-badge stat-1"><div class="sb-num">90+</div><div class="sb-label">DU Colleges</div></div>
   <div class="stat-badge blue stat-2"><div class="sb-num">Free</div><div class="sb-label">Forever for students</div></div>
-  <div class="stat-badge green stat-3"><div class="sb-num" id="hero-live-count">247</div><div class="sb-label">On the waitlist</div></div>
+  <div class="stat-badge green stat-3"><div class="sb-num" id="hero-live-count">247</div><div class="sb-label">Early access requests</div></div>
   
   <div class="hero-content">
     <div class="promo-strip"><div class="promo-dot"></div><div class="promo-text">⚽ <strong>Turf Sunday</strong> · 🏃 DU Bhaag Club · 🎪 Fest season</div></div>
@@ -1058,7 +1055,7 @@
     <div class="pulse-left">
       <div class="pulse-label"> Live signups</div>
       <div class="pulse-num"><span id="pulse-count">247</span></div>
-      <div class="pulse-sub">students on the waitlist</div>
+      <div class="pulse-sub">early access requests</div>
     </div>
     <div class="pulse-feed" id="pulse-feed"></div>
     <div class="pulse-bar-wrap">
@@ -1201,274 +1198,14 @@
   </div>
 </section>
 
-<section class="echo-section" id="echo" style="display: none;">
-  <div class="echo-wall-bg"></div>
-  <div class="echo-inner">
-    <div class="echo-head">
-      <div class="section-label">Early Access</div>
-      <h2>Post an echo to <em>get in</em></h2>
-      <p>Your echo is your entry ticket. Submit one thought to unlock early access to the Unrest feed.</p>
+
+<section id="admin-panel-section" style="display:none;padding:3rem 2rem;background:var(--paper);">
+  <div id="admin-panel" class="mod-queue-wrap" style="max-width:800px;margin:0 auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h3 style="font-family:var(--serif);color:var(--accent);margin:0;">Early access — Gmail DU proof</h3>
+      <span style="font-size:0.8rem;background:var(--green);color:white;padding:2px 8px;border-radius:100px;" id="ea-mod-count">0 Pending</span>
     </div>
-    <div id="echo-unlocked">
-      <div class="echo-form-wrap">
-        <div class="echo-form-row">
-          <input class="echo-input echo-input-small" id="echo-name" type="text" placeholder="First Name" maxlength="15">
-          <select class="echo-select echo-input-small" id="echo-year">
-            <option value="" disabled selected>Year</option>
-            <option>1st yr</option><option>2nd yr</option><option>3rd yr</option><option>4th yr</option><option>Alumni</option>
-          </select>
-          <select class="echo-select" id="echo-college">
-            </select>
-        </div>
-        <div class="echo-form-row" style="margin-top: 0.6rem;">
-          <input class="echo-input echo-input-large" id="echo-text" type="text" placeholder="Start your journey with your first echo!" maxlength="120">
-          <button class="echo-submit" onclick="submitEcho()">Post echo →</button>
-        </div>
-        <div class="echo-pending-msg" id="echo-pending-msg">
-        Your echo has been sent for review. It will appear on the wall soon!
-        </div>
-        <div id="echo-feed-unlock" style="display:none;margin-top:1rem;text-align:center;">
-          <div style="font-size:0.85rem;color:var(--green);font-weight:600;margin-bottom:10px;">
-            Echo submitted - your early access is unlocked!
-          </div>
-          <button onclick="unlockFeed()" style="background:var(--ink);color:#fff;border:none;border-radius:12px;
-            padding:14px 28px;font-family:var(--sans);font-size:1rem;font-weight:700;cursor:pointer;
-            box-shadow:0 8px 20px rgba(14,13,11,0.2);transition:all 0.2s;">
-            Enter Unrest Feed →
-          </button>
-        </div>
-
-        <div id="admin-panel" class="mod-queue-wrap">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="font-family: var(--serif); color: var(--accent); margin:0;">Echo queue</h3>
-            <span style="font-size: 0.8rem; background: var(--accent); color: white; padding: 2px 8px; border-radius: 100px;" id="mod-count">0 Pending</span>
-          </div>
-          <div id="mod-items-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
-          <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-              <h3 style="font-family: var(--serif); color: var(--accent); margin:0;">Early access — Gmail DU proof</h3>
-              <span style="font-size: 0.8rem; background: var(--green); color: white; padding: 2px 8px; border-radius: 100px;" id="ea-mod-count">0 Pending</span>
-            </div>
-            <div id="ea-mod-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
-          </div>
-        </div>
-
-      </div>
-      <div class="echo-wall" id="echo-wall"></div>
-    </div>
-  </div>
-</section>
-
-<section class="social-feed-section" id="feed" style="display: none;">
-  <div class="social-feed-wrapper">
-    <div class="feed-header">
-      <h1>Feed</h1>
-      <p>Connect, share & collaborate with your campus</p>
-    </div>
-
-    <div class="feed-tabs-wrapper">
-      <button class="feed-tab active" data-tab="du-main">DU Main</button>
-      <button class="feed-tab" data-tab="for-college">For College</button>
-      <button class="feed-tab" data-tab="brainstorm">Brainstorm</button>
-    </div>
-
-    <div id="du-main" class="feed-section active">
-      <div class="posts-grid">
-        <div class="post-card">
-          <div class="post-header">
-            <div class="post-avatar av1">AP</div>
-            <div class="post-meta">
-              <div class="post-name">Arjun Patel</div>
-              <div class="post-handle">@arjun.design</div>
-              <div class="post-college">Miranda House</div>
-              <span class="post-badge badge-verified">✓ Verified</span>
-            </div>
-          </div>
-          <div class="post-body">
-            <div class="post-text">Just launched the new DU student directory! Now you can find classmates from any college. Also added a study buddy matching feature 📚</div>
-            <div class="post-image">🎓</div>
-            <div class="post-tags"><span class="tag">#DU</span><span class="tag">#Update</span></div>
-          </div>
-          <div class="post-engagement">
-            <div class="engagement-item">❤️ 342 likes</div>
-            <div class="engagement-item">💬 28 comments</div>
-          </div>
-        </div>
-
-        <div class="post-card">
-          <div class="post-header">
-            <div class="post-avatar av2">RJ</div>
-            <div class="post-meta">
-              <div class="post-name">Rohan Joshi</div>
-              <div class="post-handle">@rohan.code</div>
-              <div class="post-college">St. Stephen's</div>
-              <span class="post-badge badge-trending">📈 Trending</span>
-            </div>
-          </div>
-          <div class="post-body">
-            <div class="post-text">DU Tech Meetup happening next Friday! Let's talk internships, projects & landing jobs. First 50 RSVP get free chai ☕</div>
-            <div class="post-image">🚀</div>
-            <div class="post-tags"><span class="tag">#Event</span><span class="tag">#Network</span></div>
-          </div>
-          <div class="post-engagement">
-            <div class="engagement-item">❤️ 568 likes</div>
-            <div class="engagement-item">💬 92 comments</div>
-          </div>
-          <button class="post-cta">RSVP Now</button>
-        </div>
-
-        <div class="post-card">
-          <div class="post-header">
-            <div class="post-avatar av3">MN</div>
-            <div class="post-meta">
-              <div class="post-name">Maya Nair</div>
-              <div class="post-handle">@maya.builds</div>
-              <div class="post-college">PGDAV</div>
-              <span class="post-badge badge-hot">🔥 Hot</span>
-            </div>
-          </div>
-          <div class="post-body">
-            <div class="post-text">Anyone up for a culture exchange? Sharing food, stories & music from different DU colleges. Break our college bubbles! 🌍</div>
-            <div class="post-image">🌍</div>
-            <div class="post-tags"><span class="tag">#Community</span><span class="tag">#Culture</span></div>
-          </div>
-          <div class="post-engagement">
-            <div class="engagement-item">❤️ 421 likes</div>
-            <div class="engagement-item">💬 156 comments</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="for-college" class="feed-section">
-      <div class="posts-grid">
-        <div class="post-card">
-          <div class="post-header">
-            <div class="post-avatar av1">RP</div>
-            <div class="post-meta">
-              <div class="post-name">Rohit Patel</div>
-              <div class="post-handle">@rohit.patel</div>
-              <div class="post-college">Miranda House</div>
-            </div>
-          </div>
-          <div class="post-body">
-            <div class="post-text">Miranda Fresher's Week is back! 🎉 Treasure hunt, cultural night, midnight snacks. Register before May 20!</div>
-            <div class="post-image">🎭</div>
-            <div class="post-tags"><span class="tag">#Event</span><span class="tag">#Fresher</span></div>
-          </div>
-          <div class="post-engagement">
-            <div class="engagement-item">❤️ 156 likes</div>
-            <div class="engagement-item">💬 42 comments</div>
-          </div>
-          <button class="post-cta">Register</button>
-        </div>
-
-        <div class="post-card">
-          <div class="post-header">
-            <div class="post-avatar av3">SK</div>
-            <div class="post-meta">
-              <div class="post-name">Sneha Kapoor</div>
-              <div class="post-handle">@sneha.builds</div>
-              <div class="post-college">St. Stephen's</div>
-            </div>
-          </div>
-          <div class="post-body">
-            <div class="post-text">Looking for 4 roommates! North Campus, near metro, balcony. Budget friendly. Serious inquiries only 🏠</div>
-            <div class="post-image">🔍</div>
-            <div class="post-tags"><span class="tag">#Housing</span><span class="tag">#Roommates</span></div>
-          </div>
-          <div class="post-engagement">
-            <div class="engagement-item">❤️ 203 likes</div>
-            <div class="engagement-item">💬 67 comments</div>
-          </div>
-        </div>
-
-        <div class="post-card">
-          <div class="post-header">
-            <div class="post-avatar av2">AJ</div>
-            <div class="post-meta">
-              <div class="post-name">Arjun Jain</div>
-              <div class="post-handle">@arjun.study</div>
-              <div class="post-college">Delhi College</div>
-            </div>
-          </div>
-          <div class="post-body">
-            <div class="post-text">Study group for Finals! Econ, CS & Maths. 2-hour sessions, 3x/week at library. Open to all batches! 📚</div>
-            <div class="post-image">📚</div>
-            <div class="post-tags"><span class="tag">#Study</span><span class="tag">#Group</span></div>
-          </div>
-          <div class="post-engagement">
-            <div class="engagement-item">❤️ 89 likes</div>
-            <div class="engagement-item">💬 28 comments</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="brainstorm" class="feed-section">
-      <div class="posts-grid">
-        <div class="post-card idea-card">
-          <div class="idea-status status-open">Open</div>
-          <div class="post-header">
-            <div class="post-avatar av2">RA</div>
-            <div class="post-meta">
-              <div class="post-name">Rahul Ahuja</div>
-              <div class="post-handle">@rahul.ideate</div>
-              <div class="post-college">Miranda House</div>
-            </div>
-          </div>
-          <div class="post-body">
-            <div class="post-text">DU Alumni Mentorship: Connect with alumni for career guidance, internships & networking. Help each other grow! 💡</div>
-            <div class="post-tags"><span class="tag">#Career</span><span class="tag">#Mentorship</span></div>
-          </div>
-          <div class="idea-votes">
-            <button class="upvote-btn">👍</button>
-            <span>342 interested</span>
-          </div>
-        </div>
-
-        <div class="post-card idea-card">
-          <div class="idea-status status-building">Building</div>
-          <div class="post-header">
-            <div class="post-avatar av1">MC</div>
-            <div class="post-meta">
-              <div class="post-name">Mira Chowdhury</div>
-              <div class="post-handle">@mira.social</div>
-              <div class="post-college">St. Stephen's</div>
-            </div>
-          </div>
-          <div class="post-body">
-            <div class="post-text">Campus Sustainability: Reducing plastic waste in cafeterias. Started with Miranda, expanding to 5 more colleges! ♻️</div>
-            <div class="post-tags"><span class="tag">#Sustainability</span><span class="tag">#Active</span></div>
-            <div style="margin-top: 12px; font-size: 0.8rem; color: var(--blue); font-weight: 600;">10 collaborators | 50% waste reduction goal</div>
-          </div>
-          <div class="idea-votes">
-            <button class="upvote-btn">👍</button>
-            <span>587 interested</span>
-          </div>
-        </div>
-
-        <div class="post-card idea-card">
-          <div class="idea-status status-open">Open</div>
-          <div class="post-header">
-            <div class="post-avatar av3">JP</div>
-            <div class="post-meta">
-              <div class="post-name">Jaya Pramesh</div>
-              <div class="post-handle">@jaya.creator</div>
-              <div class="post-college">PGDAV</div>
-            </div>
-          </div>
-          <div class="post-body">
-            <div class="post-text">DU Podcast Network: Students creating podcasts on tech, culture, politics & life. Join as creator or listener! 🎙️</div>
-            <div class="post-tags"><span class="tag">#Podcast</span><span class="tag">#Content</span></div>
-          </div>
-          <div class="idea-votes">
-            <button class="upvote-btn">👍</button>
-            <span>421 interested</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div id="ea-mod-container" style="display:flex;flex-direction:column;gap:8px;"></div>
   </div>
 </section>
 
@@ -1605,15 +1342,6 @@
     window.waitlistCount = live;
   });
 
-  const q = query(collection(window.db, "echoes"), where("status", "==", "approved"));
-  onSnapshot(q, (snapshot) => {
-    window.liveEchoes = [];
-    snapshot.forEach((doc) => {
-      const data = doc.data(); data.id = doc.id;
-      window.liveEchoes.push(data);
-    });
-    if(window.renderEchoWall) window.renderEchoWall();
-  });
 </script>
 
 <script>
@@ -1663,31 +1391,15 @@ COLLEGES.forEach(c => COLLEGE_COLORS[c.name] = c.color);
 let collegeCounts = {};
 let claimedColleges = new Set();
 let waitlistCount = 247;
-let hasUnlockedWall = false;
 let hasJoinedWaitlist = false; 
 
-window.liveEchoes = [];
 window.isAdmin = false;
 window.userVerifiedCollege = null; 
 window.userFullName = "YOUR NAME"; 
 
 COLLEGES.forEach(c => { collegeCounts[c.id] = c.seed; });
 
-window.onload = () => {
-  const sel = document.getElementById('echo-college');
-  if(sel) {
-    sel.innerHTML = '<option value="" disabled selected>Pick your college</option>' + 
-      COLLEGES.map(c => `<option>${c.name}</option>`).join('');
-  }
-};
-
 function formatUsername(name) { return name ? '@' + name.trim().toLowerCase().replace(/\s+/g, '') : '@anonymous'; }
-function scrollToEchoWall() {
-  const echoSec = document.getElementById('echo');
-  if (echoSec.style.display === 'none') { alert('Join the waitlist and get your pass to unlock the Echo Wall!'); document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth' }); } 
-  else { echoSec.scrollIntoView({ behavior: 'smooth' }); }
-}
-
 // --- ADMIN LOGIN & MODERATION ---
 async function adminLogin() {
   const email = document.getElementById('admin-email').value;
@@ -1698,115 +1410,16 @@ async function adminLogin() {
     document.getElementById('admin-modal').style.display = 'none';
     window.isAdmin = true;
     
-    document.getElementById('echo').style.display = 'block';
-    document.getElementById('admin-panel').style.display = 'block';
-    alert("Admin logged in successfully.");
-    
-    const qPending = window.query(window.collection(window.db, "echoes"), window.where("status", "==", "pending"));
-    window.onSnapshot(qPending, (snapshot) => {
-      let pendingHtml = "";
-      let count = 0;
-      snapshot.forEach((doc) => {
-        count++;
-        const p = doc.data();
-        pendingHtml += `
-          <div class="mod-item">
-            <div class="mod-info">
-              <div class="mod-info-college">${formatUsername(p.name)} - ${p.year} - ${p.college}</div>
-              <div class="mod-info-text">"${p.text}"</div>
-            </div>
-            <div class="mod-actions">
-              <button class="btn-approve" onclick="approveEcho('${doc.id}')">Approve</button>
-              <button class="btn-reject" onclick="rejectEcho('${doc.id}')">Reject</button>
-            </div>
-          </div>
-        `;
-      });
-      document.getElementById('mod-count').textContent = `${count} Pending`;
-      document.getElementById('mod-items-container').innerHTML = pendingHtml || '<div style="font-size:0.8rem;color:#888;">Queue is empty.</div>';
-    });
-
+    const adminSec = document.getElementById('admin-panel-section');
+    if (adminSec) adminSec.style.display = 'block';
+    alert("Admin logged in successfully. Early access queue loaded below.");
     window.watchEarlyAccessQueue();
+    if (adminSec) adminSec.scrollIntoView({ behavior: 'smooth' });
 
   } catch (error) {
     alert("Login failed: " + error.message);
   }
 }
-
-window.approveEcho = async function(id) {
-  try { await window.updateDoc(window.doc(window.db, "echoes", id), { status: 'approved' }); } 
-  catch(e) { console.error(e); alert("Failed to approve."); }
-}
-
-window.rejectEcho = async function(id) {
-  try { await window.deleteDoc(window.doc(window.db, "echoes", id)); } 
-  catch(e) { console.error(e); alert("Failed to reject."); }
-}
-
-function joinWaitlist(source) {
-  startEarlyAccess(source);
-}
-
-async function submitEcho() {
-  const name = document.getElementById('echo-name').value.trim() || 'Anonymous';
-  const year = document.getElementById('echo-year').value;
-  const college = document.getElementById('echo-college').value;
-  const text = document.getElementById('echo-text').value.trim();
-  if (!year || !college) { alert('Pick your year and college!'); return; }
-  if (text.length < 5) { alert('Write a longer echo!'); return; }
-  
-  try {
-    await window.addDoc(window.collection(window.db, "echoes"), {
-      name: name, year: year, college: college, text: text, w: 1, l: 0, 
-      status: window.isAdmin ? 'approved' : 'pending',
-      timestamp: new Date().toISOString()
-    });
-    
-    document.getElementById('echo-text').value = '';
-    if (!window.isAdmin) {
-      const msg = document.getElementById('echo-pending-msg');
-      msg.style.display = 'flex';
-      setTimeout(() => msg.style.display = 'none', 4000);
-      
-      // Show OTP section if email verified and not already shown
-     // Reveal feed unlock button
-      setTimeout(() => {
-        const btn = document.getElementById('echo-feed-unlock');
-        if (btn) btn.style.display = 'block';
-      }, 1200);
-    }
-  } catch (err) { alert("Submission failed. Please try again."); }
-}
-
-window.renderEchoWall = function() {
-  const wall = document.getElementById('echo-wall');
-  window.liveEchoes.sort((a, b) => (b.w - b.l) - (a.w - a.l));
-  wall.innerHTML = window.liveEchoes.map((p, i) => {
-    const color = COLLEGE_COLORS[p.college] || '#333';
-    return `
-      <div class="white-tile" style="--tc: ${color}; animation-delay: ${i * 0.05}s">
-        <div class="wt-accent"></div>
-        <div class="wt-text">"${p.text}"</div>
-        <div class="wt-footer">
-          <div class="wt-meta"><div class="wt-college">${formatUsername(p.name)} - ${p.college}</div></div>
-          <div class="wl-actions">
-            <button class="wl-btn" onclick="voteCloud('${p.id}', 'w', this)">W <span>${p.w}</span></button>
-            <button class="wl-btn" onclick="voteCloud('${p.id}', 'l', this)">L <span>${p.l}</span></button>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-};
-
-window.voteCloud = async function(id, type, btn) {
-  const currentVal = parseInt(btn.querySelector('span').textContent);
-  let newVal = btn.classList.contains(type === 'w' ? 'active-w' : 'active-l') ? currentVal - 1 : currentVal + 1;
-  try {
-     const payload = {}; payload[type] = newVal;
-     await window.updateDoc(window.doc(window.db, "echoes", id), payload);
-  } catch(e) {}
-};
 
 // --- COUNTDOWN & UTILS ---
 const LAUNCH_DATE = new Date("June 11, 2026 00:00:00 GMT+0530").getTime();
@@ -1885,12 +1498,9 @@ function restoreLocalState() {
       window.userFullName = data.name;
       window.userVerifiedCollege = COLLEGES.find(c => c.id === data.collegeId) || COLLEGES.find(c => c.id === 'Other');
       hasJoinedWaitlist = true;
-      hasUnlockedWall = true;
-
+      
       document.querySelectorAll('.hero-form, .waitlist-form').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.success-msg').forEach(el => el.style.display = 'block');
-      document.getElementById('echo').style.display = 'block';
-
       claimedColleges.add(data.collegeId);
       const tileEl = document.getElementById('tile-' + data.collegeId);
       if(tileEl) {
@@ -2187,11 +1797,7 @@ updatePulseBar();
       }
     }
 
-    if (!hasUnlockedWall) {
-      hasUnlockedWall = true;
-      window.hasEmailVerified = true; // Email verification complete
-      document.getElementById('echo').style.display = 'block';
-    }
+    document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth' });
 
     openShareModal(matchedCollege, false, formattedName);
   };
@@ -2199,7 +1805,7 @@ updatePulseBar();
   window.shareWhatsApp = function() {
     const name = window.userVerifiedCollege ? window.userVerifiedCollege.name : 'My college';
     const url  = window.location.href.split('#')[0];
-    const msg  = `*Unrest* - Delhi University's own campus network is launching *11 June 2026*!\n\nI just claimed my verified pass for *${name}*. Is your college in?\n\nJoin the waitlist: ${url}`;
+    const msg  = `*Unrest* - Delhi University's own campus network is launching *11 June 2026*!\n\nI just claimed my verified pass for *${name}*. Is your college in?\n\nRequest early access: ${url}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
@@ -2223,54 +1829,6 @@ updatePulseBar();
     });
   };
 
-
-  window.unlockFeed = function() {
-    // Hide OTP section
-    const otpSection = document.getElementById('otp');
-    otpSection.style.opacity = '0';
-    otpSection.style.transform = 'translateY(20px)';
-    
-    // Show feed section with animation
-    const feedSection = document.getElementById('feed');
-    feedSection.style.display = 'block';
-    feedSection.style.opacity = '0';
-    feedSection.style.transform = 'translateY(20px)';
-    
-    setTimeout(() => {
-      otpSection.style.display = 'none';
-      feedSection.style.opacity = '1';
-      feedSection.style.transform = 'translateY(0)';
-      feedSection.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-    }, 100);
-    
-    // Scroll to feed
-    setTimeout(() => {
-      feedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 300);
-    
-    // Confetti
-    spawnConfetti(window.userVerifiedCollege?.color || '#c84b2f');
-    
-    // Success notification
-    const notify = document.createElement('div');
-    notify.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2a6b4a;color:#fff;padding:12px 24px;border-radius:100px;font-weight:600;z-index:3000;animation:slideDown 0.3s ease;';
-    notify.textContent = 'Phone verified! Welcome to your feed!';
-    document.body.appendChild(notify);
-    setTimeout(() => notify.remove(), 4000);
-  };
-
-  // Tab switching for feed
-  document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.feed-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        const tabName = tab.dataset.tab;
-        document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        document.querySelectorAll('.feed-section').forEach(s => s.classList.remove('active'));
-        document.getElementById(tabName).classList.add('active');
-      });
-    });
-  });
 
 })();
 </script>
