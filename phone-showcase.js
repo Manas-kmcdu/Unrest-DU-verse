@@ -18,8 +18,6 @@
       : FALLBACK_COLLEGES
   );
 
-  const TICKER_ROW_COUNT = 6;
-
   const FEED_HTML = `
     <div class="post">
       <div class="post-head">
@@ -134,33 +132,21 @@
     return 1 - Math.pow(1 - t, 3);
   }
 
-  function tickerTrackMarkup(names, offset) {
-    const n = names.length;
-    return names
-      .map((name, i) => {
-        const hi = (i + offset) % 5 === 0 ? " hi" : "";
-        return `<span class="ps-ticker-item${hi}">${name}</span><span class="ps-ticker-dot"></span>`;
-      })
-      .join("");
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 
   function collegeWallMarkup() {
-    const rows = [];
-    for (let r = 0; r < TICKER_ROW_COUNT; r++) {
-      const rotated = COLLEGE_NAMES.slice(r % COLLEGE_NAMES.length).concat(
-        COLLEGE_NAMES.slice(0, r % COLLEGE_NAMES.length)
-      );
-      const track = tickerTrackMarkup(rotated, r * 3);
-      const rev = r % 2 === 1 ? " ps-ticker-row--rev" : "";
-      const speed =
-        r % 3 === 0 ? " ps-ticker-row--fast" : r % 3 === 1 ? " ps-ticker-row--slow" : "";
-      rows.push(`
-        <div class="ps-ticker-row${rev}${speed}">
-          <div class="ps-ticker-track">${track}</div>
-          <div class="ps-ticker-track ps-ticker-row--dup" aria-hidden="true">${track}</div>
-        </div>`);
-    }
-    return `<div class="phone-showcase-college-wall" aria-hidden="true">${rows.join("")}</div>`;
+    const chips = COLLEGE_NAMES.map((name, i) => {
+      const delay = ((i * 0.19) % 6).toFixed(2);
+      const duration = (3.2 + (i % 5) * 0.55).toFixed(2);
+      return `<span class="ps-college-chip" style="animation-delay:${delay}s;animation-duration:${duration}s">${escapeHtml(name)}</span>`;
+    }).join("");
+    return `<div class="phone-showcase-college-wall" aria-hidden="true">${chips}</div>`;
   }
 
   function buildSection() {

@@ -54,105 +54,76 @@
 .phone-showcase-scroll-zone {
   position: relative;
   min-height: 200vh;
-  background: var(--ink);
+  background: linear-gradient(180deg, var(--cream) 0%, var(--paper) 45%, var(--cream) 100%);
   overflow: hidden;
 }
 
-.phone-showcase-scroll-zone::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 55% 45% at 15% 40%, rgba(200, 75, 47, 0.1) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 50% at 85% 60%, rgba(30, 79, 140, 0.12) 0%, transparent 55%);
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Full-bleed college name wall (like live ticker banner) */
+/* All colleges visible at once — normal labels, gentle fade */
 .phone-showcase-college-wall {
   position: absolute;
   inset: 0;
   z-index: 0;
   display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  gap: 0.35rem;
-  padding: 2.5rem 0;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 0.45rem 0.65rem;
+  padding: 1.75rem clamp(0.75rem, 3vw, 2.5rem);
   pointer-events: none;
-  opacity: 0.92;
 }
 
-.ps-ticker-row {
-  display: flex;
-  overflow: hidden;
-  flex-shrink: 0;
-  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-}
-
-.ps-ticker-track {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  width: max-content;
-  padding-right: 1.25rem;
-  animation: psCollegeTicker 42s linear infinite;
-  will-change: transform;
-}
-
-.ps-ticker-track.ps-ticker-row--dup {
-  animation-delay: -21s;
-}
-
-.ps-ticker-row--fast .ps-ticker-track.ps-ticker-row--dup {
-  animation-delay: -16s;
-}
-
-.ps-ticker-row--slow .ps-ticker-track.ps-ticker-row--dup {
-  animation-delay: -27s;
-}
-
-.ps-ticker-row--rev .ps-ticker-track {
-  animation-direction: reverse;
-}
-
-.ps-ticker-row--fast .ps-ticker-track {
-  animation-duration: 32s;
-}
-
-.ps-ticker-row--slow .ps-ticker-track {
-  animation-duration: 54s;
-}
-
-.ps-ticker-item {
-  font-family: var(--serif);
-  font-size: clamp(0.95rem, 2.4vw, 1.35rem);
-  font-style: italic;
-  color: rgba(245, 242, 235, 0.38);
-  flex-shrink: 0;
+.ps-college-chip {
+  font-family: var(--sans);
+  font-size: clamp(0.6rem, 1.2vw, 0.76rem);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--ink3);
+  padding: 0.32rem 0.55rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 0.5px solid rgba(14, 13, 11, 0.07);
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: psCollegeFade ease-in-out infinite alternate;
+  opacity: 0.3;
 }
 
-.ps-ticker-item.hi {
-  color: rgba(245, 242, 235, 0.88);
+.ps-college-chip:nth-child(6n + 1) {
+  color: var(--ink2);
+  font-weight: 600;
 }
 
-.ps-ticker-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: rgba(245, 242, 235, 0.22);
-  flex-shrink: 0;
+.ps-college-chip:nth-child(11n) {
+  color: var(--accent);
 }
 
-@keyframes psCollegeTicker {
-  from {
-    transform: translateX(0);
+@keyframes psCollegeFade {
+  0% {
+    opacity: 0.18;
   }
-  to {
-    transform: translateX(-50%);
+  50% {
+    opacity: 0.62;
   }
+  100% {
+    opacity: 0.28;
+  }
+}
+
+/* Soft center so the phone stays readable */
+.phone-showcase-scroll-zone::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 38% 52% at 50% 48%,
+    rgba(245, 242, 235, 0.94) 0%,
+    rgba(245, 242, 235, 0.55) 42%,
+    transparent 72%
+  );
 }
 
 .phone-showcase-pin {
@@ -166,14 +137,6 @@
   padding: 0 max(1.25rem, 4vw) 2rem;
   overflow: hidden;
   z-index: 2;
-}
-
-.phone-showcase-hint {
-  color: rgba(245, 242, 235, 0.45);
-}
-
-.phone-showcase-hint.is-feed-phase {
-  color: rgba(245, 242, 235, 0.7);
 }
 
 .phone-showcase-stage {
@@ -356,8 +319,9 @@
     max-height: min(86vh, 760px);
   }
 
-  .ps-ticker-item {
-    font-size: 0.88rem;
+  .ps-college-chip {
+    font-size: 0.58rem;
+    padding: 0.28rem 0.45rem;
   }
 }
 
@@ -388,17 +352,8 @@
     max-height: min(68vh, 560px);
   }
 
-  .ps-ticker-track {
+  .ps-college-chip {
     animation: none !important;
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
-
-  .ps-ticker-row--dup {
-    display: none;
+    opacity: 0.42;
   }
 }
