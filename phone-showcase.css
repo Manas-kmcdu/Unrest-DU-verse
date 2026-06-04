@@ -68,7 +68,15 @@
   gap: 0.45rem;
 }
 
-/* Colleges above & below the phone — clipped bands, not tied to phone height */
+.phone-showcase-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0;
+}
+
+/* Colleges above & below (mobile) */
 .phone-showcase-college-band {
   width: 100%;
   display: flex;
@@ -89,6 +97,12 @@
 
 .phone-showcase-college-band--bottom {
   max-height: 4rem;
+}
+
+/* Side columns — laptop only */
+.phone-showcase-college-band--left,
+.phone-showcase-college-band--right {
+  display: none;
 }
 
 .ps-college-chip {
@@ -162,8 +176,8 @@
 
 #app-preview .phone-showcase-device .phone-screen {
   width: 100%;
-  height: min(52vh, 460px);
-  max-height: min(52vh, 460px);
+  height: min(56vh, 500px);
+  max-height: min(56vh, 500px);
   border-radius: 20px;
   display: flex;
   flex-direction: column;
@@ -171,21 +185,21 @@
 }
 
 #app-preview .phone-showcase-device .phone-status {
-  height: 18px;
-  min-height: 18px;
+  height: 16px;
+  min-height: 16px;
   padding: 0 10px;
-  font-size: 0.5rem;
+  font-size: 0.48rem;
 }
 
 #app-preview .phone-showcase-device .phone-nav {
-  height: 28px;
-  min-height: 28px;
+  height: 24px;
+  min-height: 24px;
   padding: 0 10px;
   border-bottom: none;
 }
 
 #app-preview .phone-showcase-device .phone-nav-logo {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   line-height: 1;
 }
 
@@ -194,8 +208,8 @@
 }
 
 #app-preview .phone-showcase-device .phone-tab {
-  padding: 4px 0 5px;
-  font-size: 0.52rem;
+  padding: 3px 0 4px;
+  font-size: 0.5rem;
 }
 
 #app-preview .phone-showcase-device .feed {
@@ -296,12 +310,55 @@
 
 @media (min-width: 900px) {
   .phone-showcase-stage {
-    align-items: flex-start;
-    padding-left: clamp(0.5rem, 4vw, 3rem);
+    width: min(1080px, 96vw);
+    gap: 0.35rem;
+  }
+
+  .phone-showcase-college-band--top,
+  .phone-showcase-college-band--bottom {
+    display: none;
+  }
+
+  .phone-showcase-cluster {
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    max-width: 1080px;
+  }
+
+  .phone-showcase-college-band--left,
+  .phone-showcase-college-band--right {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    max-width: 300px;
+    max-height: min(58vh, 520px);
+    align-content: center;
+    gap: 0.4rem 0.45rem;
+    mask-image: linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent);
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  .phone-showcase-college-band--left {
+    justify-content: flex-end;
+    padding-right: 0.25rem;
+  }
+
+  .phone-showcase-college-band--right {
+    justify-content: flex-start;
+    padding-left: 0.25rem;
   }
 
   #app-preview .phone-showcase-device {
-    margin-left: clamp(0.5rem, 3vw, 2rem);
+    --ps-width: min(212px, 20vw);
+    margin: 0;
+  }
+
+  #app-preview .phone-showcase-device .phone-screen {
+    height: min(58vh, 520px);
+    max-height: min(58vh, 520px);
+  }
+
+  .ps-college-chip {
+    font-size: 0.64rem;
   }
 }
 
@@ -316,8 +373,8 @@
   }
 
   #app-preview .phone-showcase-device .phone-screen {
-    height: min(48vh, 420px);
-    max-height: min(48vh, 420px);
+    height: min(54vh, 480px);
+    max-height: min(54vh, 480px);
   }
 
   .ps-college-chip {

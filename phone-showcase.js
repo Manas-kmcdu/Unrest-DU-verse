@@ -151,9 +151,27 @@
       .join("")}</div>`;
   }
 
+  function collegeLayout() {
+    const n = COLLEGE_NAMES.length;
+    const q = Math.floor(n / 4);
+    const r = n - q * 4;
+    const topEnd = q + (r > 0 ? 1 : 0);
+    const bottomEnd = topEnd + q + (r > 1 ? 1 : 0);
+    const leftEnd = bottomEnd + q + (r > 2 ? 1 : 0);
+    return {
+      top: COLLEGE_NAMES.slice(0, topEnd),
+      bottom: COLLEGE_NAMES.slice(topEnd, bottomEnd),
+      left: COLLEGE_NAMES.slice(bottomEnd, leftEnd),
+      right: COLLEGE_NAMES.slice(leftEnd),
+      offsets: { top: 0, bottom: topEnd, left: bottomEnd, right: leftEnd },
+    };
+  }
+
   function buildSection() {
     const root = document.getElementById("app-preview");
     if (!root) return null;
+
+    const cols = collegeLayout();
 
     root.innerHTML = `
       <div class="phone-showcase-head">
@@ -164,22 +182,26 @@
       <div class="phone-showcase-scroll-zone" id="phone-showcase-scroll-zone">
         <div class="phone-showcase-pin">
           <div class="phone-showcase-stage" id="phone-showcase-stage">
-            ${collegeBandMarkup(COLLEGE_NAMES.slice(0, Math.ceil(COLLEGE_NAMES.length / 2)), "phone-showcase-college-band--top", 0)}
-            <div class="phone-frame phone-showcase-device" id="phone-showcase-device">
-              <div class="phone-screen">
-                <div class="phone-status"><span>9:41</span></div>
-                <div class="phone-nav">
-                  <div class="phone-nav-logo">Un<span>rest</span></div>
+            ${collegeBandMarkup(cols.top, "phone-showcase-college-band--top", cols.offsets.top)}
+            <div class="phone-showcase-cluster">
+              ${collegeBandMarkup(cols.left, "phone-showcase-college-band--left", cols.offsets.left)}
+              <div class="phone-frame phone-showcase-device" id="phone-showcase-device">
+                <div class="phone-screen">
+                  <div class="phone-status"><span>9:41</span></div>
+                  <div class="phone-nav">
+                    <div class="phone-nav-logo">Un<span>rest</span></div>
+                  </div>
+                  <div class="phone-tabs">
+                    <div class="phone-tab active">DU</div>
+                    <div class="phone-tab">College</div>
+                    <div class="phone-tab">Explore</div>
+                  </div>
+                  <div class="feed is-scroll-driven" id="phone-showcase-feed">${FEED_HTML}</div>
                 </div>
-                <div class="phone-tabs">
-                  <div class="phone-tab active">DU</div>
-                  <div class="phone-tab">College</div>
-                  <div class="phone-tab">Explore</div>
-                </div>
-                <div class="feed is-scroll-driven" id="phone-showcase-feed">${FEED_HTML}</div>
               </div>
+              ${collegeBandMarkup(cols.right, "phone-showcase-college-band--right", cols.offsets.right)}
             </div>
-            ${collegeBandMarkup(COLLEGE_NAMES.slice(Math.ceil(COLLEGE_NAMES.length / 2)), "phone-showcase-college-band--bottom", Math.ceil(COLLEGE_NAMES.length / 2))}
+            ${collegeBandMarkup(cols.bottom, "phone-showcase-college-band--bottom", cols.offsets.bottom)}
             <p class="phone-showcase-hint" id="phone-showcase-hint">Scroll to bring the app into view</p>
           </div>
         </div>
