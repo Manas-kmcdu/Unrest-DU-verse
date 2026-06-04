@@ -247,27 +247,27 @@
     return Number.isFinite(top) ? top : 56;
   }
 
-  /** Scroll runway: full viewport on desktop; tight to phone block on mobile (no dead scroll). */
-  function scrollRunwayPx(stage) {
-    if (!isMobileLayout()) return window.innerHeight;
-    if (!stage) return window.innerHeight;
-    const stickyTop = pinStickyTopPx();
-    const stageH = stage.offsetHeight;
-    return Math.ceil(stageH + stickyTop + 12);
-  }
-
   function setScrollZoneHeight(zone, feed, stage) {
     if (!zone || !feed) return;
     const { travelPx } = scrollMetrics(feed);
-    const runway = scrollRunwayPx(stage);
-    zone.style.minHeight = `${travelPx + runway}px`;
+    if (isMobileLayout() && stage) {
+      zone.classList.add("phone-showcase-scroll-zone--mobile-flow");
+      /* Only the phone block — scroll progress comes from page movement, not empty padding below */
+      zone.style.minHeight = `${stage.offsetHeight}px`;
+    } else {
+      zone.classList.remove("phone-showcase-scroll-zone--mobile-flow");
+      zone.style.minHeight = `${travelPx + window.innerHeight}px`;
+    }
     zone.style.height = "";
   }
 
-  function scrolledPx(zone, stage) {
-    const runway = scrollRunwayPx(stage);
+  function scrolledPx(zone, stage, feed) {
+    const { travelPx } = scrollMetrics(feed);
     const top = zone.getBoundingClientRect().top;
-    const max = Math.max(0, zone.offsetHeight - runway);
+    if (isMobileLayout()) {
+      return clamp(pinStickyTopPx() - top, 0, travelPx);
+    }
+    const max = Math.max(0, zone.offsetHeight - window.innerHeight);
     return clamp(-top, 0, max);
   }
 
@@ -288,7 +288,7 @@
 
     const { zone, feed, device } = els;
     const { introPx, feedZonePx, feedScrollPx } = scrollMetrics(feed);
-    const scrolled = scrolledPx(zone, els.stage);
+    const scrolled = scrolledPx(zone, els.stage, feed);
 
     if (scrolled <= introPx) {
       const introP = introPx > 0 ? scrolled / introPx : 0;
