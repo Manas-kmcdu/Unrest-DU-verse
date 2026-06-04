@@ -180,6 +180,9 @@
     if (!root) return null;
 
     root.innerHTML = `
+      <div class="phone-showcase-header">
+        <h2 class="phone-showcase-title">One <em>network</em> connecting every campus</h2>
+      </div>
       <div class="phone-showcase-scroll-zone" id="phone-showcase-scroll-zone">
         <div class="phone-showcase-pin">
           <div class="phone-showcase-stage" id="phone-showcase-stage">
@@ -200,7 +203,7 @@
                 </div>
               </div>
             </div>
-            <p class="phone-showcase-hint" id="phone-showcase-hint">Scroll to bring the app into view</p>
+            <p class="phone-showcase-disclaimer">This is not an exact representation of the in-app visual*</p>
           </div>
         </div>
       </div>`;
@@ -210,7 +213,6 @@
       stage: document.getElementById("phone-showcase-stage"),
       feed: document.getElementById("phone-showcase-feed"),
       device: document.getElementById("phone-showcase-device"),
-      hint: document.getElementById("phone-showcase-hint"),
     };
   }
 
@@ -222,14 +224,28 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
+  function isMobileLayout() {
+    return window.matchMedia("(max-width: 768px)").matches;
+  }
+
+  function introVh() {
+    return isMobileLayout() ? INTRO_VH_MOBILE : INTRO_VH_DESKTOP;
+  }
+
   function scrollMetrics(feed) {
-    const introPx = window.innerHeight * INTRO_VH;
+    const introPx = window.innerHeight * introVh();
     const feedScrollPx = Math.max(0, feed.scrollHeight - feed.clientHeight);
-    const feedZonePx = Math.max(feedScrollPx, 120);
+    const feedZonePx = isMobileLayout() ? feedScrollPx : Math.max(feedScrollPx, 120);
     const travelPx = introPx + feedZonePx;
     return { introPx, feedZonePx, travelPx, feedScrollPx };
   }
 
+  function setScrollZoneHeight(zone, feed) {
+    if (!zone || !feed) return;
+    const { travelPx } = scrollMetrics(feed);
+    zone.style.minHeight = `${travelPx + window.innerHeight}px`;
+    zone.style.height = "";
+  }
 
   function scrolledPx(zone) {
     const top = zone.getBoundingClientRect().top;
@@ -245,34 +261,26 @@
     const x = lerp(xStart, xEnd, t);
     const rot = lerp(-6, 0, t);
     const scale = lerp(0.9, 1, t);
-    device.style.transform = `translateX(${x}vw) rotate(${rot}deg) scale(${scale})`;
+    device.style.transform = `translate3d(${x}vw, 0, 0) rotate(${rot}deg) scale(${scale})`;
   }
 
   function updateScroll() {
     const els = window.__phoneShowcaseEls;
     if (!els || prefersReducedMotion()) return;
 
-    const { zone, feed, device, hint } = els;
+    const { zone, feed, device } = els;
     const { introPx, feedZonePx, feedScrollPx } = scrollMetrics(feed);
-    const scrolled = scrolledPx(zone, els.stage);
+    const scrolled = scrolledPx(zone);
 
     if (scrolled <= introPx) {
       const introP = introPx > 0 ? scrolled / introPx : 0;
       applyPhoneIntro(device, introP);
       feed.scrollTop = 0;
-      if (hint) {
-        hint.textContent = "Scroll to bring the app into view";
-        hint.classList.remove("is-feed-phase");
-      }
     } else {
       applyPhoneIntro(device, 1);
       const feedScrolled = Math.min(scrolled - introPx, feedZonePx);
       const feedP = feedZonePx > 0 ? feedScrolled / feedZonePx : 0;
       feed.scrollTop = feedP * feedScrollPx;
-      if (hint) {
-        hint.textContent = "Keep scrolling to browse the feed";
-        hint.classList.add("is-feed-phase");
-      }
     }
   }
 
@@ -284,7 +292,7 @@
     const measure = () => {
       els.feed.scrollTop = 0;
       void els.feed.offsetHeight;
-      setScrollZoneHeight(els.zone, els.feed, els.stage);
+      setScrollZoneHeight(els.zone, els.feed);
       updateScroll();
     };
 
@@ -313,7 +321,7 @@
       resize();
     } else {
       els.feed.classList.remove("is-scroll-driven");
-      setScrollZoneHeight(els.zone, els.feed, els.stage);
+      setScrollZoneHeight(els.zone, els.feed);
     }
   }
 

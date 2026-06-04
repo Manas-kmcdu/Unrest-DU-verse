@@ -9,6 +9,26 @@
   padding-bottom: 0;
 }
 
+.phone-showcase-header {
+  text-align: center;
+  padding: clamp(2.5rem, 6vh, 4rem) 1.5rem 0.5rem;
+}
+
+.phone-showcase-title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.phone-showcase-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
 .phone-showcase-scroll-zone {
   position: relative;
   min-height: 0;
@@ -145,19 +165,14 @@
   }
 }
 
-.phone-showcase-hint {
+.phone-showcase-disclaimer {
   text-align: center;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 0.62rem;
+  font-weight: 500;
+  line-height: 1.4;
   color: var(--ink3);
-  margin: 0.15rem 0 0;
-  opacity: 0.85;
-}
-
-.phone-showcase-hint.is-feed-phase {
-  opacity: 1;
+  margin: 0.2rem 0 0;
+  opacity: 0.75;
 }
 
 /* Compact handset */
