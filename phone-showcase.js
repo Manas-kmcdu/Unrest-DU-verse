@@ -4,7 +4,8 @@
  * Phase 2 — page scroll drives feed inside the phone.
  */
 (function () {
-  const INTRO_VH = 0.45;
+  const INTRO_VH_DESKTOP = 0.45;
+  const INTRO_VH_MOBILE = 0.28;
 
   const FALLBACK_COLLEGES = [
     "Shri Ram College of Commerce", "Hindu College", "Miranda House", "Lady Shri Ram College",
@@ -179,11 +180,6 @@
     if (!root) return null;
 
     root.innerHTML = `
-      <div class="phone-showcase-head">
-        <div class="section-label">The app</div>
-        <h2>See what DU is <em>actually posting</em></h2>
-        <p>Scroll once to bring the app into view — then keep scrolling to browse the feed inside.</p>
-      </div>
       <div class="phone-showcase-scroll-zone" id="phone-showcase-scroll-zone">
         <div class="phone-showcase-pin">
           <div class="phone-showcase-stage" id="phone-showcase-stage">
@@ -234,12 +230,6 @@
     return { introPx, feedZonePx, travelPx, feedScrollPx };
   }
 
-  function setScrollZoneHeight(zone, feed) {
-    if (!zone || !feed) return;
-    const { travelPx } = scrollMetrics(feed);
-    zone.style.minHeight = `${travelPx + window.innerHeight}px`;
-    zone.style.height = "";
-  }
 
   function scrolledPx(zone) {
     const top = zone.getBoundingClientRect().top;
@@ -264,7 +254,7 @@
 
     const { zone, feed, device, hint } = els;
     const { introPx, feedZonePx, feedScrollPx } = scrollMetrics(feed);
-    const scrolled = scrolledPx(zone);
+    const scrolled = scrolledPx(zone, els.stage);
 
     if (scrolled <= introPx) {
       const introP = introPx > 0 ? scrolled / introPx : 0;
@@ -292,9 +282,9 @@
     window.__phoneShowcaseEls = els;
 
     const measure = () => {
-      feed.scrollTop = 0;
+      els.feed.scrollTop = 0;
       void els.feed.offsetHeight;
-      setScrollZoneHeight(els.zone, els.feed);
+      setScrollZoneHeight(els.zone, els.feed, els.stage);
       updateScroll();
     };
 
@@ -304,16 +294,26 @@
       setTimeout(measure, 120);
     };
 
+    let scrollTicking = false;
+    const onScroll = () => {
+      if (scrollTicking) return;
+      scrollTicking = true;
+      requestAnimationFrame(() => {
+        updateScroll();
+        scrollTicking = false;
+      });
+    };
+
     if (!prefersReducedMotion()) {
       els.feed.classList.add("is-scroll-driven");
-      window.addEventListener("scroll", updateScroll, { passive: true });
+      window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("resize", resize);
       if (document.fonts?.ready) document.fonts.ready.then(resize);
       else requestAnimationFrame(resize);
       resize();
     } else {
       els.feed.classList.remove("is-scroll-driven");
-      setScrollZoneHeight(els.zone, els.feed);
+      setScrollZoneHeight(els.zone, els.feed, els.stage);
     }
   }
 
