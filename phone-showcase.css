@@ -349,14 +349,28 @@
 }
 
 @media (max-width: 768px) {
-  .phone-showcase-pin {
-    top: 3.25rem;
-    align-items: flex-start;
-    padding-top: 0.5rem;
+  .phone-showcase {
     padding-bottom: 0;
   }
 
   .phone-showcase-scroll-zone {
+    padding-top: 0.75rem;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  .phone-showcase-pin {
+    top: 3.25rem;
+    align-items: flex-start;
+    padding-top: 0.35rem;
+    padding-bottom: 0;
+  }
+
+  .phone-showcase-stage {
+    padding-bottom: 0;
+  }
+
+  .phone-showcase-disclaimer {
     margin-bottom: 0;
   }
 

@@ -240,16 +240,34 @@
     return { introPx, feedZonePx, travelPx, feedScrollPx };
   }
 
-  function setScrollZoneHeight(zone, feed) {
+  function pinStickyTopPx() {
+    const pin = document.querySelector(".phone-showcase-pin");
+    if (!pin) return 56;
+    const top = parseFloat(getComputedStyle(pin).top);
+    return Number.isFinite(top) ? top : 56;
+  }
+
+  /** Scroll runway: full viewport on desktop; tight to phone block on mobile (no dead scroll). */
+  function scrollRunwayPx(stage) {
+    if (!isMobileLayout()) return window.innerHeight;
+    if (!stage) return window.innerHeight;
+    const stickyTop = pinStickyTopPx();
+    const stageH = stage.offsetHeight;
+    return Math.ceil(stageH + stickyTop + 12);
+  }
+
+  function setScrollZoneHeight(zone, feed, stage) {
     if (!zone || !feed) return;
     const { travelPx } = scrollMetrics(feed);
-    zone.style.minHeight = `${travelPx + window.innerHeight}px`;
+    const runway = scrollRunwayPx(stage);
+    zone.style.minHeight = `${travelPx + runway}px`;
     zone.style.height = "";
   }
 
-  function scrolledPx(zone) {
+  function scrolledPx(zone, stage) {
+    const runway = scrollRunwayPx(stage);
     const top = zone.getBoundingClientRect().top;
-    const max = Math.max(0, zone.offsetHeight - window.innerHeight);
+    const max = Math.max(0, zone.offsetHeight - runway);
     return clamp(-top, 0, max);
   }
 
@@ -270,7 +288,7 @@
 
     const { zone, feed, device } = els;
     const { introPx, feedZonePx, feedScrollPx } = scrollMetrics(feed);
-    const scrolled = scrolledPx(zone);
+    const scrolled = scrolledPx(zone, els.stage);
 
     if (scrolled <= introPx) {
       const introP = introPx > 0 ? scrolled / introPx : 0;
@@ -292,7 +310,7 @@
     const measure = () => {
       els.feed.scrollTop = 0;
       void els.feed.offsetHeight;
-      setScrollZoneHeight(els.zone, els.feed);
+      setScrollZoneHeight(els.zone, els.feed, els.stage);
       updateScroll();
     };
 
@@ -321,7 +339,7 @@
       resize();
     } else {
       els.feed.classList.remove("is-scroll-driven");
-      setScrollZoneHeight(els.zone, els.feed);
+      setScrollZoneHeight(els.zone, els.feed, els.stage);
     }
   }
 
