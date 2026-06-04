@@ -7,18 +7,18 @@
   const INTRO_VH = 0.92;
   const FEED_EXTRA_VH = 0.42;
 
-  const COLLEGES = [
-    "SRCC", "Hindu", "Miranda", "LSR", "St. Stephen's", "Hansraj", "Kirori Mal",
-    "Ramjas", "Lady Shri Ram", "Gargi", "IP College", "Sri Venkateswara",
-    "DU North", "DU South", "Cluster Innovation",
+  const FALLBACK_COLLEGES = [
+    "Shri Ram College of Commerce", "Hindu College", "Miranda House", "Lady Shri Ram College",
+    "St. Stephen's College", "Hansraj College", "Kirori Mal College", "Ramjas College",
   ];
 
-  const RIBBON = [
-    "DU FEED", { pill: "ACTIVITIES", class: "ps-pill--accent" },
-    "CORRIDOR", { pill: "SPORTS", class: "ps-pill--green" },
-    "EXPLORE", { pill: "ECHO WALL", class: "ps-pill--blue" },
-    "DU FEED", { pill: "ACTIVITIES", class: "ps-pill--accent" },
-  ];
+  const COLLEGE_NAMES = (
+    window.DU_COLLEGE_NAMES && window.DU_COLLEGE_NAMES.length
+      ? window.DU_COLLEGE_NAMES
+      : FALLBACK_COLLEGES
+  );
+
+  const TICKER_ROW_COUNT = 6;
 
   const FEED_HTML = `
     <div class="post">
@@ -134,16 +134,33 @@
     return 1 - Math.pow(1 - t, 3);
   }
 
-  function ribbonMarkup() {
-    return RIBBON.map((item) => {
-      if (typeof item === "string") return `<span>${item}</span>`;
-      return `<span class="ps-pill ${item.class}">${item.pill}</span>`;
-    }).join("");
+  function tickerTrackMarkup(names, offset) {
+    const n = names.length;
+    return names
+      .map((name, i) => {
+        const hi = (i + offset) % 5 === 0 ? " hi" : "";
+        return `<span class="ps-ticker-item${hi}">${name}</span><span class="ps-ticker-dot"></span>`;
+      })
+      .join("");
   }
 
-  function collegesMarkup() {
-    const items = [...COLLEGES, ...COLLEGES];
-    return items.map((c) => `<span>${c}</span>`).join("");
+  function collegeWallMarkup() {
+    const rows = [];
+    for (let r = 0; r < TICKER_ROW_COUNT; r++) {
+      const rotated = COLLEGE_NAMES.slice(r % COLLEGE_NAMES.length).concat(
+        COLLEGE_NAMES.slice(0, r % COLLEGE_NAMES.length)
+      );
+      const track = tickerTrackMarkup(rotated, r * 3);
+      const rev = r % 2 === 1 ? " ps-ticker-row--rev" : "";
+      const speed =
+        r % 3 === 0 ? " ps-ticker-row--fast" : r % 3 === 1 ? " ps-ticker-row--slow" : "";
+      rows.push(`
+        <div class="ps-ticker-row${rev}${speed}">
+          <div class="ps-ticker-track">${track}</div>
+          <div class="ps-ticker-track ps-ticker-row--dup" aria-hidden="true">${track}</div>
+        </div>`);
+    }
+    return `<div class="phone-showcase-college-wall" aria-hidden="true">${rows.join("")}</div>`;
   }
 
   function buildSection() {
@@ -157,10 +174,8 @@
         <p>Scroll once to bring the app into view — then keep scrolling to browse the feed inside.</p>
       </div>
       <div class="phone-showcase-scroll-zone" id="phone-showcase-scroll-zone">
+        ${collegeWallMarkup()}
         <div class="phone-showcase-pin">
-          <div class="phone-showcase-ribbon" id="phone-showcase-ribbon" aria-hidden="true">
-            ${ribbonMarkup()}
-          </div>
           <div class="phone-showcase-stage">
             <div class="phone-frame phone-showcase-device" id="phone-showcase-device">
               <div class="phone-screen">
@@ -178,9 +193,6 @@
             </div>
           </div>
           <p class="phone-showcase-hint" id="phone-showcase-hint">Scroll to bring the app into view</p>
-          <div class="phone-showcase-colleges">
-            <div class="phone-showcase-colleges-track" id="phone-showcase-colleges">${collegesMarkup()}</div>
-          </div>
         </div>
       </div>`;
 
@@ -188,8 +200,6 @@
       zone: document.getElementById("phone-showcase-scroll-zone"),
       feed: document.getElementById("phone-showcase-feed"),
       device: document.getElementById("phone-showcase-device"),
-      ribbon: document.getElementById("phone-showcase-ribbon"),
-      colleges: document.getElementById("phone-showcase-colleges"),
       hint: document.getElementById("phone-showcase-hint"),
     };
   }
@@ -239,7 +249,7 @@
     const els = window.__phoneShowcaseEls;
     if (!els || prefersReducedMotion()) return;
 
-    const { zone, feed, device, ribbon, colleges, hint } = els;
+    const { zone, feed, device, hint } = els;
     const { introRatio, feedScrollPx } = scrollMetrics(feed);
     const scrolled = scrolledPx(zone);
     const totalScrollable = Math.max(zone.offsetHeight - window.innerHeight, 1);
@@ -249,11 +259,6 @@
       const introP = p / introRatio;
       applyPhoneIntro(device, introP);
       feed.scrollTop = 0;
-      if (ribbon) {
-        ribbon.style.transform = `translateY(-50%) translateX(${lerp(8, -6, easeOutCubic(introP))}%)`;
-        ribbon.style.opacity = String(lerp(0.08, 0.14, introP));
-      }
-      if (colleges) colleges.style.transform = "translateX(0)";
       if (hint) {
         hint.textContent = "Scroll to bring the app into view";
         hint.classList.remove("is-feed-phase");
@@ -263,18 +268,6 @@
       const feedP = (p - introRatio) / (1 - introRatio);
       const easedFeed = easeOutCubic(feedP);
       feed.scrollTop = easedFeed * feedScrollPx;
-
-      if (ribbon) {
-        ribbon.style.transform = `translateY(-50%) translateX(${-6 - easedFeed * 22}%)`;
-        ribbon.style.opacity = "0.14";
-      }
-      if (colleges) {
-        const maxShift = Math.max(
-          0,
-          colleges.scrollWidth / 2 - (colleges.parentElement?.clientWidth || 0) / 2
-        );
-        colleges.style.transform = `translateX(${-easedFeed * maxShift}px)`;
-      }
       if (hint) {
         hint.textContent = "Keep scrolling to browse the feed";
         hint.classList.add("is-feed-phase");

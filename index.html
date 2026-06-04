@@ -466,10 +466,24 @@
   .waitlist h2 em { color: var(--accent2); }
   .waitlist p { color: rgba(245,242,235,0.6); margin: 1rem auto 2rem; max-width: 440px; font-size: 1rem; line-height: 1.6; }
   .waitlist-count { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: rgba(245,242,235,0.5); margin-top: 1.5rem; }
-  .ea-paths { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-bottom: 1rem; max-width: 520px; margin-left: auto; margin-right: auto; }
-  .ea-path-btn { flex: 1; min-width: 140px; background: rgba(245,242,235,0.08); border: 1px solid rgba(245,242,235,0.2); color: var(--paper); border-radius: 14px; padding: 0.85rem 1rem; font-family: var(--sans); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s; }
-  .ea-path-btn:hover { background: rgba(200,75,47,0.25); transform: scale(1.02); }
-  .ea-path-btn strong { display: block; font-size: 0.95rem; margin-bottom: 4px; }
+  .ea-paths { display: flex; flex-wrap: wrap; gap: 0.65rem; justify-content: center; margin-bottom: 1rem; max-width: 560px; margin-left: auto; margin-right: auto; }
+  .ea-path-btn { flex: 1; min-width: 148px; background: rgba(245,242,235,0.08); border: 1px solid rgba(245,242,235,0.22); color: var(--paper); border-radius: 14px; padding: 0.9rem 1rem; font-family: var(--sans); font-size: 0.82rem; font-weight: 600; cursor: pointer; text-align: left; transition: background 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s; }
+  .ea-path-btn:hover { background: rgba(200,75,47,0.25); border-color: rgba(200,75,47,0.45); transform: scale(1.02); }
+  .ea-path-btn strong { display: block; font-size: 0.95rem; margin-bottom: 0; color: var(--paper); }
+  .ea-path-sub { display: block; font-size: 0.76rem; font-weight: 500; line-height: 1.35; margin-top: 4px; color: rgba(245,242,235,0.62); }
+  .hero .ea-path-btn {
+    background: #fff;
+    border: 1px solid rgba(14,13,11,0.14);
+    color: var(--ink2);
+    box-shadow: 0 4px 18px rgba(14,13,11,0.08);
+  }
+  .hero .ea-path-btn:hover {
+    background: #fff;
+    border-color: rgba(200,75,47,0.45);
+    box-shadow: 0 6px 22px rgba(200,75,47,0.14);
+  }
+  .hero .ea-path-btn strong { color: var(--ink); }
+  .hero .ea-path-sub { color: var(--ink3); }
   .ea-modal { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(14,13,11,0.75); align-items: center; justify-content: center; padding: 1.5rem; }
   .ea-box { background: var(--paper); color: var(--ink); border-radius: 20px; max-width: 440px; width: 100%; padding: 1.75rem; position: relative; box-shadow: 0 24px 60px rgba(0,0,0,0.35); }
   .ea-close { position: absolute; top: 12px; right: 14px; cursor: pointer; font-size: 1.2rem; color: var(--ink3); }
@@ -689,7 +703,7 @@
   </div>
 
   <div class="stat-badge stat-1"><div class="sb-num">90+</div><div class="sb-label">DU Colleges</div></div>
-  <div class="stat-badge blue stat-2"><div class="sb-num">Personalised</div><div class="sb-label">For colleges & courses</div></div>
+  <div class="stat-badge blue stat-2"><div class="sb-num">Free</div><div class="sb-label">Forever for students</div></div>
   <div class="stat-badge green stat-3"><div class="sb-num" id="hero-live-count">247</div><div class="sb-label">On the waitlist</div></div>
   
   <div class="hero-content">
@@ -702,8 +716,8 @@
       <button onclick="startEarlyAccess('hero')">Get early access</button>
     </div>
     <div class="ea-paths" id="hero-ea-paths">
-      <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','du_student')"><strong>DU student</strong>@du.ac.in or Gmail + proof</button>
-      <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','aspirant')"><strong>DU aspirant</strong>Gmail + name</button>
+      <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','du_student')"><strong>DU student</strong><span class="ea-path-sub">@du.ac.in or Gmail + proof</span></button>
+      <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','aspirant')"><strong>DU aspirant</strong><span class="ea-path-sub">Gmail + full name</span></button>
     </div>
     <div class="success-msg" id="hero-success">Request received. We will email your app access code after moderator approval.</div>
   </div>
@@ -1482,8 +1496,8 @@
     <button type="button" onclick="startEarlyAccess('waitlist')">Request access</button>
   </div>
   <div class="ea-paths">
-    <button type="button" class="ea-path-btn" onclick="startEarlyAccess('waitlist','du_student')"><strong>DU student</strong></button>
-    <button type="button" class="ea-path-btn" onclick="startEarlyAccess('waitlist','aspirant')"><strong>DU aspirant</strong></button>
+    <button type="button" class="ea-path-btn" onclick="startEarlyAccess('waitlist','du_student')"><strong>DU student</strong><span class="ea-path-sub">@du.ac.in or Gmail + proof</span></button>
+    <button type="button" class="ea-path-btn" onclick="startEarlyAccess('waitlist','aspirant')"><strong>DU aspirant</strong><span class="ea-path-sub">Gmail + full name</span></button>
   </div>
     <div class="success-msg" id="waitlist-success" style="display:none;color:rgba(245,242,235,0.85)">Request received. We will email your code after moderator approval.</div>
   <div class="waitlist-count"><span>●</span> Codes are validated in the Unrest app with the same email</div>
@@ -1556,6 +1570,7 @@
 
 <div class="confetti-container" id="confetti-container"></div>
 
+<script src="du-colleges.js" defer></script>
 <script src="phone-showcase.js" defer></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
