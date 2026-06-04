@@ -121,13 +121,13 @@
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  min-height: min(78vh, 720px);
+  min-height: min(90vh, 840px);
   align-items: center;
 }
 
 /* 9:16 handset — narrow bezel, tall screen (override .phone-frame) */
 #app-preview .phone-showcase-device {
-  --ps-width: min(228px, 72vw);
+  --ps-width: min(236px, 74vw);
   width: var(--ps-width);
   flex-shrink: 0;
   padding: 7px;
@@ -311,8 +311,12 @@
   }
 
   #app-preview .phone-showcase-device {
-    --ps-width: min(210px, 68vw);
+    --ps-width: min(218px, 70vw);
     transform: translateX(10vw) rotate(-5deg) scale(0.88);
+  }
+
+  #app-preview .phone-showcase-device .phone-screen {
+    max-height: min(86vh, 760px);
   }
 
   .phone-showcase-ribbon {

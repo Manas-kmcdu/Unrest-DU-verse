@@ -164,7 +164,7 @@
           <div class="phone-showcase-stage">
             <div class="phone-frame phone-showcase-device" id="phone-showcase-device">
               <div class="phone-screen">
-                <div class="phone-status"><span>9:41</span><span>●●●</span></div>
+                <div class="phone-status"><span>9:41</span></div>
                 <div class="phone-nav">
                   <div class="phone-nav-logo">Un<span>rest</span></div>
                 </div>
