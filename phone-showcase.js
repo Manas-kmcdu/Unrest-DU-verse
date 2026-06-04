@@ -5,7 +5,9 @@
  */
 (function () {
   const INTRO_VH_DESKTOP = 0.45;
-  const INTRO_VH_MOBILE = 0.28;
+  const INTRO_VH_MOBILE = 0.22;
+  const MOBILE_SCROLL_SWIPES = 5;
+  const MOBILE_SWIPE_VH = 0.13;
 
   const FALLBACK_COLLEGES = [
     "Shri Ram College of Commerce", "Hindu College", "Miranda House", "Lady Shri Ram College",
@@ -206,7 +208,8 @@
             <p class="phone-showcase-disclaimer">This is not an exact representation of the in-app visual*</p>
           </div>
         </div>
-      </div>`;
+      </div>
+      <div class="phone-showcase-outro" aria-hidden="true"></div>`;
 
     return {
       zone: document.getElementById("phone-showcase-scroll-zone"),
@@ -232,11 +235,24 @@
     return isMobileLayout() ? INTRO_VH_MOBILE : INTRO_VH_DESKTOP;
   }
 
+  function mobileMinTravelPx() {
+    return Math.round(window.innerHeight * MOBILE_SWIPE_VH * MOBILE_SCROLL_SWIPES);
+  }
+
   function scrollMetrics(feed) {
     const introPx = window.innerHeight * introVh();
     const feedScrollPx = Math.max(0, feed.scrollHeight - feed.clientHeight);
-    const feedZonePx = isMobileLayout() ? feedScrollPx : Math.max(feedScrollPx, 120);
-    const travelPx = introPx + feedZonePx;
+    let feedZonePx = isMobileLayout() ? feedScrollPx : Math.max(feedScrollPx, 120);
+    let travelPx = introPx + feedZonePx;
+
+    if (isMobileLayout()) {
+      const minTravel = mobileMinTravelPx();
+      if (travelPx < minTravel) {
+        feedZonePx += minTravel - travelPx;
+        travelPx = minTravel;
+      }
+    }
+
     return { introPx, feedZonePx, travelPx, feedScrollPx };
   }
 

@@ -7,6 +7,22 @@
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: 0;
+  overflow: hidden;
+}
+
+.phone-showcase-outro {
+  display: block;
+  height: clamp(3rem, 14vh, 5.5rem);
+  margin: 0;
+  background: linear-gradient(
+    180deg,
+    var(--paper) 0%,
+    var(--cream) 18%,
+    rgba(14, 13, 11, 0.12) 55%,
+    rgba(14, 13, 11, 0.55) 82%,
+    var(--ink) 100%
+  );
+  pointer-events: none;
 }
 
 .phone-showcase-header {
@@ -353,10 +369,30 @@
     padding-bottom: 0;
   }
 
+  .phone-showcase-header {
+    padding: 1rem 1.25rem 0.25rem;
+  }
+
+  .phone-showcase-title {
+    font-size: clamp(1.65rem, 7vw, 2rem);
+  }
+
   .phone-showcase-scroll-zone {
-    padding-top: 0.75rem;
+    padding-top: 0.35rem;
     padding-bottom: 0;
     margin-bottom: 0;
+  }
+
+  .phone-showcase-outro {
+    height: clamp(2.75rem, 12vh, 4.5rem);
+  }
+
+  .phone-showcase {
+    border-top: none;
+  }
+
+  #app-preview + .countdown-section {
+    padding-top: 3.25rem;
   }
 
   /* In-flow on mobile — zone height = phone only; no sticky dead space below disclaimer */
