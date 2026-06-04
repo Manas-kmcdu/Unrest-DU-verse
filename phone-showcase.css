@@ -4,7 +4,9 @@
   position: relative;
   background: linear-gradient(180deg, var(--paper) 0%, var(--cream) 45%, var(--paper) 100%);
   border-top: 0.5px solid var(--border);
-  border-bottom: 0.5px solid var(--border);
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .phone-showcase-head {
@@ -54,6 +56,8 @@
 .phone-showcase-scroll-zone {
   position: relative;
   min-height: 0;
+  padding-bottom: 0;
+  margin-bottom: 0;
   background: linear-gradient(180deg, var(--cream) 0%, var(--paper) 45%, var(--cream) 100%);
   overflow: hidden;
 }
@@ -181,8 +185,7 @@
 
 #app-preview .phone-showcase-device .phone-screen {
   width: 100%;
-  aspect-ratio: 9 / 16;
-  height: auto;
+  height: min(78vh, 680px);
   max-height: min(78vh, 680px);
   border-radius: 24px;
   display: flex;

@@ -4,8 +4,8 @@
  * Phase 2 — page scroll drives feed inside the phone.
  */
 (function () {
-  const INTRO_VH = 0.7;
-  const FEED_EXTRA_VH = 0.22;
+  const INTRO_VH = 0.55;
+  const FEED_EXTRA_VH = 0.12;
 
   const FALLBACK_COLLEGES = [
     "Shri Ram College of Commerce", "Hindu College", "Miranda House", "Lady Shri Ram College",
@@ -203,18 +203,15 @@
     const introPx = window.innerHeight * INTRO_VH;
     const feedScrollPx = Math.max(0, feed.scrollHeight - feed.clientHeight);
     const feedZonePx = feedScrollPx + window.innerHeight * FEED_EXTRA_VH;
-    const totalPx = introPx + feedZonePx;
-    const introRatio = introPx / totalPx;
-    return { introPx, feedZonePx, totalPx, introRatio, feedScrollPx };
+    const travelPx = introPx + feedZonePx;
+    return { introPx, feedZonePx, travelPx, feedScrollPx };
   }
 
-  function setScrollZoneHeight(zone, feed, stage) {
+  /** Scroll track = intro + feed travel, plus one viewport for sticky pin — no dead zone after. */
+  function setScrollZoneHeight(zone, feed) {
     if (!zone || !feed) return;
-    const { totalPx } = scrollMetrics(feed);
-    const cluster =
-      stage?.offsetHeight || Math.min(window.innerHeight * 0.82, 720);
-    zone.style.minHeight = `${totalPx + cluster}px`;
-    zone.dataset.introRatio = String(scrollMetrics(feed).introRatio);
+    const { travelPx } = scrollMetrics(feed);
+    zone.style.minHeight = `${travelPx + window.innerHeight}px`;
   }
 
   function scrolledPx(zone) {
@@ -239,13 +236,11 @@
     if (!els || prefersReducedMotion()) return;
 
     const { zone, feed, device, hint } = els;
-    const { introRatio, feedScrollPx } = scrollMetrics(feed);
+    const { introPx, feedZonePx, feedScrollPx } = scrollMetrics(feed);
     const scrolled = scrolledPx(zone);
-    const totalScrollable = Math.max(zone.offsetHeight - window.innerHeight, 1);
-    const p = scrolled / totalScrollable;
 
-    if (p < introRatio) {
-      const introP = p / introRatio;
+    if (scrolled <= introPx) {
+      const introP = introPx > 0 ? scrolled / introPx : 0;
       applyPhoneIntro(device, introP);
       feed.scrollTop = 0;
       if (hint) {
@@ -254,9 +249,9 @@
       }
     } else {
       applyPhoneIntro(device, 1);
-      const feedP = (p - introRatio) / (1 - introRatio);
-      const easedFeed = easeOutCubic(feedP);
-      feed.scrollTop = easedFeed * feedScrollPx;
+      const feedScrolled = Math.min(scrolled - introPx, feedZonePx);
+      const feedP = feedZonePx > 0 ? feedScrolled / feedZonePx : 0;
+      feed.scrollTop = easeOutCubic(feedP) * feedScrollPx;
       if (hint) {
         hint.textContent = "Keep scrolling to browse the feed";
         hint.classList.add("is-feed-phase");
@@ -269,9 +264,15 @@
     if (!els) return;
     window.__phoneShowcaseEls = els;
 
-    const resize = () => {
-      setScrollZoneHeight(els.zone, els.feed, els.stage);
+    const measure = () => {
+      void els.feed.offsetHeight;
+      setScrollZoneHeight(els.zone, els.feed);
       updateScroll();
+    };
+
+    const resize = () => {
+      measure();
+      requestAnimationFrame(measure);
     };
 
     if (!prefersReducedMotion()) {
@@ -283,7 +284,7 @@
       resize();
     } else {
       els.feed.classList.remove("is-scroll-driven");
-      setScrollZoneHeight(els.zone, els.feed, els.stage);
+      setScrollZoneHeight(els.zone, els.feed);
     }
   }
 
