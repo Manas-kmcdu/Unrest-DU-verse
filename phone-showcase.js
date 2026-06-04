@@ -4,8 +4,8 @@
  * Phase 2 — page scroll drives feed inside the phone.
  */
 (function () {
-  const INTRO_VH = 0.92;
-  const FEED_EXTRA_VH = 0.42;
+  const INTRO_VH = 0.7;
+  const FEED_EXTRA_VH = 0.22;
 
   const FALLBACK_COLLEGES = [
     "Shri Ram College of Commerce", "Hindu College", "Miranda House", "Lady Shri Ram College",
@@ -160,9 +160,9 @@
         <p>Scroll once to bring the app into view — then keep scrolling to browse the feed inside.</p>
       </div>
       <div class="phone-showcase-scroll-zone" id="phone-showcase-scroll-zone">
-        ${collegeWallMarkup()}
         <div class="phone-showcase-pin">
-          <div class="phone-showcase-stage">
+          <div class="phone-showcase-stage" id="phone-showcase-stage">
+            ${collegeWallMarkup()}
             <div class="phone-frame phone-showcase-device" id="phone-showcase-device">
               <div class="phone-screen">
                 <div class="phone-status"><span>9:41</span></div>
@@ -177,13 +177,14 @@
                 <div class="feed is-scroll-driven" id="phone-showcase-feed">${FEED_HTML}</div>
               </div>
             </div>
+            <p class="phone-showcase-hint" id="phone-showcase-hint">Scroll to bring the app into view</p>
           </div>
-          <p class="phone-showcase-hint" id="phone-showcase-hint">Scroll to bring the app into view</p>
         </div>
       </div>`;
 
     return {
       zone: document.getElementById("phone-showcase-scroll-zone"),
+      stage: document.getElementById("phone-showcase-stage"),
       feed: document.getElementById("phone-showcase-feed"),
       device: document.getElementById("phone-showcase-device"),
       hint: document.getElementById("phone-showcase-hint"),
@@ -207,10 +208,12 @@
     return { introPx, feedZonePx, totalPx, introRatio, feedScrollPx };
   }
 
-  function setScrollZoneHeight(zone, feed) {
+  function setScrollZoneHeight(zone, feed, stage) {
     if (!zone || !feed) return;
     const { totalPx } = scrollMetrics(feed);
-    zone.style.minHeight = `${totalPx + window.innerHeight}px`;
+    const cluster =
+      stage?.offsetHeight || Math.min(window.innerHeight * 0.82, 720);
+    zone.style.minHeight = `${totalPx + cluster}px`;
     zone.dataset.introRatio = String(scrollMetrics(feed).introRatio);
   }
 
@@ -267,7 +270,7 @@
     window.__phoneShowcaseEls = els;
 
     const resize = () => {
-      setScrollZoneHeight(els.zone, els.feed);
+      setScrollZoneHeight(els.zone, els.feed, els.stage);
       updateScroll();
     };
 
@@ -280,7 +283,7 @@
       resize();
     } else {
       els.feed.classList.remove("is-scroll-driven");
-      setScrollZoneHeight(els.zone, els.feed);
+      setScrollZoneHeight(els.zone, els.feed, els.stage);
     }
   }
 
