@@ -268,11 +268,14 @@
     const { travelPx } = scrollMetrics(feed);
     if (isMobileLayout() && stage) {
       zone.classList.add("phone-showcase-scroll-zone--mobile-flow");
-      /* Only the phone block — scroll progress comes from page movement, not empty padding below */
-      zone.style.minHeight = `${stage.offsetHeight}px`;
+      /* Phone block height only — no extra cream pad; scroll length comes from page movement */
+      const stageH = Math.ceil(stage.getBoundingClientRect().height) || stage.offsetHeight;
+      zone.style.minHeight = `${stageH}px`;
+      zone.style.paddingBottom = "0";
     } else {
       zone.classList.remove("phone-showcase-scroll-zone--mobile-flow");
       zone.style.minHeight = `${travelPx + window.innerHeight}px`;
+      zone.style.paddingBottom = "";
     }
     zone.style.height = "";
   }

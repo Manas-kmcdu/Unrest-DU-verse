@@ -395,10 +395,10 @@
     padding-top: 3.25rem;
   }
 
-  /* In-flow on mobile — zone height = phone only; no sticky dead space below disclaimer */
-  .phone-showcase-scroll-zone--mobile-flow .phone-showcase-pin {
-    position: relative;
-    top: auto;
+  /* Never sticky on mobile — sticky + short content = large empty gap below disclaimer */
+  .phone-showcase-pin {
+    position: relative !important;
+    top: auto !important;
     align-items: center;
     padding-top: 0.35rem;
     padding-bottom: 0;
