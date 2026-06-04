@@ -263,18 +263,27 @@
     return Number.isFinite(top) ? top : 56;
   }
 
+  function stageHeightPx(stage) {
+    if (!stage) return 0;
+    return Math.ceil(stage.getBoundingClientRect().height) || stage.offsetHeight;
+  }
+
+  /** Laptop: sticky runway sized to phone block, not full viewport (avoids blank cream below). */
+  function desktopRunwayPx(stage) {
+    return stageHeightPx(stage) + pinStickyTopPx() + 16;
+  }
+
   function setScrollZoneHeight(zone, feed, stage) {
     if (!zone || !feed) return;
     const { travelPx } = scrollMetrics(feed);
     if (isMobileLayout() && stage) {
       zone.classList.add("phone-showcase-scroll-zone--mobile-flow");
-      /* Phone block height only — no extra cream pad; scroll length comes from page movement */
-      const stageH = Math.ceil(stage.getBoundingClientRect().height) || stage.offsetHeight;
-      zone.style.minHeight = `${stageH}px`;
+      zone.style.minHeight = `${stageHeightPx(stage)}px`;
       zone.style.paddingBottom = "0";
     } else {
       zone.classList.remove("phone-showcase-scroll-zone--mobile-flow");
-      zone.style.minHeight = `${travelPx + window.innerHeight}px`;
+      const runway = desktopRunwayPx(stage);
+      zone.style.minHeight = `${travelPx + runway}px`;
       zone.style.paddingBottom = "";
     }
     zone.style.height = "";
@@ -286,7 +295,8 @@
     if (isMobileLayout()) {
       return clamp(pinStickyTopPx() - top, 0, travelPx);
     }
-    const max = Math.max(0, zone.offsetHeight - window.innerHeight);
+    const runway = desktopRunwayPx(stage);
+    const max = Math.max(0, zone.offsetHeight - runway);
     return clamp(-top, 0, max);
   }
 
