@@ -62,70 +62,94 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: min(720px, 94vw);
+  width: min(1080px, 96vw);
   margin: 0 auto;
-  padding: 0 0 1.5rem;
-  gap: 0.45rem;
+  padding: 0 0 1.25rem;
+  gap: 0.35rem;
 }
 
 .phone-showcase-cluster {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  gap: 0;
+  min-height: min(58vh, 520px);
+  padding: 0.5rem 0;
 }
 
-/* Colleges above & below (mobile) */
-.phone-showcase-college-band {
-  width: 100%;
+/* Plain college names — multiple horizontal layers (Fizz-style) */
+.phone-showcase-name-wall {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
-  align-content: flex-start;
-  gap: 0.35rem 0.5rem;
-  padding: 0 0.25rem;
+  gap: clamp(0.45rem, 1.2vh, 0.85rem);
+  padding: 0 clamp(0.5rem, 2vw, 1.5rem);
   overflow: hidden;
   pointer-events: none;
-  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 6%,
+    #000 94%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 6%,
+    #000 94%,
+    transparent 100%
+  );
 }
 
-.phone-showcase-college-band--top {
-  max-height: 4.5rem;
+.ps-college-row {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(1.1rem, 2.8vw, 2.4rem);
+  white-space: nowrap;
+  width: 100%;
 }
 
-.phone-showcase-college-band--bottom {
-  max-height: 4rem;
+.ps-college-row--shift {
+  transform: translateX(-3%);
 }
 
-/* Side columns — laptop only */
-.phone-showcase-college-band--left,
-.phone-showcase-college-band--right {
-  display: none;
+.ps-college-row--dense {
+  gap: clamp(0.85rem, 2vw, 1.6rem);
 }
 
-.ps-college-chip {
+.ps-college-name {
   font-family: var(--sans);
-  font-size: 0.62rem;
-  font-weight: 500;
-  line-height: 1.15;
-  color: var(--ink3);
-  padding: 0.22rem 0.45rem;
-  border-radius: 5px;
-  background: rgba(255, 255, 255, 0.7);
-  border: 0.5px solid rgba(14, 13, 11, 0.06);
+  font-size: clamp(0.68rem, 1.35vw, 0.92rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: rgba(14, 13, 11, 0.2);
   white-space: nowrap;
   animation: psCollegeFade ease-in-out infinite alternate;
 }
 
-.ps-college-chip:nth-child(7n + 1) {
-  color: var(--ink2);
-  font-weight: 600;
+.ps-college-name--hi {
+  color: rgba(14, 13, 11, 0.38);
 }
 
-.ps-college-chip:nth-child(13n) {
-  color: var(--accent);
+.phone-showcase-cluster::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 28% 62% at 50% 50%,
+    rgba(245, 242, 235, 0.97) 0%,
+    rgba(245, 242, 235, 0.72) 38%,
+    transparent 68%
+  );
 }
 
 @keyframes psCollegeFade {
@@ -309,62 +333,61 @@
 }
 
 @media (min-width: 900px) {
-  .phone-showcase-stage {
-    width: min(1080px, 96vw);
-    gap: 0.35rem;
+  .phone-showcase-name-wall {
+    gap: clamp(0.45rem, 0.9vh, 0.7rem);
   }
 
-  .phone-showcase-college-band--top,
-  .phone-showcase-college-band--bottom {
-    display: none;
+  .ps-college-row {
+    gap: clamp(1.35rem, 2.4vw, 3rem);
   }
 
-  .phone-showcase-cluster {
-    gap: clamp(0.75rem, 2vw, 1.5rem);
-    max-width: 1080px;
-  }
-
-  .phone-showcase-college-band--left,
-  .phone-showcase-college-band--right {
-    display: flex;
-    flex: 1;
-    min-width: 0;
-    max-width: 300px;
-    max-height: min(58vh, 520px);
-    align-content: center;
-    gap: 0.4rem 0.45rem;
-    mask-image: linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent);
-    -webkit-mask-image: linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent);
-  }
-
-  .phone-showcase-college-band--left {
-    justify-content: flex-end;
-    padding-right: 0.25rem;
-  }
-
-  .phone-showcase-college-band--right {
-    justify-content: flex-start;
-    padding-left: 0.25rem;
+  .ps-college-name {
+    font-size: clamp(0.82rem, 1.05vw, 1.05rem);
   }
 
   #app-preview .phone-showcase-device {
     --ps-width: min(212px, 20vw);
-    margin: 0;
   }
 
   #app-preview .phone-showcase-device .phone-screen {
     height: min(58vh, 520px);
     max-height: min(58vh, 520px);
   }
-
-  .ps-college-chip {
-    font-size: 0.64rem;
-  }
 }
 
 @media (max-width: 768px) {
   .phone-showcase-head {
     padding-top: 2.25rem;
+  }
+
+  .phone-showcase-cluster {
+    min-height: min(54vh, 480px);
+  }
+
+  .phone-showcase-name-wall {
+    gap: 0.4rem;
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      #000 4%,
+      #000 96%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      #000 4%,
+      #000 96%,
+      transparent 100%
+    );
+  }
+
+  .ps-college-row {
+    gap: 1rem;
+  }
+
+  .ps-college-name {
+    font-size: 0.62rem;
   }
 
   #app-preview .phone-showcase-device {
@@ -375,10 +398,6 @@
   #app-preview .phone-showcase-device .phone-screen {
     height: min(54vh, 480px);
     max-height: min(54vh, 480px);
-  }
-
-  .ps-college-chip {
-    font-size: 0.56rem;
   }
 }
 
@@ -404,8 +423,8 @@
     max-height: min(48vh, 420px);
   }
 
-  .ps-college-chip {
+  .ps-college-name {
     animation: none !important;
-    opacity: 0.4;
+    opacity: 0.32;
   }
 }

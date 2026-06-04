@@ -139,39 +139,35 @@
       .replace(/"/g, "&quot;");
   }
 
-  function chipHtml(name, i) {
-    const delay = ((i * 0.17) % 5).toFixed(2);
-    const duration = (3 + (i % 4) * 0.5).toFixed(2);
-    return `<span class="ps-college-chip" style="animation-delay:${delay}s;animation-duration:${duration}s">${escapeHtml(name)}</span>`;
+  function nameHtml(name, i) {
+    const delay = ((i * 0.14) % 4.5).toFixed(2);
+    const duration = (3.2 + (i % 4) * 0.45).toFixed(2);
+    const hi = i % 6 === 0 ? " ps-college-name--hi" : "";
+    return `<span class="ps-college-name${hi}" style="animation-delay:${delay}s;animation-duration:${duration}s">${escapeHtml(name)}</span>`;
   }
 
-  function collegeBandMarkup(names, bandClass, indexOffset) {
-    return `<div class="phone-showcase-college-band ${bandClass}" aria-hidden="true">${names
-      .map((n, i) => chipHtml(n, i + indexOffset))
-      .join("")}</div>`;
-  }
+  /** Fizz-style plain text rows — no boxes, multiple layers behind phone */
+  function nameWallMarkup(rowCount) {
+    const rows = Array.from({ length: rowCount }, () => []);
+    COLLEGE_NAMES.forEach((name, i) => {
+      rows[i % rowCount].push(name);
+    });
 
-  function collegeLayout() {
-    const n = COLLEGE_NAMES.length;
-    const q = Math.floor(n / 4);
-    const r = n - q * 4;
-    const topEnd = q + (r > 0 ? 1 : 0);
-    const bottomEnd = topEnd + q + (r > 1 ? 1 : 0);
-    const leftEnd = bottomEnd + q + (r > 2 ? 1 : 0);
-    return {
-      top: COLLEGE_NAMES.slice(0, topEnd),
-      bottom: COLLEGE_NAMES.slice(topEnd, bottomEnd),
-      left: COLLEGE_NAMES.slice(bottomEnd, leftEnd),
-      right: COLLEGE_NAMES.slice(leftEnd),
-      offsets: { top: 0, bottom: topEnd, left: bottomEnd, right: leftEnd },
-    };
+    const rowEls = rows
+      .map((row, ri) => {
+        const shift = ri % 2 === 1 ? " ps-college-row--shift" : "";
+        const dense = ri % 3 === 1 ? " ps-college-row--dense" : "";
+        const body = row.map((n, i) => nameHtml(n, ri * 12 + i)).join("");
+        return `<div class="ps-college-row${shift}${dense}">${body}</div>`;
+      })
+      .join("");
+
+    return `<div class="phone-showcase-name-wall" aria-hidden="true">${rowEls}</div>`;
   }
 
   function buildSection() {
     const root = document.getElementById("app-preview");
     if (!root) return null;
-
-    const cols = collegeLayout();
 
     root.innerHTML = `
       <div class="phone-showcase-head">
@@ -182,9 +178,8 @@
       <div class="phone-showcase-scroll-zone" id="phone-showcase-scroll-zone">
         <div class="phone-showcase-pin">
           <div class="phone-showcase-stage" id="phone-showcase-stage">
-            ${collegeBandMarkup(cols.top, "phone-showcase-college-band--top", cols.offsets.top)}
             <div class="phone-showcase-cluster">
-              ${collegeBandMarkup(cols.left, "phone-showcase-college-band--left", cols.offsets.left)}
+              ${nameWallMarkup(9)}
               <div class="phone-frame phone-showcase-device" id="phone-showcase-device">
                 <div class="phone-screen">
                   <div class="phone-status"><span>9:41</span></div>
@@ -199,9 +194,7 @@
                   <div class="feed is-scroll-driven" id="phone-showcase-feed">${FEED_HTML}</div>
                 </div>
               </div>
-              ${collegeBandMarkup(cols.right, "phone-showcase-college-band--right", cols.offsets.right)}
             </div>
-            ${collegeBandMarkup(cols.bottom, "phone-showcase-college-band--bottom", cols.offsets.bottom)}
             <p class="phone-showcase-hint" id="phone-showcase-hint">Scroll to bring the app into view</p>
           </div>
         </div>
