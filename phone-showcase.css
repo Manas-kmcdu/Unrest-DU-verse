@@ -1,0 +1,372 @@
+/* Horizontal phone scroll — above early access / waitlist */
+
+.phone-showcase {
+  padding: 4.5rem 0 4rem;
+  background: linear-gradient(180deg, var(--cream) 0%, var(--paper) 100%);
+  border-top: 0.5px solid var(--border);
+  overflow: hidden;
+  position: relative;
+}
+
+.phone-showcase-head {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+  padding: 0 1.5rem;
+}
+
+.phone-showcase-head h2 {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4.5vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.08;
+  color: var(--ink);
+  margin-top: 0.5rem;
+}
+
+.phone-showcase-head h2 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.phone-showcase-head p {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink2);
+}
+
+.phone-showcase-marquee {
+  position: relative;
+  width: 100%;
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+}
+
+.phone-showcase-track {
+  display: flex;
+  width: max-content;
+  padding: 0.5rem 0 1rem;
+  animation: phoneShowcaseScroll 48s linear infinite;
+  will-change: transform;
+}
+
+.phone-showcase-set {
+  display: flex;
+  gap: 1.25rem;
+  flex-shrink: 0;
+  padding: 0 1.5rem;
+}
+
+.phone-showcase-marquee:hover .phone-showcase-track {
+  animation-play-state: paused;
+}
+
+@keyframes phoneShowcaseScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phone-showcase-track {
+    animation: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .phone-showcase-marquee {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+  .phone-showcase-set--dup {
+    display: none;
+  }
+}
+
+/* Slim phone frame (showcase only) */
+.ps-phone {
+  flex-shrink: 0;
+  width: 220px;
+  background: var(--ink);
+  border-radius: 32px;
+  padding: 10px;
+  box-shadow: 0 20px 48px rgba(14, 13, 11, 0.14);
+  transform: rotate(-1.5deg);
+  transition: transform 0.35s ease;
+}
+
+.ps-phone:nth-child(even) {
+  transform: rotate(1.5deg) translateY(6px);
+}
+
+.ps-phone:hover {
+  transform: rotate(0deg) translateY(-4px) scale(1.02);
+}
+
+.ps-screen {
+  background: var(--paper);
+  border-radius: 24px;
+  overflow: hidden;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ps-status {
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ps-nav {
+  height: 40px;
+  flex-shrink: 0;
+  border-bottom: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  font-family: var(--serif);
+  font-size: 0.95rem;
+}
+
+.ps-nav span {
+  color: var(--accent);
+  font-style: italic;
+}
+
+.ps-tabs {
+  display: flex;
+  flex-shrink: 0;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.ps-tab {
+  flex: 1;
+  padding: 6px 0;
+  text-align: center;
+  font-size: 0.55rem;
+  font-weight: 600;
+  color: var(--ink3);
+  border-bottom: 2px solid transparent;
+}
+
+.ps-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.ps-body {
+  flex: 1;
+  overflow: hidden;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ps-post {
+  background: #fff;
+  border-radius: 10px;
+  border: 0.5px solid var(--border);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ps-post-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+}
+
+.ps-av {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.ps-post-name {
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ps-post-sub {
+  font-size: 0.5rem;
+  color: var(--ink3);
+}
+
+.ps-post-text {
+  padding: 0 8px 8px;
+  font-size: 0.56rem;
+  line-height: 1.35;
+  color: var(--ink2);
+}
+
+.ps-activity {
+  border-radius: 10px;
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+.ps-activity--lime {
+  background: #faf6c8;
+  border: 0.5px solid rgba(200, 175, 55, 0.2);
+}
+
+.ps-activity--dark {
+  background: #0e0d0b;
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.ps-activity-title {
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.ps-activity-meta {
+  font-size: 0.52rem;
+  margin-top: 4px;
+  opacity: 0.75;
+}
+
+.ps-banner {
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: linear-gradient(135deg, #1a2744 0%, #2a3f5f 100%);
+  color: #f5f2eb;
+  flex-shrink: 0;
+}
+
+.ps-banner-tag {
+  font-size: 0.48rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.ps-banner-title {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+
+.ps-sport {
+  background: #fff;
+  border-radius: 10px;
+  border: 0.5px solid var(--border);
+  padding: 8px;
+  border-top: 3px solid var(--sc, var(--green));
+  flex-shrink: 0;
+}
+
+.ps-sport-title {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.ps-sport-body {
+  font-size: 0.52rem;
+  color: var(--ink3);
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+.ps-corridor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.ps-door {
+  border-radius: 10px;
+  padding: 10px;
+  background: #fff;
+  border: 0.5px solid var(--border);
+}
+
+.ps-door-title {
+  font-size: 0.58rem;
+  font-weight: 700;
+}
+
+.ps-door-sub {
+  font-size: 0.5rem;
+  color: var(--ink3);
+  margin-top: 2px;
+}
+
+.ps-take-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #f0e8e6;
+  border: 0.5px solid rgba(158, 69, 56, 0.14);
+  flex-shrink: 0;
+}
+
+.ps-take-strip strong {
+  font-size: 0.58rem;
+  flex: 1;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .phone-showcase {
+    padding: 3rem 0 2.5rem;
+  }
+  .phone-showcase-head {
+    margin-bottom: 1.75rem;
+  }
+  .ps-phone {
+    width: 200px;
+  }
+  .ps-screen {
+    height: 360px;
+  }
+  .phone-showcase-track {
+    animation-duration: 36s;
+    gap: 1rem;
+  }
+}
