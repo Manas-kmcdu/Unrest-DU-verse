@@ -139,14 +139,17 @@
       .replace(/"/g, "&quot;");
   }
 
-  function nameHtml(name, i) {
-    const delay = ((i * 0.14) % 4.5).toFixed(2);
-    const duration = (3.2 + (i % 4) * 0.45).toFixed(2);
+  function nameSpanMarkup(name, i) {
     const hi = i % 6 === 0 ? " ps-college-name--hi" : "";
-    return `<span class="ps-college-name${hi}" style="animation-delay:${delay}s;animation-duration:${duration}s">${escapeHtml(name)}</span>`;
+    return `<span class="ps-college-name${hi}">${escapeHtml(name)}</span>`;
   }
 
-  /** Fizz-style plain text rows — no boxes, multiple layers behind phone */
+  function rowNamesInner(row, ri) {
+    const doubled = row.concat(row);
+    return doubled.map((n, i) => nameSpanMarkup(n, ri * 16 + i)).join("");
+  }
+
+  /** Plain text banner rows — alternating scroll direction per row */
   function nameWallMarkup(rowCount) {
     const rows = Array.from({ length: rowCount }, () => []);
     COLLEGE_NAMES.forEach((name, i) => {
@@ -155,10 +158,16 @@
 
     const rowEls = rows
       .map((row, ri) => {
-        const shift = ri % 2 === 1 ? " ps-college-row--shift" : "";
+        const dir = ri % 2 === 0 ? "ps-college-row--left" : "ps-college-row--right";
         const dense = ri % 3 === 1 ? " ps-college-row--dense" : "";
-        const body = row.map((n, i) => nameHtml(n, ri * 12 + i)).join("");
-        return `<div class="ps-college-row${shift}${dense}">${body}</div>`;
+        const duration = (48 + ri * 6).toFixed(1);
+        const inner = rowNamesInner(row, ri);
+        return `<div class="ps-college-row ${dir}${dense}">
+          <div class="ps-college-track" style="animation-duration:${duration}s">
+            <div class="ps-college-track-group">${inner}</div>
+            <div class="ps-college-track-group" aria-hidden="true">${inner}</div>
+          </div>
+        </div>`;
       })
       .join("");
 

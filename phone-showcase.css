@@ -74,7 +74,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: min(58vh, 520px);
+  min-height: min(66vh, 620px);
   padding: 0.5rem 0;
 }
 
@@ -107,21 +107,35 @@
 }
 
 .ps-college-row {
+  overflow: hidden;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.ps-college-row--dense .ps-college-track-group {
+  gap: clamp(0.85rem, 2vw, 1.6rem);
+}
+
+.ps-college-track {
   display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
+  width: max-content;
+  will-change: transform;
+}
+
+.ps-college-row--left .ps-college-track {
+  animation: psCollegeMarqueeLeft linear infinite;
+}
+
+.ps-college-row--right .ps-college-track {
+  animation: psCollegeMarqueeRight linear infinite;
+}
+
+.ps-college-track-group {
+  display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: clamp(1.1rem, 2.8vw, 2.4rem);
-  white-space: nowrap;
-  width: 100%;
-}
-
-.ps-college-row--shift {
-  transform: translateX(-3%);
-}
-
-.ps-college-row--dense {
-  gap: clamp(0.85rem, 2vw, 1.6rem);
+  padding-right: clamp(1.1rem, 2.8vw, 2.4rem);
 }
 
 .ps-college-name {
@@ -131,7 +145,6 @@
   letter-spacing: -0.02em;
   color: rgba(14, 13, 11, 0.2);
   white-space: nowrap;
-  animation: psCollegeFade ease-in-out infinite alternate;
 }
 
 .ps-college-name--hi {
@@ -152,15 +165,21 @@
   );
 }
 
-@keyframes psCollegeFade {
+@keyframes psCollegeMarqueeLeft {
   0% {
-    opacity: 0.2;
-  }
-  50% {
-    opacity: 0.55;
+    transform: translateX(0);
   }
   100% {
-    opacity: 0.25;
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes psCollegeMarqueeRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
   }
 }
 
@@ -183,7 +202,7 @@
 #app-preview .phone-showcase-device {
   position: relative;
   z-index: 2;
-  --ps-width: min(200px, 58vw);
+  --ps-width: min(214px, 58vw);
   width: var(--ps-width);
   flex-shrink: 0;
   padding: 6px;
@@ -200,8 +219,8 @@
 
 #app-preview .phone-showcase-device .phone-screen {
   width: 100%;
-  height: min(56vh, 500px);
-  max-height: min(56vh, 500px);
+  height: min(64vh, 600px);
+  max-height: min(64vh, 600px);
   border-radius: 20px;
   display: flex;
   flex-direction: column;
@@ -337,21 +356,26 @@
     gap: clamp(0.45rem, 0.9vh, 0.7rem);
   }
 
-  .ps-college-row {
+  .ps-college-track-group {
     gap: clamp(1.35rem, 2.4vw, 3rem);
+    padding-right: clamp(1.35rem, 2.4vw, 3rem);
   }
 
   .ps-college-name {
     font-size: clamp(0.82rem, 1.05vw, 1.05rem);
   }
 
+  .phone-showcase-cluster {
+    min-height: min(68vh, 660px);
+  }
+
   #app-preview .phone-showcase-device {
-    --ps-width: min(212px, 20vw);
+    --ps-width: min(224px, 20vw);
   }
 
   #app-preview .phone-showcase-device .phone-screen {
-    height: min(58vh, 520px);
-    max-height: min(58vh, 520px);
+    height: min(68vh, 660px);
+    max-height: min(68vh, 660px);
   }
 }
 
@@ -361,7 +385,7 @@
   }
 
   .phone-showcase-cluster {
-    min-height: min(54vh, 480px);
+    min-height: min(60vh, 540px);
   }
 
   .phone-showcase-name-wall {
@@ -382,8 +406,9 @@
     );
   }
 
-  .ps-college-row {
+  .ps-college-track-group {
     gap: 1rem;
+    padding-right: 1rem;
   }
 
   .ps-college-name {
@@ -391,13 +416,13 @@
   }
 
   #app-preview .phone-showcase-device {
-    --ps-width: min(188px, 56vw);
+    --ps-width: min(198px, 56vw);
     transform: translateX(10vw) rotate(-5deg) scale(0.88);
   }
 
   #app-preview .phone-showcase-device .phone-screen {
-    height: min(54vh, 480px);
-    max-height: min(54vh, 480px);
+    height: min(60vh, 540px);
+    max-height: min(60vh, 540px);
   }
 }
 
@@ -423,8 +448,12 @@
     max-height: min(48vh, 420px);
   }
 
-  .ps-college-name {
+  .ps-college-track {
     animation: none !important;
+    transform: translateX(-12%);
+  }
+
+  .ps-college-name {
     opacity: 0.32;
   }
 }
