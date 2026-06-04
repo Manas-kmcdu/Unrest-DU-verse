@@ -4,8 +4,7 @@
  * Phase 2 — page scroll drives feed inside the phone.
  */
 (function () {
-  const INTRO_VH = 0.55;
-  const FEED_EXTRA_VH = 0.12;
+  const INTRO_VH = 0.45;
 
   const FALLBACK_COLLEGES = [
     "Shri Ram College of Commerce", "Hindu College", "Miranda House", "Lady Shri Ram College",
@@ -140,13 +139,16 @@
       .replace(/"/g, "&quot;");
   }
 
-  function collegeWallMarkup() {
-    const chips = COLLEGE_NAMES.map((name, i) => {
-      const delay = ((i * 0.19) % 6).toFixed(2);
-      const duration = (3.2 + (i % 5) * 0.55).toFixed(2);
-      return `<span class="ps-college-chip" style="animation-delay:${delay}s;animation-duration:${duration}s">${escapeHtml(name)}</span>`;
-    }).join("");
-    return `<div class="phone-showcase-college-wall" aria-hidden="true">${chips}</div>`;
+  function chipHtml(name, i) {
+    const delay = ((i * 0.17) % 5).toFixed(2);
+    const duration = (3 + (i % 4) * 0.5).toFixed(2);
+    return `<span class="ps-college-chip" style="animation-delay:${delay}s;animation-duration:${duration}s">${escapeHtml(name)}</span>`;
+  }
+
+  function collegeBandMarkup(names, bandClass, indexOffset) {
+    return `<div class="phone-showcase-college-band ${bandClass}" aria-hidden="true">${names
+      .map((n, i) => chipHtml(n, i + indexOffset))
+      .join("")}</div>`;
   }
 
   function buildSection() {
@@ -162,7 +164,7 @@
       <div class="phone-showcase-scroll-zone" id="phone-showcase-scroll-zone">
         <div class="phone-showcase-pin">
           <div class="phone-showcase-stage" id="phone-showcase-stage">
-            ${collegeWallMarkup()}
+            ${collegeBandMarkup(COLLEGE_NAMES.slice(0, Math.ceil(COLLEGE_NAMES.length / 2)), "phone-showcase-college-band--top", 0)}
             <div class="phone-frame phone-showcase-device" id="phone-showcase-device">
               <div class="phone-screen">
                 <div class="phone-status"><span>9:41</span></div>
@@ -177,6 +179,7 @@
                 <div class="feed is-scroll-driven" id="phone-showcase-feed">${FEED_HTML}</div>
               </div>
             </div>
+            ${collegeBandMarkup(COLLEGE_NAMES.slice(Math.ceil(COLLEGE_NAMES.length / 2)), "phone-showcase-college-band--bottom", Math.ceil(COLLEGE_NAMES.length / 2))}
             <p class="phone-showcase-hint" id="phone-showcase-hint">Scroll to bring the app into view</p>
           </div>
         </div>
@@ -202,22 +205,22 @@
   function scrollMetrics(feed) {
     const introPx = window.innerHeight * INTRO_VH;
     const feedScrollPx = Math.max(0, feed.scrollHeight - feed.clientHeight);
-    const feedZonePx = feedScrollPx + window.innerHeight * FEED_EXTRA_VH;
+    const feedZonePx = Math.max(feedScrollPx, 120);
     const travelPx = introPx + feedZonePx;
     return { introPx, feedZonePx, travelPx, feedScrollPx };
   }
 
-  /** Scroll track = intro + feed travel, plus one viewport for sticky pin — no dead zone after. */
   function setScrollZoneHeight(zone, feed) {
     if (!zone || !feed) return;
     const { travelPx } = scrollMetrics(feed);
     zone.style.minHeight = `${travelPx + window.innerHeight}px`;
+    zone.style.height = "";
   }
 
   function scrolledPx(zone) {
-    const rect = zone.getBoundingClientRect();
-    const max = zone.offsetHeight - window.innerHeight;
-    return clamp(-rect.top, 0, Math.max(max, 0));
+    const top = zone.getBoundingClientRect().top;
+    const max = Math.max(0, zone.offsetHeight - window.innerHeight);
+    return clamp(-top, 0, max);
   }
 
   function applyPhoneIntro(device, introP) {
@@ -251,7 +254,7 @@
       applyPhoneIntro(device, 1);
       const feedScrolled = Math.min(scrolled - introPx, feedZonePx);
       const feedP = feedZonePx > 0 ? feedScrolled / feedZonePx : 0;
-      feed.scrollTop = easeOutCubic(feedP) * feedScrollPx;
+      feed.scrollTop = feedP * feedScrollPx;
       if (hint) {
         hint.textContent = "Keep scrolling to browse the feed";
         hint.classList.add("is-feed-phase");
@@ -265,6 +268,7 @@
     window.__phoneShowcaseEls = els;
 
     const measure = () => {
+      feed.scrollTop = 0;
       void els.feed.offsetHeight;
       setScrollZoneHeight(els.zone, els.feed);
       updateScroll();
@@ -273,6 +277,7 @@
     const resize = () => {
       measure();
       requestAnimationFrame(measure);
+      setTimeout(measure, 120);
     };
 
     if (!prefersReducedMotion()) {
