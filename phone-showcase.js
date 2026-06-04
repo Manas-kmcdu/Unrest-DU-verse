@@ -1,8 +1,12 @@
 /**
- * Scroll-driven phone preview (Fizz-style):
- * scrolling the page scrolls the feed inside a sticky phone — not an auto-marquee.
+ * Scroll-driven phone preview:
+ * Phase 1 — page scroll slides phone left into view.
+ * Phase 2 — page scroll drives feed inside the phone.
  */
 (function () {
+  const INTRO_VH = 0.92;
+  const FEED_EXTRA_VH = 0.42;
+
   const COLLEGES = [
     "SRCC", "Hindu", "Miranda", "LSR", "St. Stephen's", "Hansraj", "Kirori Mal",
     "Ramjas", "Lady Shri Ram", "Gargi", "IP College", "Sri Venkateswara",
@@ -26,8 +30,8 @@
         </div>
         <div class="post-badge" style="background:#f0e8e6;color:#9e4538">SRCC</div>
       </div>
-      <div class="post-img" style="background:#f0e8e6;font-family:var(--serif);font-size:0.8rem;color:#9e4538;padding:8px;text-align:center;flex-direction:column;display:flex;justify-content:center;">
-        <div style="font-size:1.6rem;margin-bottom:4px">🎓</div>
+      <div class="post-img" style="background:#f0e8e6;font-family:var(--serif);font-size:0.75rem;color:#9e4538;padding:8px;text-align:center;flex-direction:column;display:flex;justify-content:center;">
+        <div style="font-size:1.4rem;margin-bottom:4px">🎓</div>
         <div>Economics fest '25 — registrations open</div>
       </div>
       <div class="post-body">EconFest this Friday at SRCC auditorium. Case comps, guest lectures, networking. Free for DU students.</div>
@@ -100,9 +104,9 @@
       <div class="ps-feed-banner-tag">Stress-o-meter</div>
       <div class="ps-feed-banner-title">Campus average: 7.2 this week</div>
     </div>
-    <div style="background:#fff;border:0.5px solid var(--border);border-radius:12px;padding:10px;flex-shrink:0">
-      <div style="font-size:0.65rem;font-weight:700;color:var(--ink)">Corridor · Off your chest</div>
-      <div style="font-size:0.58rem;color:var(--ink3);margin-top:4px">286 inside · anonymous</div>
+    <div style="background:#fff;border:0.5px solid var(--border);border-radius:10px;padding:9px;flex-shrink:0">
+      <div style="font-size:0.62rem;font-weight:700;color:var(--ink)">Corridor · Off your chest</div>
+      <div style="font-size:0.55rem;color:var(--ink3);margin-top:3px">286 inside · anonymous</div>
     </div>
     <div class="sport-card blue">
       <div class="sc-top">
@@ -117,10 +121,18 @@
       </div>
     </div>
     <div class="post">
-      <div class="post-body" style="padding-top:10px">Roommate in Vijay Nagar · ₹12k · veg only — DM if interested</div>
+      <div class="post-body" style="padding-top:9px">Roommate in Vijay Nagar · ₹12k · veg only — DM if interested</div>
       <div class="post-actions"><span class="post-act">W 21</span><span class="post-act">💬 8</span></div>
     </div>
   `;
+
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
 
   function ribbonMarkup() {
     return RIBBON.map((item) => {
@@ -142,7 +154,7 @@
       <div class="phone-showcase-head">
         <div class="section-label">The app</div>
         <h2>See what DU is <em>actually posting</em></h2>
-        <p>Keep scrolling — the feed inside the phone moves with you, just like browsing Unrest on campus.</p>
+        <p>Scroll once to bring the app into view — then keep scrolling to browse the feed inside.</p>
       </div>
       <div class="phone-showcase-scroll-zone" id="phone-showcase-scroll-zone">
         <div class="phone-showcase-pin">
@@ -150,9 +162,9 @@
             ${ribbonMarkup()}
           </div>
           <div class="phone-showcase-stage">
-            <div class="phone-frame phone-showcase-device">
+            <div class="phone-frame phone-showcase-device" id="phone-showcase-device">
               <div class="phone-screen">
-                <div class="phone-status"><span>9:41</span><span>●●● 100%</span></div>
+                <div class="phone-status"><span>9:41</span><span>●●●</span></div>
                 <div class="phone-nav">
                   <div class="phone-nav-logo">Un<span>rest</span></div>
                 </div>
@@ -165,7 +177,7 @@
               </div>
             </div>
           </div>
-          <p class="phone-showcase-hint">Scroll the page to explore</p>
+          <p class="phone-showcase-hint" id="phone-showcase-hint">Scroll to bring the app into view</p>
           <div class="phone-showcase-colleges">
             <div class="phone-showcase-colleges-track" id="phone-showcase-colleges">${collegesMarkup()}</div>
           </div>
@@ -175,8 +187,10 @@
     return {
       zone: document.getElementById("phone-showcase-scroll-zone"),
       feed: document.getElementById("phone-showcase-feed"),
+      device: document.getElementById("phone-showcase-device"),
       ribbon: document.getElementById("phone-showcase-ribbon"),
       colleges: document.getElementById("phone-showcase-colleges"),
+      hint: document.getElementById("phone-showcase-hint"),
     };
   }
 
@@ -188,36 +202,83 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
-  function setScrollZoneHeight(zone, feed) {
-    if (!zone || !feed) return;
-    const innerScroll = Math.max(0, feed.scrollHeight - feed.clientHeight);
-    const travel = innerScroll + window.innerHeight * 0.55;
-    zone.style.minHeight = `${Math.max(travel + window.innerHeight * 0.35, window.innerHeight * 1.85)}px`;
+  function scrollMetrics(feed) {
+    const introPx = window.innerHeight * INTRO_VH;
+    const feedScrollPx = Math.max(0, feed.scrollHeight - feed.clientHeight);
+    const feedZonePx = feedScrollPx + window.innerHeight * FEED_EXTRA_VH;
+    const totalPx = introPx + feedZonePx;
+    const introRatio = introPx / totalPx;
+    return { introPx, feedZonePx, totalPx, introRatio, feedScrollPx };
   }
 
-  function progressForZone(zone) {
+  function setScrollZoneHeight(zone, feed) {
+    if (!zone || !feed) return;
+    const { totalPx } = scrollMetrics(feed);
+    zone.style.minHeight = `${totalPx + window.innerHeight}px`;
+    zone.dataset.introRatio = String(scrollMetrics(feed).introRatio);
+  }
+
+  function scrolledPx(zone) {
     const rect = zone.getBoundingClientRect();
-    const total = zone.offsetHeight - window.innerHeight;
-    if (total <= 0) return 0;
-    return clamp(-rect.top / total, 0, 1);
+    const max = zone.offsetHeight - window.innerHeight;
+    return clamp(-rect.top, 0, Math.max(max, 0));
+  }
+
+  function applyPhoneIntro(device, introP) {
+    const t = easeOutCubic(introP);
+    const isWide = window.matchMedia("(min-width: 900px)").matches;
+    const xStart = isWide ? 22 : 16;
+    const xEnd = isWide ? -2 : 0;
+    const x = lerp(xStart, xEnd, t);
+    const rot = lerp(-6, 0, t);
+    const scale = lerp(0.9, 1, t);
+    device.style.transform = `translateX(${x}vw) rotate(${rot}deg) scale(${scale})`;
   }
 
   function updateScroll() {
     const els = window.__phoneShowcaseEls;
     if (!els || prefersReducedMotion()) return;
 
-    const { zone, feed, ribbon, colleges } = els;
-    const p = progressForZone(zone);
-    const maxScroll = Math.max(0, feed.scrollHeight - feed.clientHeight);
-    feed.scrollTop = p * maxScroll;
+    const { zone, feed, device, ribbon, colleges, hint } = els;
+    const { introRatio, feedScrollPx } = scrollMetrics(feed);
+    const scrolled = scrolledPx(zone);
+    const totalScrollable = Math.max(zone.offsetHeight - window.innerHeight, 1);
+    const p = scrolled / totalScrollable;
 
-    if (ribbon) {
-      const shift = p * 28;
-      ribbon.style.transform = `translateY(-50%) translateX(${-shift}%)`;
-    }
-    if (colleges) {
-      const maxShift = Math.max(0, colleges.scrollWidth / 2 - (colleges.parentElement?.clientWidth || 0) / 2);
-      colleges.style.transform = `translateX(${-p * maxShift}px)`;
+    if (p < introRatio) {
+      const introP = p / introRatio;
+      applyPhoneIntro(device, introP);
+      feed.scrollTop = 0;
+      if (ribbon) {
+        ribbon.style.transform = `translateY(-50%) translateX(${lerp(8, -6, easeOutCubic(introP))}%)`;
+        ribbon.style.opacity = String(lerp(0.08, 0.14, introP));
+      }
+      if (colleges) colleges.style.transform = "translateX(0)";
+      if (hint) {
+        hint.textContent = "Scroll to bring the app into view";
+        hint.classList.remove("is-feed-phase");
+      }
+    } else {
+      applyPhoneIntro(device, 1);
+      const feedP = (p - introRatio) / (1 - introRatio);
+      const easedFeed = easeOutCubic(feedP);
+      feed.scrollTop = easedFeed * feedScrollPx;
+
+      if (ribbon) {
+        ribbon.style.transform = `translateY(-50%) translateX(${-6 - easedFeed * 22}%)`;
+        ribbon.style.opacity = "0.14";
+      }
+      if (colleges) {
+        const maxShift = Math.max(
+          0,
+          colleges.scrollWidth / 2 - (colleges.parentElement?.clientWidth || 0) / 2
+        );
+        colleges.style.transform = `translateX(${-easedFeed * maxShift}px)`;
+      }
+      if (hint) {
+        hint.textContent = "Keep scrolling to browse the feed";
+        hint.classList.add("is-feed-phase");
+      }
     }
   }
 
