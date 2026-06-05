@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Join Us — Unrest</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .ju-wrap { max-width: 520px; margin: 2rem auto; padding: 0 1.25rem 3rem; }
+    .ju-wrap h1 { font-family: Georgia, serif; font-size: 1.85rem; margin: 0 0 0.5rem; }
+    .ju-wrap p { color: #444; margin: 0 0 1.5rem; line-height: 1.5; }
+    .ju-field { margin-bottom: 1rem; }
+    .ju-field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem; }
+    .ju-field input, .ju-field textarea {
+      width: 100%; padding: 0.65rem 0.75rem; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .ju-field textarea { min-height: 96px; resize: vertical; }
+    .ju-btn {
+      width: 100%; margin-top: 0.5rem; padding: 0.85rem; border: none; border-radius: 10px;
+      background: #111; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer;
+    }
+    .ju-status { margin-top: 1rem; font-size: 0.9rem; min-height: 1.25rem; }
+    .ju-logo { max-width: 200px; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="ju-wrap">
+    <img class="ju-logo" src="unrest-team-apply.png" alt="Unrest" onerror="this.style.display='none'" />
+    <h1>Join Us</h1>
+    <p>Apply to join the Unrest team — we read every submission.</p>
+    <form id="join-us-form">
+      <div class="ju-field"><label for="name">Name</label><input id="name" name="name" required autocomplete="name" /></div>
+      <div class="ju-field"><label for="email">Email</label><input id="email" name="email" type="email" required autocomplete="email" /></div>
+      <div class="ju-field"><label for="college">College</label><input id="college" name="college" required /></div>
+      <div class="ju-field"><label for="course">Course</label><input id="course" name="course" required /></div>
+      <div class="ju-field"><label for="whyJoin">Why do you want to join Unrest?</label><textarea id="whyJoin" name="whyJoin" required></textarea></div>
+      <div class="ju-field"><label for="bringToTeam">What do you bring to the team?</label><textarea id="bringToTeam" name="bringToTeam" required></textarea></div>
+      <button class="ju-btn" type="submit">Submit</button>
+    </form>
+    <p class="ju-status" id="ju-status" role="status"></p>
+  </div>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="join-us.js"></script>
+</body>
+</html>
