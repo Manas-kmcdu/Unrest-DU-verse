@@ -4,10 +4,17 @@ const { db, collection, addDoc, serverTimestamp } = window.__firebase;
 
 const form = document.getElementById("join-us-form");
 const statusEl = document.getElementById("ju-status");
+const submitBtn = document.getElementById("ju-submit");
+
+function setStatus(message, kind = "") {
+  statusEl.textContent = message;
+  statusEl.className = "ju-status" + (kind ? ` ${kind}` : "");
+}
 
 form?.addEventListener("submit", async (e) => {
   e.preventDefault();
-  statusEl.textContent = "Sending…";
+  setStatus("Sending…");
+  if (submitBtn) submitBtn.disabled = true;
   const fd = new FormData(form);
   try {
     await addDoc(collection(db, "team_applications"), {
@@ -20,9 +27,11 @@ form?.addEventListener("submit", async (e) => {
       source: new URLSearchParams(location.search).get("source") === "app" ? "app_banner" : "website",
       createdAt: serverTimestamp(),
     });
-    statusEl.textContent = "Thanks — we received your application.";
+    setStatus("Thanks — we received your application.", "ok");
     form.reset();
   } catch (err) {
-    statusEl.textContent = err?.message || "Could not submit. Email contact@unrestdu.in";
+    setStatus(err?.message || "Could not submit. Email contact@unrestdu.in", "err");
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
   }
 });

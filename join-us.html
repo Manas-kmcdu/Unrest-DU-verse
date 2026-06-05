@@ -4,42 +4,294 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Join Us — Unrest</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    .ju-wrap { max-width: 520px; margin: 2rem auto; padding: 0 1.25rem 3rem; }
-    .ju-wrap h1 { font-family: Georgia, serif; font-size: 1.85rem; margin: 0 0 0.5rem; }
-    .ju-wrap p { color: #444; margin: 0 0 1.5rem; line-height: 1.5; }
-    .ju-field { margin-bottom: 1rem; }
-    .ju-field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem; }
-    .ju-field input, .ju-field textarea {
-      width: 100%; padding: 0.65rem 0.75rem; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;
-      box-sizing: border-box;
+    :root {
+      --ink: #0e0d0b;
+      --ink2: #3d3b35;
+      --ink3: #7a776e;
+      --paper: #f5f2eb;
+      --cream: #ede9df;
+      --card: #fffdf8;
+      --accent: #c84b2f;
+      --accent-soft: rgba(200, 75, 47, 0.12);
+      --border: rgba(14, 13, 11, 0.1);
+      --serif: "Instrument Serif", Georgia, serif;
+      --sans: "DM Sans", system-ui, sans-serif;
+      --shadow: 0 24px 60px rgba(14, 13, 11, 0.08), 0 4px 16px rgba(14, 13, 11, 0.04);
     }
-    .ju-field textarea { min-height: 96px; resize: vertical; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      color: var(--ink);
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(200, 75, 47, 0.14), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 100% 100%, rgba(42, 107, 74, 0.08), transparent 50%),
+        var(--paper);
+      line-height: 1.5;
+    }
+
+    .ju-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 1.25rem 1.25rem 0;
+    }
+
+    .ju-back {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--ink3);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .ju-back:hover { color: var(--accent); }
+
+    .ju-pill {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid rgba(200, 75, 47, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 100px;
+    }
+
+    .ju-page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3.5rem;
+    }
+
+    .ju-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .ju-hero {
+      padding: 2rem 1.75rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(165deg, rgba(255, 253, 248, 1) 0%, rgba(237, 233, 223, 0.45) 100%);
+    }
+
+    .ju-logo {
+      display: block;
+      max-width: 168px;
+      height: auto;
+      margin-bottom: 1.25rem;
+    }
+
+    .ju-hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 6vw, 2.65rem);
+      font-weight: 400;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.65rem;
+    }
+
+    .ju-hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .ju-lead {
+      font-size: 0.95rem;
+      color: var(--ink2);
+      max-width: 36ch;
+      line-height: 1.55;
+    }
+
+    .ju-form {
+      padding: 1.5rem 1.75rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .ju-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 520px) {
+      .ju-row { grid-template-columns: 1fr; }
+      .ju-hero, .ju-form { padding-left: 1.25rem; padding-right: 1.25rem; }
+    }
+
+    .ju-field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .ju-field label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--ink3);
+    }
+
+    .ju-field input,
+    .ju-field textarea {
+      width: 100%;
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.72rem 0.85rem;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .ju-field input::placeholder,
+    .ju-field textarea::placeholder {
+      color: #a8a49a;
+    }
+
+    .ju-field input:hover,
+    .ju-field textarea:hover {
+      border-color: rgba(14, 13, 11, 0.18);
+    }
+
+    .ju-field input:focus,
+    .ju-field textarea:focus {
+      outline: none;
+      border-color: rgba(200, 75, 47, 0.45);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+      background: #fff;
+    }
+
+    .ju-field textarea {
+      min-height: 108px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .ju-field--wide { grid-column: 1 / -1; }
+
     .ju-btn {
-      width: 100%; margin-top: 0.5rem; padding: 0.85rem; border: none; border-radius: 10px;
-      background: #111; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer;
+      margin-top: 0.35rem;
+      width: 100%;
+      padding: 0.9rem 1.25rem;
+      border: none;
+      border-radius: 12px;
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--ink);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 14px rgba(14, 13, 11, 0.18);
     }
-    .ju-status { margin-top: 1rem; font-size: 0.9rem; min-height: 1.25rem; }
-    .ju-logo { max-width: 200px; margin-bottom: 1rem; }
+
+    .ju-btn:hover {
+      background: var(--accent);
+      box-shadow: 0 6px 20px rgba(200, 75, 47, 0.28);
+    }
+
+    .ju-btn:active { transform: translateY(1px); }
+
+    .ju-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .ju-status {
+      min-height: 1.25rem;
+      font-size: 0.88rem;
+      text-align: center;
+      color: var(--ink3);
+    }
+
+    .ju-status.ok {
+      color: var(--green, #2a6b4a);
+      font-weight: 500;
+    }
+
+    .ju-status.err { color: var(--accent); }
+
+    .ju-foot {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--ink3);
+    }
+
+    .ju-foot a {
+      color: var(--ink2);
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .ju-foot a:hover { color: var(--accent); }
   </style>
 </head>
 <body>
-  <div class="ju-wrap">
-    <img class="ju-logo" src="unrest-team-apply.png" alt="Unrest" onerror="this.style.display='none'" />
-    <h1>Join Us</h1>
-    <p>Apply to join the Unrest team — we read every submission.</p>
-    <form id="join-us-form">
-      <div class="ju-field"><label for="name">Name</label><input id="name" name="name" required autocomplete="name" /></div>
-      <div class="ju-field"><label for="email">Email</label><input id="email" name="email" type="email" required autocomplete="email" /></div>
-      <div class="ju-field"><label for="college">College</label><input id="college" name="college" required /></div>
-      <div class="ju-field"><label for="course">Course</label><input id="course" name="course" required /></div>
-      <div class="ju-field"><label for="whyJoin">Why do you want to join Unrest?</label><textarea id="whyJoin" name="whyJoin" required></textarea></div>
-      <div class="ju-field"><label for="bringToTeam">What do you bring to the team?</label><textarea id="bringToTeam" name="bringToTeam" required></textarea></div>
-      <button class="ju-btn" type="submit">Submit</button>
-    </form>
+  <header class="ju-topbar">
+    <a class="ju-back" href="https://unrestdu.in">← unrestdu.in</a>
+    <span class="ju-pill">Team applications</span>
+  </header>
+
+  <main class="ju-page">
+    <div class="ju-card">
+      <div class="ju-hero">
+        <img class="ju-logo" src="unrest-team-apply.png" alt="Unrest" onerror="this.style.display='none'" />
+        <h1>Join <em>Us</em></h1>
+        <p class="ju-lead">Help build Delhi University's campus network. Tell us who you are and what you'd bring to Unrest.</p>
+      </div>
+
+      <form id="join-us-form" class="ju-form">
+        <div class="ju-field ju-field--wide">
+          <label for="name">Name</label>
+          <input id="name" name="name" required autocomplete="name" placeholder="Your full name" />
+        </div>
+
+        <div class="ju-field ju-field--wide">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@du.ac.in or gmail" />
+        </div>
+
+        <div class="ju-row">
+          <div class="ju-field">
+            <label for="college">College</label>
+            <input id="college" name="college" required placeholder="e.g. Kirori Mal" />
+          </div>
+          <div class="ju-field">
+            <label for="course">Course</label>
+            <input id="course" name="course" required placeholder="e.g. B.A. Programme" />
+          </div>
+        </div>
+
+        <div class="ju-field ju-field--wide">
+          <label for="whyJoin">Why do you want to join Unrest?</label>
+          <textarea id="whyJoin" name="whyJoin" required placeholder="What draws you to the team?"></textarea>
+        </div>
+
+        <div class="ju-field ju-field--wide">
+          <label for="bringToTeam">What do you bring to the team?</label>
+          <textarea id="bringToTeam" name="bringToTeam" required placeholder="Skills, ideas, energy — be specific."></textarea>
+        </div>
+
+        <button class="ju-btn" type="submit" id="ju-submit">Submit application</button>
+      </form>
+    </div>
+
     <p class="ju-status" id="ju-status" role="status"></p>
-  </div>
+    <p class="ju-foot">Questions? <a href="mailto:contact@unrestdu.in">contact@unrestdu.in</a></p>
+  </main>
+
   <script type="module" src="firebase.js"></script>
   <script type="module" src="join-us.js"></script>
 </body>
