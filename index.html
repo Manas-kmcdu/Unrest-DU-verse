@@ -3,14 +3,13 @@
  <script data-goatcounter="https://manas-pandeya.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 <head>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <meta name="google-site-verification" content="CqsB2Vkk5AJFPb8OLxOyUm1mlGNZdYGBCL6Ia0CUvGY" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Unrest - Delhi University's Campus Network</title>
 <meta name="title" content="Unrest - Delhi University's Campus Network">
-<meta name="description" content="Unrest is Delhi University's verified campus network - social feed, fests, sports, jobs & marketplace. for all DU students.">
+<meta name="description" content="Unrest is Delhi University's verified campus network - social feed, fests, sports, jobs & marketplace. Free for DU students.">
 <meta name="keywords" content="Delhi University student app, DU campus network, Delhi University social network, DU college community app, DU fests">
 <link rel="canonical" href="https://unrest.in/">
 <script src="https://www.gstatic.com/firebasejs/ui/6.0.0/firebase-ui-auth.js"></script>
@@ -133,13 +132,6 @@
   .nav-logo { font-family: var(--serif); font-size: 1.4rem; color: var(--ink); text-decoration: none; letter-spacing: -0.02em; }
   .nav-logo span { color: var(--accent); font-style: italic; }
   .nav-links { display: flex; align-items: center; gap: 2rem; }
-  .nav-links { display: flex; align-items: center; gap: 18px;}
-  .nav-icon { font-size: 20px; color: #111;transition: opacity .2s ease;
-}
-
-.nav-icon:hover {
-    opacity: 0.7;
-}
   .nav-links a { font-size: 0.85rem; font-weight: 500; color: var(--ink2); text-decoration: none; transition: color 0.2s; cursor: pointer; }
   .nav-links a:hover { color: var(--accent); }
   .nav-cta { background: var(--ink); color: var(--paper) !important; padding: 0.5rem 1.2rem; border-radius: 100px; font-size: 0.82rem !important; font-weight: 600 !important; transition: background 0.2s !important; }
@@ -240,18 +232,17 @@
   .countdown-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent2); margin-bottom: 1rem; }
   .countdown-title { font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--paper); margin-bottom: 0.5rem; }
   .countdown-title em { font-style: italic; color: var(--accent2); }
-  .countdown-sub { font-size: 0.9rem; color: rgba(245,242,235,0.4); margin-bottom: 3rem; }
-  .countdown-grid { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
-  .cd-unit { display: flex; flex-direction: column; align-items: center; background: rgba(245,242,235,0.06); border: 0.5px solid rgba(245,242,235,0.1); border-radius: 20px; padding: 1.5rem 2rem; min-width: 110px; position: relative; overflow: hidden; }
-  .cd-unit::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(245,242,235,0.05) 0%, transparent 60%); }
-  .cd-num { font-family: var(--serif); font-size: clamp(3rem, 6vw, 5rem); color: var(--paper); line-height: 1; letter-spacing: -0.04em; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); position: relative; }
-  .cd-num.flip { animation: numFlip 0.4s ease; }
-  @keyframes numFlip { 0% { transform: translateY(-8px) scale(0.9); opacity: 0.5; } 60% { transform: translateY(4px) scale(1.05); } 100% { transform: translateY(0) scale(1); opacity: 1; } }
-  .cd-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,242,235,0.35); margin-top: 0.5rem; }
-  .cd-accent { position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); animation: pulse 2s infinite; }
-  .launch-bar { margin-top: 2.5rem; background: rgba(245,242,235,0.06); border: 0.5px solid rgba(245,242,235,0.1); border-radius: 100px; height: 6px; max-width: 400px; margin-left: auto; margin-right: auto; overflow: hidden; }
-  .launch-bar-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 1s ease; }
-  .launch-bar-label { font-size: 0.7rem; color: rgba(245,242,235,0.3); margin-top: 0.75rem; }
+  .countdown-sub { font-size: 0.9rem; color: rgba(245,242,235,0.4); margin-bottom: 2rem; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+  .launch-status-grid { display: flex; flex-direction: column; gap: 0.75rem; max-width: 480px; margin: 0 auto 2rem; text-align: left; }
+  .launch-status-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.9rem 1rem; background: rgba(245,242,235,0.06); border: 0.5px solid rgba(245,242,235,0.1); border-radius: 14px; }
+  .launch-status-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 0.35rem; flex-shrink: 0; }
+  .launch-status-dot.live { background: #6bcb77; box-shadow: 0 0 8px rgba(107,203,119,0.5); animation: pulse 2s infinite; }
+  .launch-status-dot.wait { background: var(--accent2); animation: pulse 2s infinite; }
+  .launch-status-dot.open { background: rgba(245,242,235,0.45); }
+  .launch-status-copy { font-size: 0.82rem; color: rgba(245,242,235,0.75); line-height: 1.5; }
+  .launch-status-copy strong { color: var(--paper); font-weight: 600; }
+  .launch-status-cta { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--paper); color: var(--ink); font-weight: 700; font-size: 0.85rem; padding: 0.85rem 1.4rem; border-radius: 100px; border: none; cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
+  .launch-status-cta:hover { transform: translateY(-1px); opacity: 0.92; }
 
   /* TICKER & PULSE */
   .ticker-section { padding: 2rem 0; overflow: hidden; background: var(--ink); border-top: 1px solid rgba(245,242,235,0.05); border-bottom: 1px solid rgba(245,242,235,0.05); }
@@ -530,15 +521,8 @@
   }
   @media (max-width: 768px) {
     nav { padding: 0 1.25rem; }
-
-@media (max-width: 768px) {.nav-links { gap: 12px; }
-   .nav-icon {font-size: 18px; }
-
-}
-   
     .nav-links { display: flex; gap: 0.75rem; }
-    .nav-links a:not(.nav-cta):not(.nav-icon) { display: none; }
-    .cd-unit { padding: 1rem 1.2rem; min-width: 80px; }
+    .nav-links a:not(.nav-cta) { display: none; }
     .pulse-left { text-align: center; } 
     
     /* MOBILE OPTIMIZATIONS FOR HERO */
@@ -689,21 +673,10 @@
 </style>
 </head>
 <body>
- 
+
 <nav>
   <a href="#" class="nav-logo">Un<span>rest</span></a>
   <div class="nav-links">
-    <a href="https://instagram.com/unrest.du"
-       target="_blank"
-       class="nav-icon"
-       aria-label="Instagram">
-      <i class="fab fa-instagram"></i>
-    </a>
-    <a href="mailto:contact@unrestdu.in"
-       class="nav-icon"
-       aria-label="Email">
-      <i class="fas fa-envelope"></i>
-    </a>
     <a href="#rollcall">Roll Call</a>
     <a href="#waitlist" class="nav-cta">Join waitlist</a>
   </div>
@@ -727,7 +700,7 @@
   </div>
 
   <div class="stat-badge stat-1"><div class="sb-num">90+</div><div class="sb-label">DU Colleges</div></div>
-  <div class="stat-badge blue stat-2"><div class="sb-num">Personalised</div><div class="sb-label">For Colleges & Courses</div></div>
+  <div class="stat-badge blue stat-2"><div class="sb-num">Free</div><div class="sb-label">Forever for students</div></div>
   <div class="stat-badge green stat-3"><div class="sb-num" id="hero-live-count">247</div><div class="sb-label">On the waitlist</div></div>
   
   <div class="hero-content">
@@ -737,7 +710,7 @@
     <p class="hero-sub">A verified social network, marketplace, and community hub - built exclusively for DU students.</p>
     <div class="hero-form" id="hero-form">
       <input type="email" placeholder="Your email (DU or Gmail)" id="hero-email">
-      <button onclick="startEarlyAccess('hero')">Get your early access code</button>
+      <button onclick="startEarlyAccess('hero')">Get early access</button>
     </div>
     <div class="ea-paths" id="hero-ea-paths">
       <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','du_student')"><strong>DU student</strong><span class="ea-path-sub">@du.ac.in or Gmail + proof</span></button>
@@ -747,21 +720,26 @@
   </div>
 </section>
 
-<div class="countdown-section" id="countdown">
+<div class="countdown-section" id="launch-status">
   <div class="countdown-inner">
-    <div class="countdown-eyebrow">🚀 Launch countdown</div>
-    <h2 class="countdown-title">Unrest goes live on <em>11 June 2026</em></h2>
-    <p class="countdown-sub">Sign up for Early Access and save your access code for the launch!</p>
-    <div class="countdown-grid">
-      <div class="cd-unit"><div class="cd-accent"></div><div class="cd-num" id="cd-days">--</div><div class="cd-label">Days</div></div>
-      <div class="cd-unit"><div class="cd-num" id="cd-hours">--</div><div class="cd-label">Hours</div></div>
-      <div class="cd-unit"><div class="cd-num" id="cd-mins">--</div><div class="cd-label">Minutes</div></div>
-      <div class="cd-unit"><div class="cd-num" id="cd-secs">--</div><div class="cd-label">Seconds</div></div>
+    <div class="countdown-eyebrow">Launch status</div>
+    <h2 class="countdown-title">Almost there — <em>launching soon</em></h2>
+    <p class="countdown-sub">Early access is open now. Join the waitlist, save your code, and be ready when we go live.</p>
+    <div class="launch-status-grid">
+      <div class="launch-status-item">
+        <div class="launch-status-dot live"></div>
+        <div class="launch-status-copy"><strong>Early access open</strong> — sign up, get your code, and build your profile before launch.</div>
+      </div>
+      <div class="launch-status-item">
+        <div class="launch-status-dot wait"></div>
+        <div class="launch-status-copy"><strong>Launch when app goes live</strong> — iOS first. We'll share the download link as soon as it's available.</div>
+      </div>
+      <div class="launch-status-item">
+        <div class="launch-status-dot open"></div>
+        <div class="launch-status-copy"><strong>Android</strong> — Play Store release follows on iOS.</div>
+      </div>
     </div>
-    <div style="margin-top:2.5rem">
-      <div class="launch-bar"><div class="launch-bar-fill" id="launch-fill" style="width:0%"></div></div>
-      <div class="launch-bar-label" id="launch-pct">Calculating progress...</div>
-    </div>
+    <button type="button" class="launch-status-cta" onclick="document.getElementById('hero').scrollIntoView({behavior:'smooth'})">Join early access →</button>
   </div>
 </div>
 
@@ -969,7 +947,7 @@
           <div id="mod-items-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
           <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-              <h3 style="font-family: var(--serif); color: var(--accent); margin:0;">Early access - Gmail DU proof</h3>
+              <h3 style="font-family: var(--serif); color: var(--accent); margin:0;">Early access — Gmail DU proof</h3>
               <span style="font-size: 0.8rem; background: var(--green); color: white; padding: 2px 8px; border-radius: 100px;" id="ea-mod-count">0 Pending</span>
             </div>
             <div id="ea-mod-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
@@ -1262,14 +1240,14 @@
   <nav style="display:flex;gap:1.5rem">
     <a href="/privacy.html">Privacy</a>
     <a href="/terms.html">Terms</a>
-    <a onclick="document.getElementById('admin-modal').style.display='flex'">sike</a>
+    <a onclick="document.getElementById('admin-modal').style.display='flex'">Admin Login</a>
   </nav>
 </footer>
 
 <div class="admin-modal" id="admin-modal">
   <div class="admin-box">
     <div class="admin-close" onclick="document.getElementById('admin-modal').style.display='none'">✕</div>
-    <h3>pls go back twin</h3>
+    <h3>Admin Login</h3>
     <input type="email" id="admin-email" class="admin-input" placeholder="Admin Email">
     <input type="password" id="admin-pass" class="admin-input" placeholder="Password">
     <button class="admin-btn" onclick="adminLogin()">Login to Moderate</button>
@@ -1531,19 +1509,7 @@ window.voteCloud = async function(id, type, btn) {
   } catch(e) {}
 };
 
-// --- COUNTDOWN & UTILS ---
-const LAUNCH_DATE = new Date("June 11, 2026 00:00:00 GMT+0530").getTime();
-function updateCountdown() {
-  const now = new Date().getTime(); const diff = LAUNCH_DATE - now;
-  if (diff <= 0) return;
-  document.getElementById('cd-days').textContent = String(Math.floor(diff / 86400000)).padStart(2, '0');
-  document.getElementById('cd-hours').textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
-  document.getElementById('cd-mins').textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-  document.getElementById('cd-secs').textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-}
-setInterval(updateCountdown, 1000);
-
-function spawnConfetti(color) {
+// --- UTILS ---
   const container = document.getElementById('confetti-container');
   for (let i = 0; i < 28; i++) {
     const p = document.createElement('div'); p.className = 'confetti-piece';
@@ -1722,10 +1688,10 @@ updatePulseBar();
             backdrop-filter:blur(12px); border: 1px solid rgba(255,255,255,0.1);">
             <div style="font-size:0.55rem;font-weight:700;letter-spacing:0.1em;
               text-transform:uppercase;color:rgba(255,255,255,0.5);font-family:'DM Sans',sans-serif;
-              margin-bottom:6px;text-align:center;">Launch Date</div>
+              margin-bottom:6px;text-align:center;">Status</div>
             <div style="font-size:0.75rem;color:#fff;font-family:'DM Sans',sans-serif;
               font-weight:500;line-height:1.4;text-align:center;">
-              <strong>11 June 2026</strong>
+              <strong>Launching soon</strong>
             </div>
           </div>
 
@@ -1805,7 +1771,7 @@ updatePulseBar();
     " <strong>15-rupee chai</strong> ·  Metro updates ·  Nukkad Natak",
     " <strong>North Campus vibe</strong> ·  South Campus pride ·  College lore",
     " <strong>Founding member perks</strong> ·  Verified badge ·  Free merch",
-    " <strong>11 June 2026</strong> ·  Launch countdown live ·  Claim your spot"
+    " <strong>Early access open</strong> ·  Launch when app goes live ·  Android next"
   ];
 
   const el = document.querySelector('.promo-text');
@@ -1922,7 +1888,7 @@ updatePulseBar();
   window.shareWhatsApp = function() {
     const name = window.userVerifiedCollege ? window.userVerifiedCollege.name : 'My college';
     const url  = window.location.href.split('#')[0];
-    const msg  = `*Unrest* - Delhi University's own campus network is launching *11 June 2026*!\n\nI just claimed my verified pass for *${name}*. Is your college in?\n\nJoin the waitlist: ${url}`;
+    const msg  = `*Unrest* - Delhi University's own campus network is coming soon!\n\nI just claimed my verified pass for *${name}*. Is your college in?\n\nJoin the waitlist: ${url}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
