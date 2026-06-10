@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Download Unrest — DU Campus App</title>
+  <meta name="description" content="Download Unrest for Android or join the iOS beta on TestFlight. Delhi University's verified campus network." />
+  <link rel="canonical" href="https://unrestdu.in/download.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0e0d0b;
+      --ink2: #3d3b35;
+      --ink3: #7a776e;
+      --paper: #f5f2eb;
+      --cream: #ede9df;
+      --card: #fffdf8;
+      --accent: #c84b2f;
+      --accent-soft: rgba(200, 75, 47, 0.12);
+      --green: #2a6b4a;
+      --green-soft: rgba(42, 107, 74, 0.1);
+      --blue: #1e4f8c;
+      --blue-soft: rgba(30, 79, 140, 0.1);
+      --border: rgba(14, 13, 11, 0.1);
+      --serif: "Instrument Serif", Georgia, serif;
+      --sans: "DM Sans", system-ui, sans-serif;
+      --shadow: 0 24px 60px rgba(14, 13, 11, 0.08), 0 4px 16px rgba(14, 13, 11, 0.04);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      color: var(--ink);
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(200, 75, 47, 0.14), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 100% 100%, rgba(42, 107, 74, 0.08), transparent 50%),
+        var(--paper);
+      line-height: 1.5;
+    }
+
+    .dl-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1.25rem 1.25rem 0;
+    }
+
+    .dl-back {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--ink3);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .dl-back:hover { color: var(--accent); }
+
+    .dl-pill {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid rgba(200, 75, 47, 0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 100px;
+    }
+
+    .dl-page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3.5rem;
+    }
+
+    .dl-hero {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .dl-hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 6vw, 2.75rem);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+    }
+
+    .dl-hero h1 em { color: var(--accent); font-style: italic; }
+
+    .dl-hero p {
+      color: var(--ink2);
+      font-size: 0.95rem;
+      max-width: 34rem;
+      margin: 0 auto;
+    }
+
+    .dl-version {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink3);
+      background: var(--cream);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.75rem;
+      border-radius: 100px;
+    }
+
+    .dl-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .dl-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .dl-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 1.35rem 1.35rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .dl-card-head {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .dl-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+
+    .dl-icon.android { background: var(--green-soft); }
+    .dl-icon.ios { background: var(--blue-soft); }
+
+    .dl-card h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .dl-card .dl-sub {
+      font-size: 0.82rem;
+      color: var(--ink3);
+    }
+
+    .dl-card p {
+      font-size: 0.88rem;
+      color: var(--ink2);
+    }
+
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      margin-top: auto;
+      padding: 0.85rem 1.1rem;
+      border-radius: 100px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .dl-btn:hover { transform: translateY(-1px); opacity: 0.92; }
+
+    .dl-btn.android {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .dl-btn.ios {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .dl-btn.disabled {
+      background: var(--cream);
+      color: var(--ink3);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .dl-note {
+      margin-top: 1.25rem;
+      padding: 1rem 1.1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      font-size: 0.82rem;
+      color: var(--ink2);
+    }
+
+    .dl-note strong { color: var(--ink); }
+
+    .dl-steps {
+      margin-top: 1.25rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.1rem 1.25rem;
+    }
+
+    .dl-steps h3 {
+      font-size: 0.92rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .dl-steps ol {
+      margin-left: 1.1rem;
+      font-size: 0.84rem;
+      color: var(--ink2);
+    }
+
+    .dl-steps li + li { margin-top: 0.35rem; }
+
+    .dl-footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--ink3);
+    }
+
+    .dl-footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="dl-topbar">
+    <a class="dl-back" href="/">← Back to home</a>
+    <span class="dl-pill">Beta · Founding 35</span>
+  </div>
+
+  <main class="dl-page">
+    <div class="dl-hero">
+      <h1>Get <em>Unrest</em> on your phone</h1>
+      <p>Delhi University's campus network — feed, activities, corridor, and more. Sign in with your <strong>@du.ac.in</strong> email or approved account.</p>
+      <span class="dl-version">Version 1.0.6 · Beta</span>
+    </div>
+
+    <div class="dl-grid">
+      <section class="dl-card">
+        <div class="dl-card-head">
+          <div class="dl-icon android" aria-hidden="true">🤖</div>
+          <div>
+            <h2>Android</h2>
+            <div class="dl-sub">Direct APK install</div>
+          </div>
+        </div>
+        <p>Download the APK, open it, and allow install from your browser or files app. Updates ship automatically when you open the app.</p>
+        <a id="android-download" class="dl-btn android" href="#" rel="noopener">Download for Android</a>
+      </section>
+
+      <section class="dl-card">
+        <div class="dl-card-head">
+          <div class="dl-icon ios" aria-hidden="true">🍎</div>
+          <div>
+            <h2>iPhone</h2>
+            <div class="dl-sub">TestFlight beta</div>
+          </div>
+        </div>
+        <p>Install Apple's free TestFlight app, then open our public beta link. No Mac or sideloading needed.</p>
+        <a id="ios-download" class="dl-btn ios" href="#" rel="noopener">Join on TestFlight</a>
+      </section>
+    </div>
+
+    <div class="dl-note">
+      <strong>Need an access code?</strong> Founding members get one after approval on the waitlist. Use the same email in the app when you sign up.
+    </div>
+
+    <div class="dl-steps">
+      <h3>Android install tips</h3>
+      <ol>
+        <li>Tap <strong>Download for Android</strong> above.</li>
+        <li>If Chrome blocks the file, tap <strong>Download anyway</strong>.</li>
+        <li>Open the APK from your notifications or Downloads folder.</li>
+        <li>Allow install from this source if Android asks.</li>
+      </ol>
+    </div>
+
+    <div class="dl-steps" style="margin-top: 0.75rem;">
+      <h3>iPhone install tips</h3>
+      <ol>
+        <li>Install <strong>TestFlight</strong> from the App Store first.</li>
+        <li>Tap <strong>Join on TestFlight</strong> above on your iPhone.</li>
+        <li>Tap <strong>Accept</strong>, then <strong>Install</strong> in TestFlight.</li>
+      </ol>
+    </div>
+
+    <p class="dl-footer">
+      App Store &amp; Play Store listings coming after review.
+      · <a href="/privacy.html">Privacy</a>
+      · <a href="/terms.html">Terms</a>
+    </p>
+  </main>
+
+  <script>
+    // Update these URLs when a new APK is built or TestFlight public link is created.
+    var DOWNLOAD_CONFIG = {
+      androidApkUrl: "https://expo.dev/artifacts/eas/f4mRwpaYwQiW9uEwctRdvd.apk",
+      testFlightUrl: "",
+      appStoreUrl: ""
+    };
+
+    (function () {
+      var androidBtn = document.getElementById("android-download");
+      var iosBtn = document.getElementById("ios-download");
+
+      if (DOWNLOAD_CONFIG.androidApkUrl) {
+        androidBtn.href = DOWNLOAD_CONFIG.androidApkUrl;
+        androidBtn.setAttribute("download", "unrest-1.0.6.apk");
+      } else {
+        androidBtn.classList.add("disabled");
+        androidBtn.textContent = "Android link coming soon";
+        androidBtn.removeAttribute("href");
+      }
+
+      if (DOWNLOAD_CONFIG.testFlightUrl) {
+        iosBtn.href = DOWNLOAD_CONFIG.testFlightUrl;
+      } else if (DOWNLOAD_CONFIG.appStoreUrl) {
+        iosBtn.href = DOWNLOAD_CONFIG.appStoreUrl;
+        iosBtn.textContent = "Download on App Store";
+      } else {
+        iosBtn.classList.add("disabled");
+        iosBtn.textContent = "TestFlight link coming soon";
+        iosBtn.removeAttribute("href");
+      }
+    })();
+  </script>
+</body>
+</html>
