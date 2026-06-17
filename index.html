@@ -9,7 +9,7 @@
 
 <title>Unrest - Delhi University's Campus Network</title>
 <meta name="title" content="Unrest - Delhi University's Campus Network">
-<meta name="description" content="Unrest is Delhi University's verified campus network - social feed, fests, sports, jobs & marketplace. Free for DU students.">
+<meta name="description" content="Unrest launches 20 June 2026 — Delhi University's verified campus network. Request early access for iPhone launch day.">
 <meta name="keywords" content="Delhi University student app, DU campus network, Delhi University social network, DU college community app, DU fests">
 <link rel="canonical" href="https://unrest.in/">
 <script src="https://www.gstatic.com/firebasejs/ui/6.0.0/firebase-ui-auth.js"></script>
@@ -18,13 +18,13 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://unrestdu.in/">
 <meta property="og:title" content="Unrest - Delhi University's Campus Network">
-<meta property="og:description" content="Verified social network for DU students. Fests, sports, internships & more. Join the waitlist.">
+<meta property="og:description" content="Unrest launches 20 June on iPhone. Verified campus network for DU students & aspirants. Get your early access code.">
 <meta property="og:image" content="https://unrestdu.in/og-cover.png">
   
 <meta property="twitter:card" content="summary_large_image">
 <meta property="twitter:url" content="https://unrestdu.in/">
 <meta property="twitter:title" content="Unrest - Delhi University's Campus Network">
-<meta property="twitter:description" content="Verified social network for DU students. Fests, sports, internships & more. Join the waitlist.">
+<meta property="twitter:description" content="Unrest launches 20 June on iPhone. Verified campus network for DU students & aspirants. Get your early access code.">
 <meta property="twitter:image" content="https://unrestdu.in/og-cover.png">
 
 <script type="application/ld+json">
@@ -136,6 +136,20 @@
   .nav-links a:hover { color: var(--accent); }
   .nav-cta { background: var(--ink); color: var(--paper) !important; padding: 0.5rem 1.2rem; border-radius: 100px; font-size: 0.82rem !important; font-weight: 600 !important; transition: background 0.2s !important; }
   .nav-cta:hover { background: var(--accent) !important; color: var(--paper) !important; }
+  .nav-social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    border: 0.5px solid var(--border);
+    color: var(--ink2);
+    background: rgba(255,255,255,0.55);
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .nav-social:hover { color: var(--accent); border-color: rgba(200,75,47,0.35); background: rgba(255,255,255,0.9); }
+  .nav-social svg { width: 17px; height: 17px; display: block; }
 
   /* HERO */
   .hero {
@@ -243,6 +257,33 @@
   .launch-status-copy strong { color: var(--paper); font-weight: 600; }
   .launch-status-cta { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--paper); color: var(--ink); font-weight: 700; font-size: 0.85rem; padding: 0.85rem 1.4rem; border-radius: 100px; border: none; cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
   .launch-status-cta:hover { transform: translateY(-1px); opacity: 0.92; }
+  .launch-countdown { display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; margin: 0 auto 2rem; max-width: 520px; }
+  .launch-countdown-unit { min-width: 72px; padding: 0.85rem 0.65rem; background: rgba(245,242,235,0.08); border: 0.5px solid rgba(245,242,235,0.12); border-radius: 14px; }
+  .launch-countdown-num { display: block; font-family: var(--serif); font-size: clamp(1.6rem, 4vw, 2.2rem); color: var(--paper); line-height: 1; margin-bottom: 0.35rem; }
+  .launch-countdown-label { display: block; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,242,235,0.45); }
+  #launch-countdown-label { font-size: 0.78rem; color: rgba(245,242,235,0.55); margin-bottom: 1rem; }
+  .hero-live-cta { display: none; flex-direction: column; align-items: center; gap: 0.75rem; margin: 0 auto 1rem; animation: fadeUp 0.6s 0.3s ease both; }
+  .hero-live-cta a { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; background: var(--ink); color: var(--paper); font-weight: 700; font-size: 0.9rem; padding: 0.85rem 1.6rem; border-radius: 100px; text-decoration: none; transition: transform 0.2s, background 0.2s; }
+  .hero-live-cta a:hover { background: var(--accent); transform: scale(1.02); }
+  .hero-live-cta span { font-size: 0.78rem; color: var(--ink3); max-width: 420px; text-align: center; line-height: 1.5; }
+  body[data-launch-phase="live"] .hero-live-cta { display: flex; }
+  body[data-launch-phase="live"] #hero-prelaunch-form,
+  body[data-launch-phase="live"] #hero-ea-paths { display: none !important; }
+  .suggestions-live-section { background: var(--cream); padding: 5rem 2rem; }
+  .suggestions-live-inner { max-width: 900px; margin: 0 auto; }
+  .suggestions-live-head { text-align: center; margin-bottom: 2rem; }
+  .suggestions-live-head p { color: var(--ink2); max-width: 520px; margin: 0.75rem auto 0; line-height: 1.6; }
+  .live-suggestions-feed { display: grid; gap: 0.75rem; }
+  .live-suggestion-card { background: var(--card, #fffdf8); border: 0.5px solid var(--border); border-radius: 16px; padding: 1rem 1.1rem; }
+  .live-suggestion-text { font-size: 0.92rem; color: var(--ink); line-height: 1.55; margin-bottom: 0.65rem; }
+  .live-suggestion-meta { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.75rem; color: var(--ink3); }
+  .live-suggestion-votes { font-weight: 700; color: var(--accent); }
+  .live-suggestions-empty { text-align: center; color: var(--ink3); font-size: 0.88rem; padding: 2rem 1rem; }
+  .live-suggestions-cta { text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: var(--ink2); }
+  .live-suggestions-cta strong { color: var(--ink); }
+  .nav-live-cta { display: none; background: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
+  body[data-launch-phase="live"] .nav-live-cta { display: inline-flex; }
+  body[data-launch-phase="live"] .nav-prelaunch-cta { display: none; }
 
   /* TICKER & PULSE */
   .ticker-section { padding: 2rem 0; overflow: hidden; background: var(--ink); border-top: 1px solid rgba(245,242,235,0.05); border-bottom: 1px solid rgba(245,242,235,0.05); }
@@ -522,7 +563,7 @@
   @media (max-width: 768px) {
     nav { padding: 0 1.25rem; }
     .nav-links { display: flex; gap: 0.75rem; }
-    .nav-links a:not(.nav-cta) { display: none; }
+    .nav-links a:not(.nav-cta):not(.nav-social) { display: none; }
     .pulse-left { text-align: center; } 
     
     /* MOBILE OPTIMIZATIONS FOR HERO */
@@ -677,12 +718,39 @@
 <nav>
   <a href="#" class="nav-logo">Un<span>rest</span></a>
   <div class="nav-links">
+    <a href="#launch-status">Launch</a>
     <a href="#rollcall">Roll Call</a>
-    <a href="#waitlist" class="nav-cta">Join waitlist</a>
+    <a
+      href="https://instagram.com/unrest.du"
+      class="nav-social"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Unrest on Instagram"
+      title="@unrest.du on Instagram"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+        <circle cx="12" cy="12" r="4.2" />
+        <circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none" />
+      </svg>
+    </a>
+    <a
+      href="mailto:contact@unrestdu.in"
+      class="nav-social"
+      aria-label="Email Unrest"
+      title="contact@unrestdu.in"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <rect x="3" y="5.5" width="18" height="13" rx="2" />
+        <path d="M4 7l8 6.5L20 7" />
+      </svg>
+    </a>
+    <a href="#waitlist" class="nav-cta nav-prelaunch-cta" id="nav-prelaunch-cta">Get early access</a>
+    <a href="/download.html" class="nav-cta nav-live-cta" id="nav-download-btn">Get the app</a>
   </div>
 </nav>
 
-<section class="hero">
+<section class="hero" id="hero">
   <div class="hero-bg"></div>
   <div class="hero-grain"></div>
   <div class="hero-lines"></div>
@@ -704,10 +772,15 @@
   <div class="stat-badge green stat-3"><div class="sb-num" id="hero-live-count">247</div><div class="sb-label">On the waitlist</div></div>
   
   <div class="hero-content">
-    <div class="promo-strip"><div class="promo-dot"></div><div class="promo-text">⚽ <strong>Turf Sunday</strong> · 🏃 DU Bhaag Club · 🎪 Fest season</div></div>
-    <div class="hero-badge">Now accepting early access</div>
+    <div class="promo-strip"><div class="promo-dot"></div><div class="promo-text">📅 <strong>Launching 20 June</strong> · iPhone first · Android follows</div></div>
+    <div class="hero-badge" id="hero-badge">Launching 20 June</div>
     <h1>Delhi University's<br><em>campus network</em><br>finally <span class="under">exists</span></h1>
-    <p class="hero-sub">A verified social network, marketplace, and community hub - built exclusively for DU students.</p>
+    <p class="hero-sub" id="hero-sub">A verified campus network for DU students and aspirants. iPhone launch on 20 June — request your code now and be ready on day one.</p>
+    <div class="hero-live-cta" id="hero-live-cta">
+      <a id="hero-download-btn" href="/download.html">Download on iPhone →</a>
+      <span>Already have a code? Enter it in the app with the same email you registered.</span>
+    </div>
+    <div id="hero-prelaunch-form">
     <div class="hero-form" id="hero-form">
       <input type="email" placeholder="Your email (DU or Gmail)" id="hero-email">
       <button onclick="startEarlyAccess('hero')">Get early access</button>
@@ -716,6 +789,7 @@
       <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','du_student')"><strong>DU student</strong><span class="ea-path-sub">@du.ac.in or Gmail + proof</span></button>
       <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','aspirant')"><strong>DU aspirant</strong><span class="ea-path-sub">Gmail + full name</span></button>
     </div>
+    </div>
     <div class="success-msg" id="hero-success">Request received. We will email your app access code after moderator approval.</div>
   </div>
 </section>
@@ -723,23 +797,54 @@
 <div class="countdown-section" id="launch-status">
   <div class="countdown-inner">
     <div class="countdown-eyebrow">Launch status</div>
-    <h2 class="countdown-title">Almost there — <em>launching soon</em></h2>
-    <p class="countdown-sub">Early access is open now. Join the waitlist, save your code, and be ready when we go live.</p>
-    <div class="launch-status-grid">
-      <div class="launch-status-item">
-        <div class="launch-status-dot live"></div>
-        <div class="launch-status-copy"><strong>Early access open</strong> — sign up, get your code, and build your profile before launch.</div>
-      </div>
-      <div class="launch-status-item">
-        <div class="launch-status-dot wait"></div>
-        <div class="launch-status-copy"><strong>Launch when app goes live</strong> — iOS first. We'll share the download link as soon as it's available.</div>
-      </div>
-      <div class="launch-status-item">
-        <div class="launch-status-dot open"></div>
-        <div class="launch-status-copy"><strong>Android</strong> — Play Store release follows on iOS.</div>
+    <h2 class="countdown-title" id="launch-status-title">Launching <em>20 June</em></h2>
+    <p class="countdown-sub" id="launch-status-sub">Early access is open. Get your code, save it, and install when we go live on Friday, 20 June 2026 (10:00 AM IST).</p>
+
+    <div id="launch-countdown">
+      <p id="launch-countdown-label">Countdown to launch</p>
+      <div class="launch-countdown" aria-live="polite">
+        <div class="launch-countdown-unit"><span class="launch-countdown-num" id="cd-days">00</span><span class="launch-countdown-label">Days</span></div>
+        <div class="launch-countdown-unit"><span class="launch-countdown-num" id="cd-hours">00</span><span class="launch-countdown-label">Hours</span></div>
+        <div class="launch-countdown-unit"><span class="launch-countdown-num" id="cd-mins">00</span><span class="launch-countdown-label">Mins</span></div>
+        <div class="launch-countdown-unit"><span class="launch-countdown-num" id="cd-secs">00</span><span class="launch-countdown-label">Secs</span></div>
       </div>
     </div>
-    <button type="button" class="launch-status-cta" onclick="document.getElementById('hero').scrollIntoView({behavior:'smooth'})">Join early access →</button>
+
+    <div id="launch-prelaunch-copy">
+      <div class="launch-status-grid">
+        <div class="launch-status-item">
+          <div class="launch-status-dot live"></div>
+          <div class="launch-status-copy"><strong>Early access open</strong> — request your code now. Moderator-approved signups receive it by email.</div>
+        </div>
+        <div class="launch-status-item">
+          <div class="launch-status-dot wait"></div>
+          <div class="launch-status-copy"><strong>20 June · iPhone</strong> — App Store release on launch day. We'll email everyone with a code their install link.</div>
+        </div>
+        <div class="launch-status-item">
+          <div class="launch-status-dot open"></div>
+          <div class="launch-status-copy"><strong>Android</strong> — Play Store internal testing follows shortly after iOS. Same early access code.</div>
+        </div>
+      </div>
+      <button type="button" class="launch-status-cta" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Get your code before launch →</button>
+    </div>
+
+    <div id="launch-live-copy" hidden>
+      <div class="launch-status-grid">
+        <div class="launch-status-item">
+          <div class="launch-status-dot live"></div>
+          <div class="launch-status-copy"><strong>iPhone</strong> — download from the App Store or your invite link. Enter your early access code in the app.</div>
+        </div>
+        <div class="launch-status-item">
+          <div class="launch-status-dot wait"></div>
+          <div class="launch-status-copy"><strong>Early access</strong> — we're shipping fast. Use Suggestions in the app to vote on what we build next.</div>
+        </div>
+        <div class="launch-status-item">
+          <div class="launch-status-dot open"></div>
+          <div class="launch-status-copy"><strong>Android</strong> — internal testing invites rolling out. Watch your inbox.</div>
+        </div>
+      </div>
+      <a class="launch-status-cta" id="launch-status-download" href="/download.html" style="text-decoration:none">Download Unrest →</a>
+    </div>
   </div>
 </div>
 
@@ -884,12 +989,25 @@
   </div>
 </div>
   
+<section class="suggestions-live-section" id="suggestions-live" hidden>
+  <div class="suggestions-live-inner">
+    <div class="suggestions-live-head">
+      <div class="section-label">Shape Unrest</div>
+      <h2>Community <em>suggestions</em></h2>
+      <p>Ideas from early access users — upvote in the app to tell us what to build next.</p>
+    </div>
+    <div class="live-suggestions-feed" id="live-suggestions-feed"></div>
+    <p class="live-suggestions-empty" id="live-suggestions-empty">Loading suggestions…</p>
+    <p class="live-suggestions-cta">Post your own in the app: <strong>Profile → Settings → Suggestions</strong></p>
+  </div>
+</section>
+
 <section class="features" id="features">
   <div class="features-inner">
     <div class="features-head">
       <div class="section-label">Everything you need</div>
       <h2>Built for <em>DU life</em></h2>
-      <p>From your morning lecture to the fest after-party - one app covers it all.</p>
+      <p>Feed, activities, Corridor, mentors, and more — rolling out through early access from 20 June.</p>
     </div>
     <div class="feature-grid">
       <div class="feature-card"><div class="feat-icon" style="background:#fef0ec" role="img" aria-label="Identity"></div><div class="feat-title">Verified student identity</div><div class="feat-desc">Sign up with your DU college email. Get a verified college badge. Only real DU students, no outsiders.</div><span class="feat-tag" style="background:#fef0ec;color:#c84b2f">Core</span></div>
@@ -1174,9 +1292,9 @@
 </section>
 
 <section class="waitlist" id="waitlist">
-  <div class="section-label" style="color:rgba(245,242,235,0.5)">Early access</div>
+  <div class="section-label" style="color:rgba(245,242,235,0.5)">Early access · before 20 June</div>
   <h2>Get your <em>app code</em></h2>
-  <p>One code per person. All requests are moderator-approved. Gmail DU students upload affiliation proof. Aspirants use Gmail and full name.</p>
+  <p>Launch is 20 June on iPhone. Request access now — one code per person, moderator-approved. Gmail DU students upload affiliation proof. Aspirants use Gmail and full name.</p>
   <div class="waitlist-form" id="waitlist-form">
     <input type="email" placeholder="Your email" id="waitlist-email">
     <button type="button" onclick="startEarlyAccess('waitlist')">Request access</button>
@@ -1258,12 +1376,17 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, query, where, onSnapshot, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, query, where, onSnapshot, updateDoc, doc, deleteDoc, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getAuth, signInWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
   import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
   import * as firebase from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { initEarlyAccessUI } from "./early-access.js";
+  import {
+    SITE_LAUNCH,
+    applySiteLaunchPhase,
+    initLiveSuggestionsFeed,
+  } from "./site-launch.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDBJ0hHjVyEnwg7mV7ECeG163K7fs1fsiE",
@@ -1290,6 +1413,22 @@
     where,
     onSnapshot,
   });
+
+  applySiteLaunchPhase();
+  if (SITE_LAUNCH.phase === "live") {
+    const dl = document.getElementById("launch-status-download");
+    if (dl) {
+      dl.href = SITE_LAUNCH.ios.appStoreUrl || SITE_LAUNCH.ios.testFlightUrl || SITE_LAUNCH.downloadPage;
+    }
+    initLiveSuggestionsFeed({
+      db: window.db,
+      collection,
+      query,
+      orderBy,
+      limit,
+      onSnapshot,
+    });
+  }
   window.firebase = firebase;
   window.RecaptchaVerifier = RecaptchaVerifier;
   window.signInWithPhoneNumber = signInWithPhoneNumber;

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Download Unrest — DU Campus App</title>
-  <meta name="description" content="Download Unrest for Android or join the iOS beta on TestFlight. Delhi University's verified campus network." />
+  <meta name="description" content="Unrest launches 20 June 2026 on iPhone. Early access codes required. Android internal testing follows." />
   <link rel="canonical" href="https://unrestdu.in/download.html" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -251,14 +251,14 @@
 <body>
   <div class="dl-topbar">
     <a class="dl-back" href="/">← Back to home</a>
-    <span class="dl-pill">Beta · Founding 35</span>
+    <span class="dl-pill" id="dl-phase-pill">Launching 20 June</span>
   </div>
 
   <main class="dl-page">
     <div class="dl-hero">
       <h1>Get <em>Unrest</em> on your phone</h1>
-      <p>Delhi University's campus network — feed, activities, corridor, and more. Sign in with your <strong>@du.ac.in</strong> email or approved account.</p>
-      <span class="dl-version">Version 1.0.6 · Beta</span>
+      <p id="dl-hero-copy">Delhi University's campus network launches <strong>20 June 2026</strong> on iPhone. Early access users: install with your invite link, then enter the code emailed to you.</p>
+      <span class="dl-version" id="dl-version-label">Early access · iOS first</span>
     </div>
 
     <div class="dl-grid">
@@ -267,11 +267,11 @@
           <div class="dl-icon android" aria-hidden="true">🤖</div>
           <div>
             <h2>Android</h2>
-            <div class="dl-sub">Direct APK install</div>
+            <div class="dl-sub">After iOS launch</div>
           </div>
         </div>
-        <p>Download the APK, open it, and allow install from your browser or files app. Updates ship automatically when you open the app.</p>
-        <a id="android-download" class="dl-btn android" href="#" rel="noopener">Download for Android</a>
+        <p id="android-copy">Play Store internal testing opens shortly after the 20 June iPhone launch. You'll get an email with your testing link — same early access code.</p>
+        <a id="android-download" class="dl-btn android disabled" href="#" rel="noopener">Android link after launch</a>
       </section>
 
       <section class="dl-card">
@@ -279,16 +279,16 @@
           <div class="dl-icon ios" aria-hidden="true">🍎</div>
           <div>
             <h2>iPhone</h2>
-            <div class="dl-sub">TestFlight beta</div>
+            <div class="dl-sub" id="ios-sub">App Store · 20 June</div>
           </div>
         </div>
-        <p>Install Apple's free TestFlight app, then open our public beta link. No Mac or sideloading needed.</p>
-        <a id="ios-download" class="dl-btn ios" href="#" rel="noopener">Join on TestFlight</a>
+        <p id="ios-copy">Available on the App Store from launch day. If you received a TestFlight or internal link by email, use that on your iPhone.</p>
+        <a id="ios-download" class="dl-btn ios" href="#" rel="noopener">Download on iPhone</a>
       </section>
     </div>
 
     <div class="dl-note">
-      <strong>Need an access code?</strong> Founding members get one after approval on the waitlist. Use the same email in the app when you sign up.
+      <strong>Need an access code?</strong> Request one on <a href="/">unrestdu.in</a> before launch, or use the code already emailed to you. Sign in with the same address in the app.
     </div>
 
     <div class="dl-steps">
@@ -311,41 +311,81 @@
     </div>
 
     <p class="dl-footer">
-      App Store &amp; Play Store listings coming after review.
+      <span id="dl-footer-note">iOS launches 20 June · Android testing follows.</span>
       · <a href="/privacy.html">Privacy</a>
       · <a href="/terms.html">Terms</a>
     </p>
   </main>
 
-  <script>
-    // Update these URLs when a new APK is built or TestFlight public link is created.
+  <script type="module">
+    import { SITE_LAUNCH } from "./site-launch.js";
+
     var DOWNLOAD_CONFIG = {
-      androidApkUrl: "https://expo.dev/artifacts/eas/f4mRwpaYwQiW9uEwctRdvd.apk",
-      testFlightUrl: "",
-      appStoreUrl: ""
+      androidApkUrl: "",
+      playInternalUrl: SITE_LAUNCH.android.playInternalUrl,
+      testFlightUrl: SITE_LAUNCH.ios.testFlightUrl,
+      appStoreUrl: SITE_LAUNCH.ios.appStoreUrl,
     };
 
+    function applyDownloadPhase() {
+      var live = SITE_LAUNCH.phase === "live";
+      var pill = document.getElementById("dl-phase-pill");
+      var heroCopy = document.getElementById("dl-hero-copy");
+      var version = document.getElementById("dl-version-label");
+      var footer = document.getElementById("dl-footer-note");
+      var iosSub = document.getElementById("ios-sub");
+      var iosCopy = document.getElementById("ios-copy");
+      var androidCopy = document.getElementById("android-copy");
+
+      if (live) {
+        if (pill) pill.textContent = "Now live · early access";
+        if (heroCopy) {
+          heroCopy.innerHTML =
+            "Delhi University's campus network is live on iPhone. Install below, then enter your early access code in the app.";
+        }
+        if (version) version.textContent = "Early access · shipping fast";
+        if (footer) footer.textContent = "Android internal testing rolling out";
+        if (iosSub) iosSub.textContent = "App Store";
+      }
+    }
+
     (function () {
+      applyDownloadPhase();
       var androidBtn = document.getElementById("android-download");
       var iosBtn = document.getElementById("ios-download");
 
-      if (DOWNLOAD_CONFIG.androidApkUrl) {
+      if (DOWNLOAD_CONFIG.playInternalUrl) {
+        androidBtn.href = DOWNLOAD_CONFIG.playInternalUrl;
+        androidBtn.classList.remove("disabled");
+        androidBtn.textContent = "Join Android testing";
+      } else if (DOWNLOAD_CONFIG.androidApkUrl) {
         androidBtn.href = DOWNLOAD_CONFIG.androidApkUrl;
-        androidBtn.setAttribute("download", "unrest-1.0.6.apk");
+        androidBtn.classList.remove("disabled");
+        androidBtn.textContent = "Download for Android";
+        androidBtn.setAttribute("download", "unrest.apk");
+      } else if (SITE_LAUNCH.phase !== "live") {
+        androidBtn.classList.add("disabled");
+        androidBtn.textContent = "Android after 20 June";
+        androidBtn.removeAttribute("href");
       } else {
         androidBtn.classList.add("disabled");
-        androidBtn.textContent = "Android link coming soon";
+        androidBtn.textContent = "Android invite coming by email";
         androidBtn.removeAttribute("href");
       }
 
       if (DOWNLOAD_CONFIG.testFlightUrl) {
         iosBtn.href = DOWNLOAD_CONFIG.testFlightUrl;
+        iosBtn.textContent = "Join on TestFlight";
       } else if (DOWNLOAD_CONFIG.appStoreUrl) {
         iosBtn.href = DOWNLOAD_CONFIG.appStoreUrl;
         iosBtn.textContent = "Download on App Store";
+      } else if (SITE_LAUNCH.phase !== "live") {
+        iosBtn.classList.add("disabled");
+        iosBtn.textContent = "Available 20 June";
+        iosBtn.removeAttribute("href");
       } else {
         iosBtn.classList.add("disabled");
-        iosBtn.textContent = "TestFlight link coming soon";
+        iosBtn.textContent = "Install link in your launch email";
         iosBtn.removeAttribute("href");
       }
     })();
