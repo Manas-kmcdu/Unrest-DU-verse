@@ -270,8 +270,8 @@
             <div class="dl-sub">After iOS launch</div>
           </div>
         </div>
-        <p id="android-copy">Play Store internal testing opens shortly after the 20 June iPhone launch. You'll get an email with your testing link — same early access code.</p>
-        <a id="android-download" class="dl-btn android disabled" href="#" rel="noopener">Android link after launch</a>
+        <p id="android-copy">Google Play open testing is still being set up. iPhone is on the App Store — your early access code will work on Android when testing opens.</p>
+        <a id="android-download" class="dl-btn android disabled" href="#" rel="noopener">Android testing delayed</a>
       </section>
 
       <section class="dl-card">
@@ -291,7 +291,7 @@
       <strong>Need an access code?</strong> Request one on <a href="/">unrestdu.in</a> before launch, or use the code already emailed to you. Sign in with the same address in the app.
     </div>
 
-    <div class="dl-steps">
+    <div class="dl-steps" id="android-steps" hidden>
       <h3>Android install tips</h3>
       <ol>
         <li>Tap <strong>Download for Android</strong> above.</li>
@@ -301,12 +301,21 @@
       </ol>
     </div>
 
-    <div class="dl-steps" style="margin-top: 0.75rem;">
-      <h3>iPhone install tips</h3>
+    <div class="dl-steps" id="ios-steps-testflight" style="margin-top: 0.75rem;" hidden>
+      <h3>iPhone install tips (TestFlight)</h3>
       <ol>
         <li>Install <strong>TestFlight</strong> from the App Store first.</li>
         <li>Tap <strong>Join on TestFlight</strong> above on your iPhone.</li>
         <li>Tap <strong>Accept</strong>, then <strong>Install</strong> in TestFlight.</li>
+      </ol>
+    </div>
+
+    <div class="dl-steps" id="ios-steps-app-store" style="margin-top: 0.75rem;">
+      <h3>iPhone install tips</h3>
+      <ol>
+        <li>Open this page on your iPhone and tap <strong>Download on App Store</strong>.</li>
+        <li>Install Unrest, then open the app and sign in with the email that received your code.</li>
+        <li>Enter your early access code when prompted.</li>
       </ol>
     </div>
 
@@ -318,7 +327,7 @@
   </main>
 
   <script type="module">
-    import { SITE_LAUNCH } from "./site-launch.js";
+    import { SITE_LAUNCH, iosStoreLive } from "./site-launch.js";
 
     var DOWNLOAD_CONFIG = {
       androidApkUrl: "",
@@ -329,6 +338,7 @@
 
     function applyDownloadPhase() {
       var live = SITE_LAUNCH.phase === "live";
+      var iosReady = iosStoreLive();
       var pill = document.getElementById("dl-phase-pill");
       var heroCopy = document.getElementById("dl-hero-copy");
       var version = document.getElementById("dl-version-label");
@@ -337,15 +347,23 @@
       var iosCopy = document.getElementById("ios-copy");
       var androidCopy = document.getElementById("android-copy");
 
-      if (live) {
-        if (pill) pill.textContent = "Now live · early access";
+      if (live || iosReady) {
+        if (pill) pill.textContent = live ? "Now live · early access" : "iPhone live · Android soon";
         if (heroCopy) {
           heroCopy.innerHTML =
-            "Delhi University's campus network is live on iPhone. Install below, then enter your early access code in the app.";
+            "Delhi University's campus network is on the App Store for iPhone. Install below, then enter your early access code in the app.";
         }
-        if (version) version.textContent = "Early access · shipping fast";
-        if (footer) footer.textContent = "Android internal testing rolling out";
+        if (version) version.textContent = "Early access · iOS on App Store";
+        if (footer) footer.textContent = "Android Play testing delayed — we'll email when it opens";
         if (iosSub) iosSub.textContent = "App Store";
+        if (iosCopy) {
+          iosCopy.textContent =
+            "Search Unrest on the App Store or use the button below. Sign in with the same email that received your early access code.";
+        }
+        if (androidCopy) {
+          androidCopy.textContent =
+            "Google Play open testing is still being set up. Your early access code will work on Android when testing opens.";
+        }
       }
     }
 
@@ -353,36 +371,44 @@
       applyDownloadPhase();
       var androidBtn = document.getElementById("android-download");
       var iosBtn = document.getElementById("ios-download");
+      var androidSteps = document.getElementById("android-steps");
+      var iosTfSteps = document.getElementById("ios-steps-testflight");
+      var iosStoreSteps = document.getElementById("ios-steps-app-store");
 
       if (DOWNLOAD_CONFIG.playInternalUrl) {
         androidBtn.href = DOWNLOAD_CONFIG.playInternalUrl;
         androidBtn.classList.remove("disabled");
         androidBtn.textContent = "Join Android testing";
+        if (androidSteps) androidSteps.hidden = false;
       } else if (DOWNLOAD_CONFIG.androidApkUrl) {
         androidBtn.href = DOWNLOAD_CONFIG.androidApkUrl;
         androidBtn.classList.remove("disabled");
         androidBtn.textContent = "Download for Android";
         androidBtn.setAttribute("download", "unrest.apk");
-      } else if (SITE_LAUNCH.phase !== "live") {
-        androidBtn.classList.add("disabled");
-        androidBtn.textContent = "Android after 20 June";
-        androidBtn.removeAttribute("href");
+        if (androidSteps) androidSteps.hidden = false;
       } else {
         androidBtn.classList.add("disabled");
-        androidBtn.textContent = "Android invite coming by email";
+        androidBtn.textContent = "Android testing delayed";
         androidBtn.removeAttribute("href");
+        if (androidSteps) androidSteps.hidden = true;
       }
 
       if (DOWNLOAD_CONFIG.testFlightUrl) {
         iosBtn.href = DOWNLOAD_CONFIG.testFlightUrl;
         iosBtn.textContent = "Join on TestFlight";
+        if (iosTfSteps) iosTfSteps.hidden = false;
+        if (iosStoreSteps) iosStoreSteps.hidden = true;
       } else if (DOWNLOAD_CONFIG.appStoreUrl) {
         iosBtn.href = DOWNLOAD_CONFIG.appStoreUrl;
         iosBtn.textContent = "Download on App Store";
+        iosBtn.classList.remove("disabled");
+        if (iosTfSteps) iosTfSteps.hidden = true;
+        if (iosStoreSteps) iosStoreSteps.hidden = false;
       } else if (SITE_LAUNCH.phase !== "live") {
         iosBtn.classList.add("disabled");
         iosBtn.textContent = "Available 20 June";
         iosBtn.removeAttribute("href");
+        if (iosStoreSteps) iosStoreSteps.hidden = true;
       } else {
         iosBtn.classList.add("disabled");
         iosBtn.textContent = "Install link in your launch email";

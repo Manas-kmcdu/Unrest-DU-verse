@@ -14,14 +14,19 @@ export const SITE_LAUNCH = {
   launchDateLabel: "Friday, 20 June 2026",
   launchTimeLabel: "10:00 AM IST",
   ios: {
-    appStoreUrl: "",
+    appStoreUrl: "https://apps.apple.com/us/app/unrest-campus-network/id6777179220",
     testFlightUrl: "",
   },
   android: {
+    /** Empty until Play open testing is approved. */
     playInternalUrl: "",
   },
   downloadPage: "/download.html",
 };
+
+export function iosStoreLive() {
+  return Boolean(SITE_LAUNCH.ios.appStoreUrl || SITE_LAUNCH.ios.testFlightUrl);
+}
 
 function $(id) {
   return document.getElementById(id);
@@ -108,16 +113,36 @@ export function applySiteLaunchPhase() {
     const navDl = $("nav-download-btn");
     if (navDl) navDl.href = iosDownloadUrl();
   } else {
-    setText("hero-badge", "Launching 20 June");
+    const iosReady = iosStoreLive();
+    setText("hero-badge", iosReady ? "iPhone live · Android soon" : "Launching 20 June");
     setText(
       "hero-sub",
-      "A verified campus network for DU students and aspirants. iPhone launch on 20 June — request your code now and be ready on day one."
+      iosReady
+        ? "Unrest is on the App Store for iPhone. Android open testing is still being set up — request your early access code and sign in with the same email in the app."
+        : "A verified campus network for DU students and aspirants. iPhone launch on 20 June — request your code now and be ready on day one."
     );
-    setHtml("launch-status-title", 'Launching <em>20 June</em>');
+    setHtml("launch-status-title", iosReady ? 'Live on <em>iPhone</em>' : 'Launching <em>20 June</em>');
     setText(
       "launch-status-sub",
-      `Early access is open. Get your code, save it, and install when we go live on ${SITE_LAUNCH.launchDateLabel} (${SITE_LAUNCH.launchTimeLabel}).`
+      iosReady
+        ? "Download on iPhone below. Official launch day is still 20 June — Android follows when Play testing opens."
+        : `Early access is open. Get your code, save it, and install when we go live on ${SITE_LAUNCH.launchDateLabel} (${SITE_LAUNCH.launchTimeLabel}).`
     );
+    if (iosReady) {
+      const dl = $("hero-download-btn");
+      if (dl) dl.href = iosDownloadUrl();
+    }
+    const iosLine = $("launch-ios-line");
+    if (iosLine) {
+      iosLine.innerHTML = iosReady
+        ? "<strong>iPhone</strong> — on the App Store now. Enter your early access code after install."
+        : `<strong>20 June · iPhone</strong> — App Store release on launch day. We'll email everyone with a code their install link.`;
+    }
+    const androidLine = $("launch-android-line");
+    if (androidLine) {
+      androidLine.innerHTML =
+        "<strong>Android</strong> — Play open testing is delayed while we fix a release issue. Same code when it opens.";
+    }
   }
 
   initLaunchCountdown();
