@@ -42,6 +42,8 @@ const db = getFirestore(app);
 const functions = getFunctions(app, "asia-south1");
 const approveEarlyAccessFn = httpsCallable(functions, "approveEarlyAccessRequest");
 const rejectEarlyAccessFn = httpsCallable(functions, "rejectEarlyAccessRequest");
+const runLaunchEmailBatchFn = httpsCallable(functions, "adminRunLaunchEmailBatch");
+const previewLaunchEmailFn = httpsCallable(functions, "adminPreviewLaunchEmail");
 const FOUNDER_STORAGE_KEY = "unrest_founders_office_items_v1";
 const FOUNDER_LANES = ["tasks", "references", "ideas", "notes"];
 
@@ -55,6 +57,7 @@ const state = {
   usernames: [],
   profileChanges: [],
   earlyAccessRequests: [],
+  teamApplications: [],
   founderItems: [],
   selectedFounderItemId: null,
   unsubs: [],
@@ -269,6 +272,20 @@ function startSubscriptions() {
     )
   );
 
+  state.unsubs.push(
+    onSnapshot(
+      query(collection(db, "team_applications"), orderBy("createdAt", "desc")),
+      (snap) => {
+        state.teamApplications = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        renderProfileSections();
+      },
+      () => {
+        state.teamApplications = [];
+        renderProfileSections();
+      }
+    )
+  );
+
   if (state.isAdmin) {
     state.unsubs.push(
       onSnapshot(
@@ -413,21 +430,35 @@ function renderProfileSections() {
       '<p class="empty">Early access approvals are restricted to admin accounts.</p>';
     return;
   }
-  eaEl.innerHTML =
-    state.earlyAccessRequests.length === 0
-      ? `<p class="empty">No pending early access approvals.</p>`
-      : state.earlyAccessRequests
-          .map((r) => {
-            const proofs = Array.isArray(r.proofUrls)
-              ? r.proofUrls
-                  .map(
-                    (u, i) =>
-                      `<a href="${escapeHtml(u)}" target="_blank" rel="noopener">Proof ${i + 1}</a>`
-                  )
-                  .join(" · ")
-              : "";
-            const channel = r.emailChannel || (r.type === "aspirant" ? "gmail" : "unknown");
-            return `<article class="card">
+  eaEl.innerHTML = `
+    <section class="launch-email-panel">
+      <h2 class="launch-email-title">Launch day email drafts</h2>
+      <p class="panel-desc">
+        Creates <strong>Gmail drafts</strong> in <code>contact@unrestdu.in</code> — nothing sends automatically.
+        Each draft greets the user by name (<code>Hi Full Name,</code>). Review in Drafts, then send manually.
+      </p>
+      <div class="launch-email-actions">
+        <button type="button" class="btn" data-action="launch-email-preview">Preview draft to my inbox</button>
+        <button type="button" class="btn" data-action="launch-email-dry-run">Dry run (count only)</button>
+        <button type="button" class="btn btn-primary" data-action="launch-email-send">Create all drafts</button>
+      </div>
+      <p id="launch-email-status" class="team-status"></p>
+    </section>
+    ${
+      state.earlyAccessRequests.length === 0
+        ? `<p class="empty">No pending early access approvals.</p>`
+        : state.earlyAccessRequests
+            .map((r) => {
+              const proofs = Array.isArray(r.proofUrls)
+                ? r.proofUrls
+                    .map(
+                      (u, i) =>
+                        `<a href="${escapeHtml(u)}" target="_blank" rel="noopener">Proof ${i + 1}</a>`
+                    )
+                    .join(" · ")
+                : "";
+              const channel = r.emailChannel || (r.type === "aspirant" ? "gmail" : "unknown");
+              return `<article class="card">
         <div class="card-meta"><strong>${escapeHtml(r.fullName || "Student")}</strong> · ${escapeHtml(r.email || "")}</div>
         <p class="card-body">
           Type: ${escapeHtml(r.type || "du_student")} · Channel: ${escapeHtml(channel)} · Status: ${escapeHtml(r.status || "pending")}
@@ -438,8 +469,31 @@ function renderProfileSections() {
           <button type="button" class="btn btn-danger" data-action="early-access-reject" data-id="${escapeHtml(r.id)}">Reject</button>
         </div>
       </article>`;
-          })
-          .join("");
+            })
+            .join("")
+    }`;
+
+  const joinEl = $("profile-join-us");
+  if (joinEl) {
+    joinEl.innerHTML =
+      state.teamApplications.length === 0
+        ? `<p class="empty">No Join Us applications yet.</p>`
+        : state.teamApplications
+            .map((app) => {
+              const why = app.whyJoin || app.why || "—";
+              const bring = app.bringToTeam || app.bring || "—";
+              return `<article class="card">
+        <div class="card-meta"><strong>${escapeHtml(app.name || "Applicant")}</strong> · ${escapeHtml(app.email || "")}</div>
+        <div class="card-meta">${escapeHtml(app.college || "")} · ${escapeHtml(app.course || "")} · ${formatTs(app.createdAt)}</div>
+        <p class="card-body"><strong>Why join:</strong> ${escapeHtml(why)}</p>
+        <p class="card-body"><strong>Brings:</strong> ${escapeHtml(bring)}</p>
+        <div class="card-actions">
+          <button type="button" class="btn btn-danger" data-action="dismiss-team-app" data-id="${escapeHtml(app.id)}">Dismiss</button>
+        </div>
+      </article>`;
+            })
+            .join("");
+  }
 }
 
 function renderFounderOffice() {
@@ -494,6 +548,11 @@ async function dismissReport(id) {
     resolvedAt: serverTimestamp(),
   });
   showToast("Report dismissed");
+}
+
+async function dismissTeamApplication(id) {
+  await deleteDoc(doc(db, "team_applications", id));
+  showToast("Application dismissed");
 }
 
 async function deleteReported(reportId, postId) {
@@ -616,11 +675,11 @@ async function approveEarlyAccess(requestId) {
   if (!state.isAdmin) throw new Error("Admin only");
   const result = await approveEarlyAccessFn({ requestId });
   const email = result?.data?.email || "";
-  const emailed = result?.data?.emailed === true;
-  if (emailed) {
-    showToast(email ? `Code emailed to ${email}` : "Code issued and emailed");
+  const drafted = result?.data?.drafted === true || result?.data?.emailed === true;
+  if (drafted) {
+    showToast(email ? `Draft created for ${email} — check Gmail Drafts` : "Code issued — draft in Gmail");
   } else {
-    showToast(email ? `Code created for ${email}, but email delivery failed` : "Code created, but email delivery failed");
+    showToast(email ? `Code created for ${email}, but draft failed — see Firestore email_drafts` : "Code created, but draft failed");
   }
 }
 
@@ -628,6 +687,41 @@ async function rejectEarlyAccess(requestId) {
   if (!state.isAdmin) throw new Error("Admin only");
   await rejectEarlyAccessFn({ requestId });
   showToast("Early access request rejected");
+}
+
+async function previewLaunchEmail() {
+  if (!state.isAdmin) throw new Error("Admin only");
+  const statusEl = $("launch-email-status");
+  if (statusEl) statusEl.textContent = "Sending preview…";
+  const result = await previewLaunchEmailFn({});
+  if (statusEl) {
+    statusEl.textContent = result?.data?.ok
+      ? `Preview draft created for ${result.data.to} — check Gmail Drafts`
+      : "Preview draft failed — check IMAP is enabled for the mailbox";
+  }
+  showToast(result?.data?.ok ? "Preview draft in Gmail" : "Preview failed");
+}
+
+async function runLaunchEmailBatch(dryRun) {
+  if (!state.isAdmin) throw new Error("Admin only");
+  if (
+    !dryRun &&
+    !confirm(
+      "Create launch email drafts in Gmail for everyone with a code? Nothing sends automatically. Already-drafted addresses are skipped."
+    )
+  ) {
+    return;
+  }
+  const statusEl = $("launch-email-status");
+  if (statusEl) statusEl.textContent = dryRun ? "Counting…" : "Creating drafts… this can take a few minutes";
+  const result = await runLaunchEmailBatchFn({ dryRun });
+  const data = result?.data ?? {};
+  const drafted = data.liveDrafted ?? data.drafted ?? data.liveSent ?? 0;
+  const summary = dryRun
+    ? `Dry run: ${data.approved ?? 0} to approve · ${drafted} drafts would be created · ${data.liveSkipped ?? 0} already drafted`
+    : `Done: ${data.approved ?? 0} approved · ${drafted} drafts created · ${data.liveFailed ?? 0} failed · ${data.liveSkipped ?? 0} skipped`;
+  if (statusEl) statusEl.textContent = summary;
+  showToast(dryRun ? "Dry run complete" : "Draft batch finished — open Gmail Drafts");
 }
 
 async function addFounderItemFromForm() {
@@ -905,6 +999,10 @@ function bindUi() {
       if (action === "name-deny") await denyDisplayName(btn.dataset.id);
       if (action === "early-access-approve") await approveEarlyAccess(btn.dataset.id);
       if (action === "early-access-reject") await rejectEarlyAccess(btn.dataset.id);
+      if (action === "launch-email-preview") await previewLaunchEmail();
+      if (action === "launch-email-dry-run") await runLaunchEmailBatch(true);
+      if (action === "launch-email-send") await runLaunchEmailBatch(false);
+      if (action === "dismiss-team-app") await dismissTeamApplication(btn.dataset.id);
       if (action === "founder-toggle-done") await toggleFounderDone(btn.dataset.id);
       if (action === "founder-edit") await editFounderItem(btn.dataset.id);
       if (action === "founder-delete") await deleteFounderItem(btn.dataset.id);

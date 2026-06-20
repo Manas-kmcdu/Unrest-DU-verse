@@ -379,6 +379,27 @@ body {
   color: var(--muted);
 }
 
+.launch-email-panel {
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface, #faf9f7);
+}
+
+.launch-email-title {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.launch-email-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+}
+
 .founder-form {
   background: var(--surface);
   border: 1px solid var(--border);
