@@ -6,6 +6,7 @@
 <meta name="google-site-verification" content="CqsB2Vkk5AJFPb8OLxOyUm1mlGNZdYGBCL6Ia0CUvGY" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="./early-access-shim.js"></script>
 
 <title>Unrest - Delhi University's Campus Network</title>
 <meta name="title" content="Unrest - Delhi University's Campus Network">
@@ -783,7 +784,7 @@
     <div id="hero-prelaunch-form">
     <div class="hero-form" id="hero-form">
       <input type="email" placeholder="Your email (DU or Gmail)" id="hero-email">
-      <button onclick="startEarlyAccess('hero')">Get early access</button>
+      <button type="button" onclick="startEarlyAccess('hero')">Get early access</button>
     </div>
     <div class="ea-paths" id="hero-ea-paths">
       <button type="button" class="ea-path-btn" onclick="startEarlyAccess('hero','du_student')"><strong>DU student</strong><span class="ea-path-sub">@du.ac.in or Gmail + proof</span></button>
@@ -1403,16 +1404,21 @@
   window.auth = getAuth(app);
   const functions = getFunctions(app, "asia-south1");
   const storage = getStorage(app);
-  initEarlyAccessUI({
-    db: window.db,
-    storage,
-    functions,
-    httpsCallable,
-    collection,
-    query,
-    where,
-    onSnapshot,
-  });
+
+  try {
+    initEarlyAccessUI({
+      db: window.db,
+      storage,
+      functions,
+      httpsCallable,
+      collection,
+      query,
+      where,
+      onSnapshot,
+    });
+  } catch (err) {
+    console.error("Early access UI failed to initialize:", err);
+  }
 
   applySiteLaunchPhase();
   if (SITE_LAUNCH.phase === "live") {
@@ -1584,7 +1590,7 @@ window.rejectEcho = async function(id) {
 }
 
 function joinWaitlist(source) {
-  startEarlyAccess(source);
+  window.startEarlyAccess(source);
 }
 
 async function submitEcho() {

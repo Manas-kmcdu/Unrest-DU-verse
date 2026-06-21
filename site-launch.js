@@ -1,8 +1,8 @@
 /**
  * unrestdu.in launch phases.
  *
- * prelaunch - countdown + waitlist (before 20 June)
- * live      - "We're live", download CTAs, public suggestions feed
+ * prelaunch — countdown + waitlist (before 20 June)
+ * live      — "We're live", download CTAs, public suggestions feed
  *
  * To go live after launch: set phase to "live", add store URLs, deploy.
  */
@@ -114,18 +114,18 @@ export function applySiteLaunchPhase() {
     if (navDl) navDl.href = iosDownloadUrl();
   } else {
     const iosReady = iosStoreLive();
-    setText("hero-badge", iosReady ? "iPhone live · Android soon");
+    setText("hero-badge", iosReady ? "iPhone live · Android soon" : "Launching 20 June");
     setText(
       "hero-sub",
       iosReady
-        ? "Unrest is on the App Store for iPhone. Android open testing is still being set up - request your early access code and sign in with the same email in the app."
-        : "A verified campus network for DU students and aspirants. iPhone launch on 20 June - request your code now and be ready on day one."
+        ? "Unrest is on the App Store for iPhone. Android open testing is still being set up — request your early access code and sign in with the same email in the app."
+        : "A verified campus network for DU students and aspirants. iPhone launch on 20 June — request your code now and be ready on day one."
     );
     setHtml("launch-status-title", iosReady ? 'Live on <em>iPhone</em>' : 'Launching <em>20 June</em>');
     setText(
       "launch-status-sub",
       iosReady
-        ? "Download on iPhone below. Official launch day is still 20 June - Android follows when Play testing opens."
+        ? "Download on iPhone below. Official launch day is still 20 June — Android follows when Play testing opens."
         : `Early access is open. Get your code, save it, and install when we go live on ${SITE_LAUNCH.launchDateLabel} (${SITE_LAUNCH.launchTimeLabel}).`
     );
     if (iosReady) {
@@ -135,13 +135,13 @@ export function applySiteLaunchPhase() {
     const iosLine = $("launch-ios-line");
     if (iosLine) {
       iosLine.innerHTML = iosReady
-        ? "<strong>iPhone</strong> - on the App Store now. Enter your early access code after install."
-        : `<strong>20 June · iPhone</strong> - App Store release on launch day. We'll email everyone with a code their install link.`;
+        ? "<strong>iPhone</strong> — on the App Store now. Enter your early access code after install."
+        : `<strong>20 June · iPhone</strong> — App Store release on launch day. We'll email everyone with a code their install link.`;
     }
     const androidLine = $("launch-android-line");
     if (androidLine) {
       androidLine.innerHTML =
-        "<strong>Android</strong> - Play open testing is taking place. Same code when it's live.";
+        "<strong>Android</strong> — Play open testing is delayed while we fix a release issue. Same code when it opens.";
     }
   }
 

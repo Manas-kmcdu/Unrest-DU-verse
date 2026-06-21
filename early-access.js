@@ -376,4 +376,16 @@ export function initEarlyAccessUI({
       if (badge) badge.textContent = `${snap.size} Pending`;
     });
   };
+
+  if (typeof window.registerEarlyAccessHandlers === "function") {
+    window.registerEarlyAccessHandlers({
+      startEarlyAccess: window.startEarlyAccess,
+      closeEarlyAccessModal: window.closeEarlyAccessModal,
+      pickEarlyAccessType: window.pickEarlyAccessType,
+      submitEarlyAccessForm: window.submitEarlyAccessForm,
+      approveEarlyAccess: window.approveEarlyAccess,
+      rejectEarlyAccess: window.rejectEarlyAccess,
+      watchEarlyAccessQueue: window.watchEarlyAccessQueue,
+    });
+  }
 }
