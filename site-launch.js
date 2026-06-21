@@ -8,7 +8,7 @@
  */
 
 export const SITE_LAUNCH = {
-  phase: "live",
+  phase: "prelaunch",
   /** 10:00 AM IST on launch day */
   launchAt: "2026-06-20T04:30:00.000Z",
   launchDateLabel: "Friday, 20 June 2026",
