@@ -44,9 +44,20 @@ export async function postSubmitEarlyAccess(payload) {
   if (!res.ok) {
     const err = new Error(body.message || body.error || "Request failed");
     err.code = body.error ? `functions/${body.error}` : "";
+    err.httpStatus = res.status;
     throw err;
   }
   return normalizeEarlyAccessResult(body);
+}
+
+/** Website signup via Firebase callable (SDK handles CORS from unrestdu.in). */
+export function createSubmitEarlyAccess({ functions, httpsCallable }) {
+  const submitCallable = httpsCallable(functions, "submitEarlyAccess");
+
+  return async function submitEarlyAccessPayload(payload) {
+    const res = await submitCallable(payload);
+    return normalizeEarlyAccessResult(res.data);
+  };
 }
 
 function escapeHtml(text) {
@@ -67,7 +78,7 @@ export function initEarlyAccessUI({
   where,
   onSnapshot,
 }) {
-  const submitFn = postSubmitEarlyAccess;
+  const submitFn = createSubmitEarlyAccess({ functions, httpsCallable });
   const approveFn = httpsCallable(functions, "approveEarlyAccessRequest");
   const rejectFn = httpsCallable(functions, "rejectEarlyAccessRequest");
 
@@ -266,10 +277,11 @@ export function initEarlyAccessUI({
       let msg = err?.message || err?.details || "";
       const isNetwork =
         /failed to fetch|networkerror|load failed|cors/i.test(String(msg)) ||
+        err?.httpStatus === 403 ||
         (err?.name === "FirebaseError" && !code && /fetch/i.test(String(msg)));
       if (isNetwork) {
         msg =
-          "Could not reach the signup server (connection blocked). Try again in a minute, or email contact@unrestdu.in with your name and email.";
+          "Could not reach the signup server. Try again in a minute, disable ad blockers for this site, or email contact@unrestdu.in with your name and email.";
       } else if (
         code === "functions/internal" ||
         code === "functions/not-found" ||
