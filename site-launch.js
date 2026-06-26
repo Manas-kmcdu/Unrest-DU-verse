@@ -125,7 +125,7 @@ export function applySiteLaunchPhase() {
     setText(
       "launch-status-sub",
       iosReady
-        ? "Download on iPhone below. Official launch day is still 20 June — Android follows when Play testing opens."
+        ? "Download on iPhone below. Android follows when Play Store testing concludes."
         : `Early access is open. Get your code, save it, and install when we go live on ${SITE_LAUNCH.launchDateLabel} (${SITE_LAUNCH.launchTimeLabel}).`
     );
     if (iosReady) {
