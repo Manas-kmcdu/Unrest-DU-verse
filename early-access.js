@@ -13,9 +13,25 @@ export function isGmail(email) {
   return domain === "gmail.com" || domain === "googlemail.com";
 }
 
-/** Website signup (plain HTTP — avoids callable CORS / Cloud Run IAM issues). */
+/** Same-origin proxy (Firebase Hosting rewrite) — no browser CORS preflight. */
+export const SAME_ORIGIN_SUBMIT_URL = "/api/early-access";
+
+/** Direct Cloud Function URL (fallback when not on Firebase Hosting). */
 export const SUBMIT_EARLY_ACCESS_URL =
   "https://asia-south1-du-verse-e75db.cloudfunctions.net/submitEarlyAccessWeb";
+
+function isNetworkOrCorsError(err) {
+  const msg = String(err?.message || "");
+  return (
+    /failed to fetch|cors|networkerror|load failed|ERR_FAILED/i.test(msg) ||
+    err?.httpStatus === 403 ||
+    err?.name === "TypeError"
+  );
+}
+
+function shouldTryNextSubmitUrl(err) {
+  return isNetworkOrCorsError(err) || err?.httpStatus === 500 || err?.httpStatus === 502 || err?.httpStatus === 503 || err?.httpStatus === 504;
+}
 
 /** Normalize callable `{ data }` or HTTP JSON body. */
 export function normalizeEarlyAccessResult(raw) {
@@ -29,8 +45,8 @@ export function normalizeEarlyAccessResult(raw) {
   };
 }
 
-export async function postSubmitEarlyAccess(payload) {
-  const res = await fetch(SUBMIT_EARLY_ACCESS_URL, {
+async function postSubmitEarlyAccessOnce(payload, url) {
+  const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -50,13 +66,34 @@ export async function postSubmitEarlyAccess(payload) {
   return normalizeEarlyAccessResult(body);
 }
 
-/** Website signup via Firebase callable (SDK handles CORS from unrestdu.in). */
+/** Website signup via HTTP POST (same-origin proxy first, then direct function URL). */
+export async function postSubmitEarlyAccess(payload) {
+  const urls = [SAME_ORIGIN_SUBMIT_URL, SUBMIT_EARLY_ACCESS_URL];
+  let lastErr;
+  for (const url of urls) {
+    try {
+      return await postSubmitEarlyAccessOnce(payload, url);
+    } catch (err) {
+      lastErr = err;
+      if (url === SAME_ORIGIN_SUBMIT_URL && shouldTryNextSubmitUrl(err)) continue;
+      throw err;
+    }
+  }
+  throw lastErr;
+}
+
+/** HTTP first; Firebase callable as last resort if cross-origin is blocked. */
 export function createSubmitEarlyAccess({ functions, httpsCallable }) {
-  const submitCallable = httpsCallable(functions, "submitEarlyAccess");
+  const submitCallable = httpsCallable(functions, "submitEarlyAccess", { timeout: 120000 });
 
   return async function submitEarlyAccessPayload(payload) {
-    const res = await submitCallable(payload);
-    return normalizeEarlyAccessResult(res.data);
+    try {
+      return await postSubmitEarlyAccess(payload);
+    } catch (httpErr) {
+      if (!isNetworkOrCorsError(httpErr)) throw httpErr;
+      const res = await submitCallable(payload);
+      return normalizeEarlyAccessResult(res.data);
+    }
   };
 }
 
@@ -79,8 +116,6 @@ export function initEarlyAccessUI({
   onSnapshot,
 }) {
   const submitFn = createSubmitEarlyAccess({ functions, httpsCallable });
-  const approveFn = httpsCallable(functions, "approveEarlyAccessRequest");
-  const rejectFn = httpsCallable(functions, "rejectEarlyAccessRequest");
 
   const modal = document.getElementById("ea-modal");
   const stepType = document.getElementById("ea-step-type");
@@ -230,6 +265,19 @@ export function initEarlyAccessUI({
     try {
       let proofUrls = [];
       if (needsProof && proofInput.files.length > 0) {
+        const badHeic = Array.from(proofInput.files).find(
+          (f) =>
+            /\.heic$/i.test(f.name) || f.type === "image/heic" || f.type === "image/heif"
+        );
+        if (badHeic) {
+          if (statusEl)
+            statusEl.textContent =
+              "HEIC photos are not supported. In Photos, share as JPEG or take a screenshot, then upload again.";
+          btn.disabled = false;
+          btn.textContent = "Request access review";
+          return;
+        }
+
         if (!pendingRequestId) {
           const first = await submitFn({
             type: selectedType,
@@ -241,9 +289,6 @@ export function initEarlyAccessUI({
             pendingRequestId = first.requestId;
             pendingEmail = email;
             pendingName = fullName;
-          } else if (first.status === "code_sent") {
-            showSuccess(first.message);
-            return;
           }
         }
         proofUrls = await uploadProofs(pendingRequestId, proofInput.files);
@@ -276,12 +321,16 @@ export function initEarlyAccessUI({
       const code = err?.code || "";
       let msg = err?.message || err?.details || "";
       const isNetwork =
-        /failed to fetch|networkerror|load failed|cors/i.test(String(msg)) ||
+        /failed to fetch|networkerror|load failed|cors|ERR_FAILED/i.test(String(msg)) ||
         err?.httpStatus === 403 ||
-        (err?.name === "FirebaseError" && !code && /fetch/i.test(String(msg)));
+        (err?.name === "FirebaseError" && !code && /fetch/i.test(String(msg))) ||
+        err?.name === "TypeError";
       if (isNetwork) {
         msg =
-          "Could not reach the signup server. Try again in a minute, disable ad blockers for this site, or email contact@unrestdu.in with your name and email.";
+          "Could not reach the signup server (connection blocked). Deploy the site via Firebase Hosting with the /api/early-access proxy, or allow public access on submitEarlyAccessWeb in Cloud Run. You can also email contact@unrestdu.in with your name and email.";
+      } else if (err?.httpStatus === 500 || err?.httpStatus === 502 || err?.httpStatus === 503) {
+        msg =
+          "Signup server is temporarily unavailable. Wait a minute and try again, or email contact@unrestdu.in with your name and email.";
       } else if (
         code === "functions/internal" ||
         code === "functions/not-found" ||
@@ -305,12 +354,15 @@ export function initEarlyAccessUI({
   };
 
   function showSuccess(message) {
+    const reviewMessage =
+      message ||
+      "Request received. A moderator will review it and email your code. Use the same email in the app.";
     showStep("done");
     const doneText = document.getElementById("ea-done-text");
     const codeBox = document.getElementById("ea-code-display");
 
     if (doneText) {
-      doneText.textContent = message;
+      doneText.textContent = reviewMessage;
     }
 
     if (codeBox) {
@@ -326,78 +378,12 @@ export function initEarlyAccessUI({
     });
   }
 
-  window.approveEarlyAccess = async function (requestId) {
-    try {
-      const res = await approveFn({ requestId });
-      const emailed = res?.data?.emailed === true;
-      alert(emailed ? "Code issued and emailed." : "Code issued, but email delivery failed.");
-    } catch (e) {
-      alert("Approve failed: " + (e.message || e));
-    }
-  };
-
-  window.rejectEarlyAccess = async function (requestId) {
-    if (!confirm("Reject this affiliation request?")) return;
-    try {
-      await rejectFn({ requestId });
-      alert("Request rejected.");
-    } catch (e) {
-      alert("Reject failed: " + (e.message || e));
-    }
-  };
-
-  window.watchEarlyAccessQueue = function () {
-    const q = query(
-      collection(db, "early_access_requests"),
-      where("status", "in", ["pending_affiliation", "pending_review"])
-    );
-    onSnapshot(q, (snap) => {
-      const container = document.getElementById("ea-mod-container");
-      if (!container) return;
-      let html = "";
-      snap.forEach((docSnap) => {
-        const p = docSnap.data();
-        const typeLabel =
-          p.type === "aspirant"
-            ? "DU aspirant"
-            : p.emailChannel === "du_ac_in"
-              ? "DU student (official email)"
-              : "DU student (Gmail + proof)";
-        const proofs = (p.proofUrls || [])
-          .map(
-            (u) =>
-              `<a href="${u}" target="_blank" rel="noopener" style="color:var(--accent);font-size:0.75rem">View proof</a>`
-          )
-          .join(" · ");
-        html += `
-          <div class="mod-item">
-            <div class="mod-info">
-              <div class="mod-info-college">${p.fullName || "—"} · ${p.email}</div>
-              <div class="mod-info-text">${typeLabel} · ${proofs || "No proof files"}</div>
-            </div>
-            <div class="mod-actions">
-              <button class="btn-approve" onclick="approveEarlyAccess('${docSnap.id}')">Approve & email code</button>
-              <button class="btn-reject" onclick="rejectEarlyAccess('${docSnap.id}')">Reject</button>
-            </div>
-          </div>`;
-      });
-      container.innerHTML =
-        html ||
-        '<div style="font-size:0.8rem;color:#888;">No affiliation reviews pending.</div>';
-      const badge = document.getElementById("ea-mod-count");
-      if (badge) badge.textContent = `${snap.size} Pending`;
-    });
-  };
-
   if (typeof window.registerEarlyAccessHandlers === "function") {
     window.registerEarlyAccessHandlers({
       startEarlyAccess: window.startEarlyAccess,
       closeEarlyAccessModal: window.closeEarlyAccessModal,
       pickEarlyAccessType: window.pickEarlyAccessType,
       submitEarlyAccessForm: window.submitEarlyAccessForm,
-      approveEarlyAccess: window.approveEarlyAccess,
-      rejectEarlyAccess: window.rejectEarlyAccess,
-      watchEarlyAccessQueue: window.watchEarlyAccessQueue,
     });
   }
 }

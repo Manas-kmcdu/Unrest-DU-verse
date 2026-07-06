@@ -1064,13 +1064,6 @@
             <span style="font-size: 0.8rem; background: var(--accent); color: white; padding: 2px 8px; border-radius: 100px;" id="mod-count">0 Pending</span>
           </div>
           <div id="mod-items-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
-          <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-              <h3 style="font-family: var(--serif); color: var(--accent); margin:0;">Early access — Gmail DU proof</h3>
-              <span style="font-size: 0.8rem; background: var(--green); color: white; padding: 2px 8px; border-radius: 100px;" id="ea-mod-count">0 Pending</span>
-            </div>
-            <div id="ea-mod-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
-          </div>
         </div>
 
       </div>
@@ -1572,8 +1565,6 @@ async function adminLogin() {
       document.getElementById('mod-items-container').innerHTML = pendingHtml || '<div style="font-size:0.8rem;color:#888;">Queue is empty.</div>';
     });
 
-    window.watchEarlyAccessQueue();
-
   } catch (error) {
     alert("Login failed: " + error.message);
   }
@@ -1655,11 +1646,15 @@ window.voteCloud = async function(id, type, btn) {
 };
 
 // --- UTILS ---
+function spawnConfetti(color) {
   const container = document.getElementById('confetti-container');
+  if (!container) return;
   for (let i = 0; i < 28; i++) {
-    const p = document.createElement('div'); p.className = 'confetti-piece';
-    p.style.cssText = `left:${20+Math.random()*60}vw; top:${30+Math.random()*20}vh; width:8px; height:8px; background:${color}; animation-duration:1.5s;`;
-    container.appendChild(p); setTimeout(() => p.remove(), 1500);
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `left:${20 + Math.random() * 60}vw; top:${30 + Math.random() * 20}vh; width:8px; height:8px; background:${color}; animation-duration:1.5s;`;
+    container.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
   }
 }
 

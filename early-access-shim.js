@@ -56,9 +56,6 @@
 
   stub("startEarlyAccess");
   stub("submitEarlyAccessForm");
-  stub("approveEarlyAccess");
-  stub("rejectEarlyAccess");
-  stub("watchEarlyAccessQueue");
 
   window.closeEarlyAccessModal = function () {
     if (ready && typeof impl.closeEarlyAccessModal === "function") {
@@ -86,9 +83,6 @@
     window.closeEarlyAccessModal = impl.closeEarlyAccessModal;
     window.pickEarlyAccessType = impl.pickEarlyAccessType;
     window.submitEarlyAccessForm = impl.submitEarlyAccessForm;
-    window.approveEarlyAccess = impl.approveEarlyAccess;
-    window.rejectEarlyAccess = impl.rejectEarlyAccess;
-    window.watchEarlyAccessQueue = impl.watchEarlyAccessQueue;
 
     queued.forEach(function (item) {
       if (item.timer) clearTimeout(item.timer);
