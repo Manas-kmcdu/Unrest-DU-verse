@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VERSUS - 1v1 Football Tournament</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --pitch:      #0B0F0B;
+    --pitch-2:    #12180F;
+    --line:       #2A3324;
+    --chalk:      #F3F1E7;
+    --chalk-dim:  #B9BBAE;
+    --glow:       #D7FF3E;
+    --glow-dim:   #9AAE2F;
+    --red:        #FF4B3E;
+    --max-w:      1120px;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--pitch);
+    color:var(--chalk);
+    font-family:'Archivo', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  img{ display:block; max-width:100%; }
+
+  .wrap{ max-width:var(--max-w); margin:0 auto; padding:0 28px; }
+
+  a{ color:inherit; text-decoration:none; }
+
+  /* subtle turf texture */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0px, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 96px);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(11,15,11,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 28px;
+    max-width:var(--max-w); margin:0 auto;
+  }
+  .logo{
+    font-family:'Anton', sans-serif;
+    font-size:22px;
+    letter-spacing:0.5px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .logo span{ color:var(--glow); }
+  .nav-cta{
+    background:var(--glow);
+    color:var(--pitch);
+    font-weight:800;
+    font-size:14px;
+    padding:11px 22px;
+    border-radius:3px;
+    transition:transform .15s ease;
+  }
+  .nav-cta:hover{ transform:translateY(-1px); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    padding:72px 0 0;
+    z-index:1;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.15fr 0.85fr;
+    gap:48px;
+    align-items:center;
+  }
+  .kicker{
+    display:flex; align-items:center; gap:10px;
+    color:var(--red);
+    font-weight:700;
+    font-size:14px;
+    margin-bottom:22px;
+  }
+  .kicker .dot{
+    width:8px; height:8px; border-radius:50%;
+    background:var(--red);
+    box-shadow:0 0 0 0 rgba(255,75,62,0.6);
+    animation:pulse 1.8s infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(255,75,62,0.55); }
+    70%{ box-shadow:0 0 0 9px rgba(255,75,62,0); }
+    100%{ box-shadow:0 0 0 0 rgba(255,75,62,0); }
+  }
+  h1.headline{
+    font-family:'Anton', sans-serif;
+    font-weight:400;
+    line-height:0.92;
+    font-size:clamp(52px, 8vw, 104px);
+    letter-spacing:-1px;
+    text-transform:uppercase;
+  }
+  h1.headline .stroke{
+    -webkit-text-stroke:1.5px var(--chalk);
+    color:transparent;
+  }
+  .sub{
+    margin-top:26px;
+    font-size:18px;
+    line-height:1.55;
+    color:var(--chalk-dim);
+    max-width:46ch;
+  }
+  .hero-actions{
+    margin-top:36px;
+    display:flex; align-items:center; gap:20px;
+    flex-wrap:wrap;
+  }
+  .btn-primary{
+    background:var(--glow);
+    color:var(--pitch);
+    font-weight:800;
+    font-size:16px;
+    padding:16px 32px;
+    border-radius:3px;
+    display:inline-flex; align-items:center; gap:10px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 24px rgba(215,255,62,0.18);
+  }
+  .spots-left{
+    font-size:14px;
+    color:var(--chalk-dim);
+  }
+  .spots-left b{ color:var(--chalk); }
+
+  .hero-visual{
+    position:relative;
+    aspect-ratio:4/5;
+    border-radius:6px;
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .hero-visual img{
+    width:100%; height:100%; object-fit:cover;
+    filter:grayscale(15%) contrast(1.08);
+  }
+  .hero-visual::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(11,15,11,0) 40%, rgba(11,15,11,0.85) 100%);
+  }
+  .hero-tag{
+    position:absolute; left:20px; bottom:20px; z-index:2;
+    font-family:'Anton', sans-serif;
+    font-size:15px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--glow);
+  }
+
+  .price-strip{
+    margin-top:64px;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    padding:22px 0;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:16px;
+  }
+  .price-strip .item{
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .price-strip .label{
+    font-size:12px; letter-spacing:0.5px;
+    color:var(--chalk-dim); text-transform:uppercase;
+  }
+  .price-strip .value{
+    font-family:'Anton', sans-serif;
+    font-size:26px;
+  }
+  .price-strip .value.glow{ color:var(--glow); }
+
+  /* ---------- FORMAT ---------- */
+  .section{
+    position:relative; z-index:1;
+    padding:110px 0;
+  }
+  .section-head{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    margin-bottom:56px;
+    flex-wrap:wrap; gap:20px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:28px;
+  }
+  .section-head h2{
+    font-family:'Anton', sans-serif;
+    font-weight:400;
+    font-size:clamp(34px, 4vw, 48px);
+    text-transform:uppercase;
+    letter-spacing:-0.5px;
+  }
+  .section-head p{
+    color:var(--chalk-dim);
+    max-width:34ch;
+    font-size:15px;
+    line-height:1.5;
+  }
+
+  .format-rounds{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:stretch;
+    gap:0;
+  }
+  .round-card{
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:36px 32px;
+    background:var(--pitch-2);
+    position:relative;
+  }
+  .round-num{
+    font-family:'Anton', sans-serif;
+    font-size:13px;
+    letter-spacing:1px;
+    color:var(--glow-dim);
+    text-transform:uppercase;
+    margin-bottom:18px;
+  }
+  .round-card h3{
+    font-family:'Anton', sans-serif;
+    font-weight:400;
+    font-size:30px;
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  .round-card p{
+    color:var(--chalk-dim);
+    font-size:15px;
+    line-height:1.6;
+    margin-bottom:22px;
+  }
+  .round-meta{
+    display:flex; flex-direction:column; gap:10px;
+    font-size:14px;
+  }
+  .round-meta span{ color:var(--chalk-dim); }
+  .round-meta b{ font-weight:600; }
+  .arrow-col{
+    display:flex; align-items:center; justify-content:center;
+    padding:0 24px;
+  }
+  .arrow-col svg{ width:32px; height:32px; }
+
+  .round-card.final{ border-color:var(--glow-dim); }
+  .round-card.final .round-num{ color:var(--glow); }
+
+  /* ---------- PRIZE ---------- */
+  .prize{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:48px;
+    align-items:center;
+  }
+  .prize-visual{
+    position:relative;
+    aspect-ratio:5/4;
+    border-radius:6px;
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .prize-visual img{
+    width:100%; height:100%; object-fit:cover;
+    filter:grayscale(15%) contrast(1.08);
+  }
+  .prize-num{
+    font-family:'Anton', sans-serif;
+    font-size:clamp(70px, 9vw, 130px);
+    line-height:0.9;
+    color:var(--glow);
+    letter-spacing:-2px;
+  }
+  .prize-num span{ font-size:0.4em; color:var(--chalk); vertical-align:top; margin-right:6px; }
+  .prize p{
+    margin-top:20px;
+    color:var(--chalk-dim);
+    font-size:16px;
+    line-height:1.6;
+    max-width:40ch;
+  }
+
+  /* ---------- VENUE ---------- */
+  .venue-box{
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:44px;
+    background:var(--pitch-2);
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:36px;
+  }
+  .venue-item .label{
+    font-size:12px; letter-spacing:0.5px;
+    color:var(--glow-dim); text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  .venue-item .value{
+    font-family:'Anton', sans-serif;
+    font-size:24px;
+    text-transform:uppercase;
+    line-height:1.15;
+  }
+  .venue-item .sub-value{
+    margin-top:6px;
+    font-size:14px;
+    color:var(--chalk-dim);
+  }
+
+  /* ---------- REGISTER ---------- */
+  .register{
+    background:var(--pitch-2);
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .register-grid{
+    display:grid;
+    grid-template-columns:0.9fr 1.1fr;
+    gap:64px;
+    align-items:flex-start;
+  }
+  .register-left h2{
+    font-family:'Anton', sans-serif;
+    font-weight:400;
+    font-size:clamp(34px,4vw,46px);
+    text-transform:uppercase;
+    line-height:0.98;
+    margin-bottom:18px;
+  }
+  .register-left p{
+    color:var(--chalk-dim);
+    font-size:15px;
+    line-height:1.6;
+    max-width:38ch;
+    margin-bottom:28px;
+  }
+  .checklist{ display:flex; flex-direction:column; gap:14px; }
+  .checklist .row{
+    display:flex; align-items:center; gap:12px;
+    font-size:14px;
+    color:var(--chalk-dim);
+  }
+  .checklist .row svg{ width:16px; height:16px; flex-shrink:0; color:var(--glow); }
+
+  .form-card{
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:36px;
+    background:var(--pitch);
+  }
+  .field{ margin-bottom:20px; }
+  .field label{
+    display:block; font-size:12px;
+    letter-spacing:0.4px; text-transform:uppercase;
+    color:var(--chalk-dim); margin-bottom:8px;
+  }
+  .field input, .field select{
+    width:100%;
+    background:transparent;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:13px 14px;
+    color:var(--chalk);
+    font-family:'Archivo', sans-serif;
+    font-size:15px;
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  .field input:focus, .field select:focus{ border-color:var(--glow-dim); }
+  .field input::placeholder{ color:#5C6055; }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+  .form-summary{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 0;
+    border-top:1px solid var(--line);
+    margin-top:8px; margin-bottom:0;
+    font-size:15px;
+  }
+  .form-summary .amount{ font-family:'Anton', sans-serif; font-size:22px; color:var(--glow); }
+
+  .pay-box{
+    margin-top:20px;
+    padding:22px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    background:var(--pitch-2);
+    display:grid;
+    grid-template-columns:96px 1fr;
+    gap:20px;
+    align-items:center;
+  }
+  .pay-box-qr{
+    width:96px; height:96px;
+    border-radius:4px;
+    overflow:hidden;
+    border:1px solid var(--line);
+    background:#fff;
+  }
+  .pay-box-qr img{ width:100%; height:100%; object-fit:cover; }
+  .pay-box-info .label{
+    font-size:11px; letter-spacing:0.4px; text-transform:uppercase;
+    color:var(--chalk-dim); margin-bottom:8px;
+  }
+  .upi-id-row{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Archivo', sans-serif;
+    font-weight:600; font-size:14px;
+    color:var(--chalk);
+  }
+  .copy-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--glow);
+    font-size:11px; font-weight:700;
+    letter-spacing:0.4px; text-transform:uppercase;
+    padding:5px 10px;
+    border-radius:3px;
+    cursor:pointer;
+    transition:border-color .15s ease;
+  }
+  .copy-btn:hover{ border-color:var(--glow-dim); }
+
+  .btn-submit{
+    width:100%;
+    background:var(--glow);
+    color:var(--pitch);
+    font-weight:800;
+    font-size:16px;
+    padding:17px;
+    border:none; border-radius:3px;
+    cursor:pointer;
+    transition:transform .15s ease;
+  }
+  .btn-submit:hover{ transform:translateY(-2px); }
+  .form-note{
+    margin-top:14px;
+    font-size:12px;
+    color:var(--chalk-dim);
+    text-align:center;
+    line-height:1.5;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    padding:36px 0 44px;
+  }
+  .footer-row{
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:12px;
+    font-size:13px;
+    color:var(--chalk-dim);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:480px){
+    .pay-box{ grid-template-columns:1fr; text-align:left; }
+    .pay-box-qr{ width:100%; height:auto; aspect-ratio:1; }
+  }
+
+  @media (max-width:860px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .hero-visual{ order:-1; aspect-ratio:16/10; }
+    .format-rounds{ grid-template-columns:1fr; }
+    .arrow-col{ transform:rotate(90deg); padding:16px 0; }
+    .prize{ grid-template-columns:1fr; }
+    .prize-visual{ order:-1; }
+    .venue-box{ grid-template-columns:1fr; gap:24px; }
+    .register-grid{ grid-template-columns:1fr; gap:40px; }
+    .price-strip{ gap:24px; }
+    .field-row{ grid-template-columns:1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">VER<span>SUS</span></div>
+    <a href="#register" class="nav-cta">Register</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="kicker"><span class="dot"></span>ONLY 50 SPOTS &mdash; ROUND 1 ON SEP 20</div>
+        <h1 class="headline">1<span class="stroke">V</span>1<br>FOOTBALL<br>SHOWDOWN</h1>
+        <p class="sub">One matchup. Three minutes. No teammates to hide behind. Win your face-off, advance to the final, walk away with the cash.</p>
+        <div class="hero-actions">
+          <a href="#register" class="btn-primary">Secure Your Spot - ₹299</a>
+          <div class="spots-left">Only <b>50 spots</b> available</div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="images/hero-1.jpg" alt="Aerial view of a football pitch">
+        <div class="hero-tag">Round 1 · Dugout, Roop Nagar</div>
+      </div>
+    </div>
+
+    <div class="price-strip">
+      <div class="item">
+        <div class="label">Entry Fee</div>
+        <div class="value glow">₹299</div>
+      </div>
+      <div class="item">
+        <div class="label">Round 1</div>
+        <div class="value">20 Sep, 5PM</div>
+      </div>
+      <div class="item">
+        <div class="label">Venue</div>
+        <div class="value">Dugout, Roop Nagar</div>
+      </div>
+      <div class="item">
+        <div class="label">Winner Takes</div>
+        <div class="value glow">₹5,000</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMAT -->
+  <section class="section" id="format">
+    <div class="section-head">
+      <h2>How it plays out</h2>
+      <p>Two rounds. Straight knockout. Nowhere to hide in a 1v1.</p>
+    </div>
+
+    <div class="format-rounds">
+      <div class="round-card">
+        <div class="round-num">Round 1 - Face-Off</div>
+        <h3>3-Minute Matchup</h3>
+        <p>You're paired against your matchup for a single 3-minute 1v1 match. Straight elimination - score more, you're through.</p>
+        <div class="round-meta">
+          <span>Date &amp; time - <b>20th September, 5PM onwards</b></span>
+          <span>Venue - <b>Dugout, Roop Nagar</b></span>
+          <span>Duration - <b>3 minutes per match</b></span>
+        </div>
+      </div>
+
+      <div class="arrow-col">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--glow-dim)">
+          <path d="M5 12h14M13 5l7 7-7 7"/>
+        </svg>
+      </div>
+
+      <div class="round-card final">
+        <div class="round-num">Final Round</div>
+        <h3>Winner Takes All</h3>
+        <p>Winners from Round 1 advance straight to the final. One last matchup decides who walks away with the prize.</p>
+        <div class="round-meta">
+          <span>Eligibility - <b>Round 1 winners only</b></span>
+          <span>Prize - <b>₹5,000 to the winner</b></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIZE -->
+  <section class="section" id="prize">
+    <div class="prize">
+      <div>
+        <div class="prize-num"><span>₹</span>5,000</div>
+        <p>Straight to the final's winner. No splitting, no points table - one match decides it.</p>
+      </div>
+      <div class="prize-visual">
+        <img src="images/hero-2.jpg" alt="Pitch line markings">
+      </div>
+    </div>
+  </section>
+
+  <!-- VENUE -->
+  <section class="section" id="venue">
+    <div class="section-head">
+      <h2>Where &amp; when</h2>
+      <p>Lock the date in. Spots are first-come, first-served.</p>
+    </div>
+    <div class="venue-box">
+      <div class="venue-item">
+        <div class="label">Date</div>
+        <div class="value">20th September</div>
+        <div class="sub-value">Round 1 kickoff</div>
+      </div>
+      <div class="venue-item">
+        <div class="label">Time</div>
+        <div class="value">5:00 PM Onwards</div>
+        <div class="sub-value">Matchups run back-to-back</div>
+      </div>
+      <div class="venue-item">
+        <div class="label">Venue</div>
+        <div class="value">Dugout</div>
+        <div class="sub-value">Roop Nagar, Delhi</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REGISTER -->
+  <section class="section register" id="register">
+    <div class="wrap" style="padding:110px 0;">
+      <div class="register-grid">
+        <div class="register-left">
+          <h2>Lock your matchup</h2>
+          <p>50 spots. First-come, first-served. Fill this in and proceed to payment to confirm your place in Round 1.</p>
+          <div class="checklist">
+            <div class="row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              Confirmed spot for Round 1, 20th September
+            </div>
+            <div class="row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              Matchup assigned before match day
+            </div>
+            <div class="row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              Round 1 winners advance to the final automatically
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="field">
+            <label>Full Name</label>
+            <input type="text" placeholder="Your name">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Phone Number</label>
+              <input type="tel" placeholder="10-digit number">
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input type="email" placeholder="you@email.com">
+            </div>
+          </div>
+          <div class="field">
+            <label>College / University</label>
+            <input type="text" placeholder="e.g. Kirori Mal College">
+          </div>
+          <div class="field">
+            <label>Preferred Position</label>
+            <select>
+              <option>Striker</option>
+              <option>Midfielder</option>
+              <option>Defender</option>
+              <option>Goalkeeper</option>
+            </select>
+          </div>
+
+          <div class="form-summary">
+            <span>Entry Fee</span>
+            <span class="amount">₹299</span>
+          </div>
+
+          <div class="pay-box">
+            <div class="pay-box-qr">
+              <img src="images/upi-qr.png" alt="UPI QR code">
+            </div>
+            <div class="pay-box-info">
+              <div class="label">Scan with any UPI app</div>
+              <div class="upi-id-row">
+                <span id="upiId">9650692251@pthdfc</span>
+                <button type="button" class="copy-btn" onclick="copyUpi()">Copy</button>
+              </div>
+              <div class="field" style="margin-top:18px; margin-bottom:0;">
+                <label>UPI Transaction ID</label>
+                <input type="text" placeholder="12-digit UTR / reference no.">
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-submit" type="button" style="margin-top:24px;">Confirm Registration</button>
+          <div class="form-note">Pay ₹299 via the QR above, then enter the transaction ID to confirm your spot.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-row">
+      <div>VERSUS - 1v1 Football Tournament</div>
+      <div>50 spots · Round 1 on 20th September · Dugout, Roop Nagar</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function copyUpi(){
+  const id = document.getElementById('upiId').textContent;
+  navigator.clipboard?.writeText(id).catch(()=>{});
+  const btn = document.querySelector('.copy-btn');
+  const original = btn.textContent;
+  btn.textContent = 'Copied';
+  setTimeout(()=>{ btn.textContent = original; }, 1500);
+}
+</script>
+</body>
+</html>
