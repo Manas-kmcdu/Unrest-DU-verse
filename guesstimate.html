@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Would Guess...? — Weekly Guesstimate Challenge</title>
+<style>
+  :root{
+    --paper: #F6F4EE;
+    --paper-line: #ccd7e0;
+    --ink: #1C2541;
+    --ink-soft: #4A5470;
+    --amber: #D98E2B;
+    --amber-soft: #F3E1C0;
+    --pen: #A6402F;
+    --sage: #5E7F63;
+    --sage-soft: #E1EAE1;
+    --rule: #D8D3C4;
+    --serif: ui-serif, Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background-color: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(160,182,201,0.16) 28px),
+      repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(160,182,201,0.0) 28px);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap{
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px 100px;
+  }
+
+  a{ color: var(--pen); }
+  a:hover{ color: var(--ink); }
+
+  /* ---- Hero ---- */
+  .hero{
+    padding: 88px 0 56px;
+  }
+  .hero h1{
+    font-family: var(--serif);
+    font-size: clamp(44px, 8vw, 72px);
+    line-height: 1.05;
+    margin: 0 0 20px;
+    letter-spacing: -0.01em;
+  }
+  .hero p.sub{
+    font-size: 19px;
+    color: var(--ink-soft);
+    max-width: 46ch;
+    margin: 0 0 28px;
+  }
+  .hero .jump{
+    font-size: 15px;
+    color: var(--ink-soft);
+  }
+  .hero .jump a{ text-decoration-thickness: 1px; }
+
+  /* ---- Section rhythm ---- */
+  section{
+    padding: 52px 0;
+    border-top: 1px solid var(--rule);
+  }
+  section > h2{
+    font-family: var(--serif);
+    font-size: 28px;
+    margin: 0 0 22px;
+  }
+  section > p{
+    margin: 0 0 16px;
+    max-width: 62ch;
+  }
+
+  /* ---- Method list ---- */
+  ol.method{
+    padding-left: 0;
+    margin: 24px 0;
+    list-style: none;
+    counter-reset: step;
+    display: grid;
+    gap: 14px;
+  }
+  ol.method li{
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 12px;
+    align-items: baseline;
+  }
+  ol.method li::before{
+    content: counter(step);
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--pen);
+    border: 1px solid var(--pen);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .example{
+    background: rgba(255,255,255,0.5);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--amber);
+    padding: 18px 20px;
+    margin-top: 26px;
+    font-size: 15px;
+    color: var(--ink-soft);
+  }
+  .example strong{ color: var(--ink); }
+
+  /* ---- Toolkit ---- */
+  ul.toolkit{
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px;
+    display: grid;
+    gap: 12px;
+  }
+  ul.toolkit li{
+    padding-left: 18px;
+    position: relative;
+  }
+  ul.toolkit li::before{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    background: var(--sage);
+    border-radius: 50%;
+  }
+  ul.toolkit b{ color: var(--ink); }
+
+  .practice-list{
+    font-size: 15px;
+    color: var(--ink-soft);
+  }
+  .practice-list li{ margin-bottom: 6px; }
+
+  /* ---- Challenge set ---- */
+  .week-label{
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+
+  .ladder{
+    display: grid;
+    gap: 20px;
+    margin-top: 24px;
+  }
+
+  .field-row{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .pending-identity{
+    margin-top: 18px;
+    border-top: 1px dashed var(--rule);
+    padding-top: 16px;
+  }
+  .pending-identity .hint{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+  @media (max-width: 480px){
+    .field-row{ grid-template-columns: 1fr; }
+  }
+
+  .assist.anchors{
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--amber);
+    background: var(--amber-soft);
+    padding: 14px 16px;
+    margin: 0 0 20px;
+    font-size: 14px;
+  }
+  .assist .assist-label{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .assist ul{
+    margin: 0;
+    padding-left: 18px;
+  }
+  .assist li{ margin-bottom: 3px; }
+
+  .panel{
+    border: 1px solid var(--rule);
+    background: rgba(255,255,255,0.55);
+    position: relative;
+    padding: 26px 26px 24px;
+    transition: opacity 0.25s ease;
+  }
+  .panel.locked{
+    opacity: 0.55;
+  }
+  .panel .tab{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--serif);
+    font-size: 20px;
+    margin: 0 0 4px;
+  }
+  .panel .tier-easy .tab{ color: var(--sage); }
+  .panel .tier-medium .tab{ color: var(--amber); }
+  .panel .tier-hard .tab{ color: var(--pen); }
+  .panel .meta{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+  }
+  .panel .question{
+    font-size: 17px;
+    margin: 0 0 18px;
+    max-width: 56ch;
+  }
+
+  .lock-msg{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+
+  label.field-label{
+    display: block;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  textarea, input[type="text"], input[type="number"]{
+    width: 100%;
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--rule);
+    padding: 10px 12px;
+    border-radius: 2px;
+  }
+  textarea{
+    min-height: 92px;
+    resize: vertical;
+    margin-bottom: 14px;
+  }
+  textarea:focus, input[type="text"]:focus, input[type="number"]:focus{
+    outline: 2px solid var(--amber);
+    outline-offset: 1px;
+  }
+
+  /* ---- Parameter breakdown ---- */
+  .param-list{
+    display: grid;
+    gap: 16px;
+    margin: 4px 0 8px;
+  }
+  .param-row{
+    border: 1px solid var(--rule);
+    background: #fff;
+    padding: 14px 16px;
+  }
+  .param-row .param-label{
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .param-row .param-label .unit{
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+  .param-inputs{
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 10px;
+  }
+  @media (max-width: 480px){
+    .param-inputs{ grid-template-columns: 1fr; }
+  }
+  .param-value{
+    font-family: var(--mono);
+  }
+  .param-reason{
+    font-size: 14px;
+  }
+  .param-reason::placeholder, .param-value::placeholder{
+    color: #b7b2a3;
+  }
+
+  .estimate-preview{
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--sage);
+    background: var(--sage-soft);
+    padding: 14px 16px;
+    margin: 6px 0 16px;
+    font-size: 14px;
+  }
+  .estimate-preview .preview-label{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+  .estimate-preview .preview-value{
+    font-family: var(--mono);
+    font-size: 20px;
+    color: var(--ink);
+  }
+  .estimate-preview .preview-chain{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+
+  button{
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  button:hover{ background: #35406b; }
+  button:disabled{
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  button.ghost{
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink-soft);
+  }
+  button.ghost:hover{ background: rgba(0,0,0,0.04); }
+
+  .validation{
+    font-size: 13px;
+    color: var(--pen);
+    margin: -8px 0 14px;
+    min-height: 16px;
+  }
+
+  .submitted-block{
+    background: #fff;
+    border: 1px solid var(--rule);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .submitted-block .label{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+  .submitted-block .estimate-readout{
+    font-family: var(--mono);
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+  .submitted-block .param-readout{
+    font-size: 14px;
+    color: var(--ink-soft);
+    display: grid;
+    gap: 6px;
+  }
+  .submitted-block .param-readout .prow{
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+  }
+  .submitted-block .param-readout .pval{
+    font-family: var(--mono);
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .solution{
+    margin-top: 16px;
+    border-top: 1px dashed var(--rule);
+    padding-top: 16px;
+    font-size: 15px;
+    color: var(--ink-soft);
+  }
+  .solution .label{
+    font-size: 12px;
+    color: var(--pen);
+    margin-bottom: 8px;
+  }
+
+  .check{
+    color: var(--sage);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  footer{
+    padding: 40px 0 0;
+    font-size: 13px;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--rule);
+  }
+  footer .reset{
+    margin-top: 10px;
+  }
+  footer button.reset-btn{
+    font-size: 12px;
+    padding: 6px 12px;
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid var(--rule);
+  }
+
+  @media (max-width: 480px){
+    .hero{ padding-top: 56px; }
+    .panel{ padding: 20px 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section class="hero" style="border-top:none;">
+    <h1>I Would Guess...?</h1>
+    <p class="sub">A weekly estimation challenge for Delhi University students. Three questions, three difficulties, no calculators required — just a working and a willingness to be roughly right.</p>
+    <p class="jump"><a href="#what">What's a guesstimate?</a> &nbsp;·&nbsp; <a href="#challenge">Jump to this week's set</a></p>
+  </section>
+
+  <section id="what">
+    <h2>What's a guesstimate?</h2>
+    <p>A guesstimate is an estimate you build from scratch, out loud, using only what you already know. Nobody expects you to know how many chai stalls there are near North Campus — but you can reason your way to a number that's in the right neighbourhood, and show exactly how you got there.</p>
+    <p>It's the core skill tested in consulting and finance case interviews, and it's a useful habit well beyond that: breaking an unfamiliar, unmeasurable question into small pieces you can actually reason about.</p>
+    <ol class="method">
+      <li>Break it down — split the big unknown into smaller, guessable pieces.</li>
+      <li>Estimate each piece — use whatever you genuinely know: population, rough averages, your own experience.</li>
+      <li>Put it back together — multiply the pieces back into one number.</li>
+      <li>Sanity-check the size — does it feel like the right order of magnitude, or off by a factor of ten?</li>
+    </ol>
+    <div class="example">
+      <strong>Worked example — how many piano tuners are there in Delhi?</strong><br>
+      Start from Delhi's population (~3 crore), guess how many households own a piano (maybe 1 in 2,000), and how often each gets tuned (once a year). That's roughly 15,000 tunings a year. If one tuner can do about 500 tunings a year, that's around 30 piano tuners in the city. The exact number matters less than the fact that every step is defensible.
+    </div>
+  </section>
+
+  <section>
+    <h2>Toolkit</h2>
+    <ul class="toolkit">
+      <li><b>Bottom-up decomposition</b> — build the number from small units up: people, then households, then a city.</li>
+      <li><b>Top-down anchoring</b> — start from a number you're confident about and adjust from there.</li>
+      <li><b>Round aggressively</b> — 10, 100, 1,000. Precision isn't the point; the chain of logic is.</li>
+      <li><b>Say your assumptions out loud</b> — a guesstimate is a chain of assumptions, not a lucky number.</li>
+    </ul>
+    <p style="margin-bottom:10px; font-size:15px;">Want more reps before this week's set? Try these on your own:</p>
+    <ul class="practice-list">
+      <li>How many textbooks change hands in Kamla Nagar market every semester?</li>
+      <li>How many cups of tea does a DU college canteen pour in one academic year?</li>
+      <li>How many hours does the average DU student spend on the metro per week?</li>
+    </ul>
+  </section>
+
+  <section id="challenge">
+    <div class="week-label" id="weekLabel"></div>
+    <h2>This week's set</h2>
+    <p>Solve Easy first — it unlocks Medium, and Medium unlocks Hard. Each question is broken into pieces already — fill in a number for each piece and a one-line reason it's about right, and we'll multiply them together for you. Lock it in, add your name and email once, and it carries over to the rest of the set.</p>
+    <div class="ladder" id="ladder"></div>
+  </section>
+
+  <footer>
+    <p>New questions go up weekly. Your progress on this device is saved automatically.</p>
+    <div class="reset">
+      <button class="reset-btn" id="resetBtn">Reset my progress</button>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  const WEEK_LABEL = "Week of 14 September 2026";
+  const STORAGE_KEY = "progress:2026-09-14:v2";
+
+  // Paste in the values from the Google Form setup steps. Leave FORM_ACTION_URL
+  // blank and submissions just won't be sent anywhere except this device.
+  const CONFIG = {
+    FORM_ACTION_URL: "https://docs.google.com/forms/d/e/1FAIpQLScEdugaeWXb8VkSjNpLTuOKfZSQJIsQA4oeSusbBsRKd4nY4g/formResponse",
+    ENTRY_IDS: {
+      name: "entry.1452189316",
+      email: "entry.1669713885",
+      level: "entry.1717684185",
+      estimate: "entry.1505124543",
+      working: "entry.917226160"
+    }
+  };
+
+  // To publish a new week: change WEEK_LABEL and STORAGE_KEY above (a new key
+  // starts everyone fresh), then edit the question/parameters/solution below.
+  //
+  // Each challenge is broken into `parameters` — small guessable quantities.
+  // A student enters a number + a short reason for each; the final estimate
+  // is auto-computed as the PRODUCT of all parameter values. Keep parameters
+  // genuinely multiplicative (pieces that multiply into the target quantity),
+  // and convert units in the label itself (e.g. "per hour" not "per minute")
+  // rather than relying on a hidden conversion factor.
+  const CHALLENGES = [
+    {
+      id: "easy",
+      tier: "Easy",
+      tierClass: "tier-easy",
+      meta: "~5 minutes",
+      question: "How many auto-rickshaws pass through the North Campus circle outside Vishwavidyalaya metro station on a typical weekday?",
+      parameters: [
+        { id: "hours", label: "Hours per day the circle sees real, steady traffic", unit: "hours/day", placeholder: "e.g. 14" },
+        { id: "rate", label: "Average autos passing a fixed point per hour, blending busy and quiet stretches", unit: "autos/hour", placeholder: "e.g. 90" }
+      ],
+      anchors: [
+        "Vishwavidyalaya station's last publicly recorded daily average footfall was around 24,000 entries and exits (DMRC data) — a floor, since ridership has grown since",
+        "The station runs trains from about 6:00 AM to just before midnight — roughly an 18-hour window",
+        "A shared auto typically carries 3-4 passengers per trip"
+      ],
+      solution: "Take the circle as 'active' for about 14 hours a day. Autos pass a fixed point at maybe 2-3/minute in busy stretches and 0-1/minute in quiet ones — call the blended average 90/hour. 14 × 90 ≈ 1,260 autos a day. The method matters more than the digit — the point is you can defend every number in the chain."
+    },
+    {
+      id: "medium",
+      tier: "Medium",
+      tierClass: "tier-medium",
+      meta: "~7 minutes",
+      question: "How many cups of tea or coffee does an average DU college canteen sell across one academic year?",
+      parameters: [
+        { id: "students", label: "Total students at a mid-sized college", unit: "students", placeholder: "e.g. 3000" },
+        { id: "share", label: "Share of students who pass through the canteen on a given day", unit: "fraction, 0–1", placeholder: "e.g. 0.3" },
+        { id: "cups", label: "Cups bought per canteen visitor, on average", unit: "cups/visitor", placeholder: "e.g. 0.7" },
+        { id: "days", label: "Teaching days in an academic year", unit: "days/year", placeholder: "e.g. 180" }
+      ],
+      solution: "3,000 students × 30% passing through the canteen ≈ 900 visitors a day. At 0.7 cups per visitor (some buy two, many buy none) that's about 630 cups a day. Across roughly 180 teaching days, 630 × 180 ≈ 113,000 cups a year — call it a bit over a lakh."
+    },
+    {
+      id: "hard",
+      tier: "Hard",
+      tierClass: "tier-hard",
+      meta: "~9 minutes",
+      question: "How much money does the Delhi Metro collect in a year just from students entering or exiting at Vishwavidyalaya station?",
+      parameters: [
+        { id: "footfall", label: "Total daily footfall at the station on a college day", unit: "entries/day", placeholder: "e.g. 40000" },
+        { id: "share", label: "Share of that footfall that's DU students or staff", unit: "fraction, 0–1", placeholder: "e.g. 0.6" },
+        { id: "fare", label: "Average fare per trip, blending passes and short-hop tickets", unit: "₹/trip", placeholder: "e.g. 15" },
+        { id: "days", label: "Days a year the university is meaningfully active", unit: "days/year", placeholder: "e.g. 220" }
+      ],
+      anchors: [
+        "Vishwavidyalaya station's last publicly recorded daily average footfall was around 24,000 entries and exits (DMRC data) — a floor, since ridership has grown since",
+        "The station runs trains from about 6:00 AM to just before midnight — roughly an 18-hour window"
+      ],
+      solution: "40,000 daily entries × 60% DU students ≈ 24,000 student trips a day. At an average of ₹15/trip, that's about ₹3.6 lakh a day. Across roughly 220 active university days a year, that lands close to ₹8 crore a year — treat this as order-of-magnitude, not an audited figure."
+    }
+  ];
+
+  const ladder = document.getElementById("ladder");
+  document.getElementById("weekLabel").textContent = WEEK_LABEL;
+
+  let state = null;
+
+  function defaultState(){
+    const s = { identity: { name: "", email: "" } };
+    CHALLENGES.forEach(c => {
+      const params = {};
+      c.parameters.forEach(p => { params[p.id] = { value: "", reason: "" }; });
+      s[c.id] = { params, estimate: null, submitted: false, revealed: false };
+    });
+    return s;
+  }
+
+  // Uses browser localStorage so progress persists across visits on this device.
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      state = raw ? JSON.parse(raw) : defaultState();
+    }catch(e){
+      state = defaultState();
+    }
+    render();
+  }
+
+  function saveState(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }catch(e){
+      // Storage failed (e.g. private browsing) — progress just won't persist.
+    }
+  }
+
+  function lockSvg(){
+    return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+  }
+
+  function isUnlocked(index){
+    if(index === 0) return true;
+    const prev = CHALLENGES[index - 1];
+    return !!(state[prev.id] && state[prev.id].submitted);
+  }
+
+  function fmtNumber(n){
+    if(!isFinite(n)) return "—";
+    return Math.round(n).toLocaleString("en-IN");
+  }
+
+  // Reads the live values out of the param inputs currently on screen for a
+  // given challenge, without touching saved state.
+  function readLiveParams(challenge){
+    return challenge.parameters.map(p => {
+      const valEl = document.getElementById("pval-" + challenge.id + "-" + p.id);
+      const reasonEl = document.getElementById("preason-" + challenge.id + "-" + p.id);
+      return {
+        id: p.id,
+        label: p.label,
+        value: valEl ? valEl.value.trim() : "",
+        reason: reasonEl ? reasonEl.value.trim() : ""
+      };
+    });
+  }
+
+  function computeProduct(paramValues){
+    let product = 1;
+    let allValid = paramValues.length > 0;
+    paramValues.forEach(pv => {
+      const n = parseFloat(pv.value);
+      if(!pv.value || isNaN(n)){ allValid = false; return; }
+      product *= n;
+    });
+    return allValid ? product : NaN;
+  }
+
+  function updatePreview(challenge){
+    const preview = document.getElementById("preview-" + challenge.id);
+    if(!preview) return;
+    const live = readLiveParams(challenge);
+    const product = computeProduct(live);
+    const valueEl = preview.querySelector(".preview-value");
+    const chainEl = preview.querySelector(".preview-chain");
+    valueEl.textContent = isFinite(product) ? "≈ " + fmtNumber(product) : "— fill in every piece above";
+    chainEl.textContent = live.map(pv => pv.value || "?").join(" × ");
+  }
+
+  function render(){
+    ladder.innerHTML = "";
+    CHALLENGES.forEach((c, i) => {
+      const s = state[c.id];
+      const unlocked = isUnlocked(i);
+
+      const panel = document.createElement("div");
+      panel.className = "panel " + c.tierClass + (unlocked ? "" : " locked");
+
+      let inner = '<div class="tab">' + c.tier + (s.submitted ? ' <span class="check">✓</span>' : '') + '</div>';
+      inner += '<div class="meta">' + c.meta + '</div>';
+
+      if(!unlocked){
+        inner += '<div class="lock-msg">' + lockSvg() + '<span>Submit ' + CHALLENGES[i-1].tier + ' to unlock this one.</span></div>';
+        panel.innerHTML = inner;
+        ladder.appendChild(panel);
+        return;
+      }
+
+      inner += '<p class="question">' + c.question + '</p>';
+
+      if(c.anchors && c.anchors.length){
+        inner += '<div class="assist anchors"><div class="assist-label">A few real numbers to anchor on</div><ul>'
+          + c.anchors.map(a => '<li>' + escapeHtml(a) + '</li>').join('')
+          + '</ul></div>';
+      }
+
+      if(!s.submitted){
+        inner += '<div class="param-list">';
+        c.parameters.forEach(p => {
+          const saved = s.params[p.id] || { value: "", reason: "" };
+          inner += ''
+            + '<div class="param-row">'
+            + '<div class="param-label">' + escapeHtml(p.label) + ' <span class="unit">(' + escapeHtml(p.unit) + ')</span></div>'
+            + '<div class="param-inputs">'
+            + '<input type="number" step="any" class="param-value" id="pval-' + c.id + '-' + p.id + '" placeholder="' + escapeHtml(p.placeholder) + '" value="' + escapeHtml(saved.value) + '">'
+            + '<input type="text" class="param-reason" id="preason-' + c.id + '-' + p.id + '" maxlength="140" placeholder="Why this number, in 1-2 lines" value="' + escapeHtml(saved.reason) + '">'
+            + '</div>'
+            + '</div>';
+        });
+        inner += '</div>';
+
+        inner += ''
+          + '<div class="estimate-preview" id="preview-' + c.id + '">'
+          + '<div class="preview-label">Your estimate (auto-calculated from the pieces above)</div>'
+          + '<div class="preview-value">—</div>'
+          + '<div class="preview-chain"></div>'
+          + '</div>';
+
+        inner += ''
+          + '<div class="validation" id="validation-' + c.id + '"></div>'
+          + '<button data-id="' + c.id + '" class="submit-btn">Lock in my guess</button>'
+          + '<div class="pending-identity" id="pending-identity-' + c.id + '" style="display:none;">'
+          + '<div class="hint">Last step — who\'s solving this?</div>'
+          + '<div class="field-row">'
+          + '<input type="text" id="pid-name-' + c.id + '" placeholder="Full name">'
+          + '<input type="text" id="pid-email-' + c.id + '" placeholder="DU email">'
+          + '</div>'
+          + '<div class="validation" id="pid-validation-' + c.id + '"></div>'
+          + '<button data-id="' + c.id + '" class="confirm-lock-btn">Confirm and lock in</button>'
+          + '</div>';
+      } else {
+        inner += '<div class="submitted-block">';
+        inner += '<div class="label">Your estimate</div>';
+        inner += '<div class="estimate-readout">' + escapeHtml(fmtNumber(s.estimate)) + '</div>';
+        inner += '<div class="label">Your pieces</div>';
+        inner += '<div class="param-readout">';
+        c.parameters.forEach(p => {
+          const saved = s.params[p.id] || { value: "", reason: "" };
+          inner += ''
+            + '<div class="prow">'
+            + '<div class="pval">' + escapeHtml(saved.value || "—") + '</div>'
+            + '<div>' + escapeHtml(p.label) + (saved.reason ? ' — ' + escapeHtml(saved.reason) : '') + '</div>'
+            + '</div>';
+        });
+        inner += '</div></div>';
+
+        if(!s.revealed){
+          inner += '<button class="ghost reveal-btn" data-id="' + c.id + '">See one way to approach it</button>';
+        } else {
+          inner += ''
+            + '<div class="solution">'
+            + '<div class="label">One approach</div>'
+            + '<div>' + escapeHtml(c.solution) + '</div>'
+            + '</div>';
+        }
+      }
+
+      panel.innerHTML = inner;
+      ladder.appendChild(panel);
+    });
+
+    // Wire up live preview + persistence for each unlocked, unsubmitted challenge.
+    CHALLENGES.forEach((c, i) => {
+      const s = state[c.id];
+      if(!isUnlocked(i) || s.submitted) return;
+      c.parameters.forEach(p => {
+        const valEl = document.getElementById("pval-" + c.id + "-" + p.id);
+        const reasonEl = document.getElementById("preason-" + c.id + "-" + p.id);
+        if(valEl) valEl.addEventListener("input", () => { updatePreview(c); });
+        if(reasonEl) reasonEl.addEventListener("input", () => {});
+      });
+      updatePreview(c);
+    });
+
+    ladder.querySelectorAll(".submit-btn").forEach(btn => {
+      btn.addEventListener("click", onSubmit);
+    });
+    ladder.querySelectorAll(".confirm-lock-btn").forEach(btn => {
+      btn.addEventListener("click", onConfirmIdentity);
+    });
+    ladder.querySelectorAll(".reveal-btn").forEach(btn => {
+      btn.addEventListener("click", onReveal);
+    });
+  }
+
+  function pingGoogleForm(payload){
+    if(!CONFIG.FORM_ACTION_URL) return; // not configured yet — submissions stay local only
+    const body = new URLSearchParams();
+    body.append(CONFIG.ENTRY_IDS.name, payload.name);
+    body.append(CONFIG.ENTRY_IDS.email, payload.email);
+    body.append(CONFIG.ENTRY_IDS.level, payload.level);
+    body.append(CONFIG.ENTRY_IDS.estimate, payload.estimate);
+    body.append(CONFIG.ENTRY_IDS.working, payload.working);
+    fetch(CONFIG.FORM_ACTION_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString()
+    }).catch(() => { /* best-effort — never block the UI on this */ });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement("div");
+    div.textContent = str == null ? "" : str;
+    return div.innerHTML;
+  }
+
+  function onSubmit(e){
+    const id = e.target.getAttribute("data-id");
+    const challenge = CHALLENGES.find(c => c.id === id);
+    const live = readLiveParams(challenge);
+    const validation = document.getElementById("validation-" + id);
+
+    const missingValue = live.find(pv => pv.value === "" || isNaN(parseFloat(pv.value)));
+    if(missingValue){
+      validation.textContent = "Add a number for every piece — even a rough one.";
+      return;
+    }
+    const missingReason = live.find(pv => pv.reason.length < 3);
+    if(missingReason){
+      validation.textContent = "Add a one-line reason for every piece.";
+      return;
+    }
+    validation.textContent = "";
+
+    const estimate = computeProduct(live);
+
+    if(state.identity && state.identity.name && state.identity.email){
+      finalizeSubmission(id, live, estimate);
+      return;
+    }
+
+    // First submission on this device — ask who's solving before locking in.
+    challenge.parameters.forEach(p => {
+      const valEl = document.getElementById("pval-" + id + "-" + p.id);
+      const reasonEl = document.getElementById("preason-" + id + "-" + p.id);
+      if(valEl) valEl.setAttribute("readonly", "true");
+      if(reasonEl) reasonEl.setAttribute("readonly", "true");
+    });
+    e.target.style.display = "none";
+    document.getElementById("pending-identity-" + id).style.display = "block";
+  }
+
+  function onConfirmIdentity(e){
+    const id = e.target.getAttribute("data-id");
+    const challenge = CHALLENGES.find(c => c.id === id);
+    const name = document.getElementById("pid-name-" + id).value.trim();
+    const email = document.getElementById("pid-email-" + id).value.trim();
+    const validation = document.getElementById("pid-validation-" + id);
+
+    if(!name || !email){
+      validation.textContent = "Add your name and DU email to lock this in.";
+      return;
+    }
+
+    state.identity = { name, email };
+    const live = readLiveParams(challenge);
+    const estimate = computeProduct(live);
+    finalizeSubmission(id, live, estimate);
+  }
+
+  function finalizeSubmission(id, liveParams, estimate){
+    const params = {};
+    liveParams.forEach(pv => { params[pv.id] = { value: pv.value, reason: pv.reason }; });
+    state[id] = { params, estimate, submitted: true, revealed: false };
+    saveState();
+
+    const tier = CHALLENGES.find(c => c.id === id);
+    const workingSummary = liveParams
+      .map(pv => pv.label + ": " + pv.value + " (" + pv.reason + ")")
+      .join(" | ");
+
+    pingGoogleForm({
+      name: state.identity.name,
+      email: state.identity.email,
+      level: tier ? tier.tier : id,
+      // Plain digits only — a comma-formatted string like "1,13,400" can be
+      // rejected by a Google Form field that has number validation on.
+      estimate: isFinite(estimate) ? String(Math.round(estimate)) : "",
+      working: workingSummary
+    });
+
+    render();
+
+    const nextIndex = CHALLENGES.findIndex(c => c.id === id) + 1;
+    if(nextIndex < CHALLENGES.length){
+      const nextPanel = ladder.children[nextIndex];
+      if(nextPanel) nextPanel.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+
+  function onReveal(e){
+    const id = e.target.getAttribute("data-id");
+    state[id].revealed = true;
+    saveState();
+    render();
+  }
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    state = defaultState();
+    saveState();
+    render();
+  });
+
+  loadState();
+})();
+</script>
+</body>
+</html>
