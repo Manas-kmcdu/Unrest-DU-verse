@@ -1,0 +1,38 @@
+/* Home page events slideshow */
+.es{position:relative;margin-top:clamp(36px,5vw,56px)}
+.es-t{position:relative;display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;padding:8px clamp(20px,4vw,32px);margin-inline:calc(-1*clamp(20px,4vw,32px));scroll-padding-inline:clamp(20px,4vw,32px)}
+.es-t::-webkit-scrollbar{display:none}
+.es-s{flex:0 0 min(88%,780px);scroll-snap-align:start;opacity:.45;transform:scale(.96);transition:opacity .5s,transform .7s cubic-bezier(.22,1,.36,1)}
+.es-s.on{opacity:1;transform:none}
+.es-a{--tx:#F4F0E8;--tm:rgba(244,240,232,.66);position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:64px;height:100%;min-height:clamp(380px,44vw,450px);padding:clamp(22px,3vw,32px);border:1px solid var(--border);border-radius:24px;overflow:hidden;isolation:isolate;color:var(--tx);transition:border-color .3s}
+.es-a::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(460px circle at var(--mx,78%) var(--my,12%),var(--hi),transparent 70%);opacity:.6;transition:opacity .4s}
+.es-a:hover{border-color:var(--ac)}.es-a:hover::before{opacity:1}
+.es-s.g .es-a{--ac:#FFC94A;--hi:rgba(255,201,74,.22);background:linear-gradient(160deg,#2e0f19,#140a0d 72%)}
+.es-s.h .es-a{--ac:#FF6A2A;--hi:rgba(255,106,42,.24);background:linear-gradient(160deg,#18181b,#0c0c0d 72%)}
+.es-s.f .es-a{--ac:#FF5C93;--hi:rgba(255,92,147,.22);background:linear-gradient(160deg,#2a0f1d,#120a0e 72%)}
+.es-s.v .es-a{--ac:#5EE0A0;--hi:rgba(94,224,160,.2);background:linear-gradient(160deg,#0e2018,#0a110d 72%)}
+.es-art{position:absolute;z-index:-1;right:-30px;top:-30px;width:min(60%,300px);aspect-ratio:1}.es-art svg{width:100%;height:100%}
+.es-sp{animation:esr 40s linear infinite}@keyframes esr{to{transform:rotate(360deg)}}
+.es-gl{animation:esg 6s ease-in-out infinite}@keyframes esg{50%{filter:drop-shadow(0 0 30px var(--ac))}}
+.es-chip{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--ac);border-radius:99px;color:var(--ac);font-size:.8rem;font-weight:500}
+.es-chip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ac);animation:esp 2.2s ease-in-out infinite}@keyframes esp{50%{opacity:.3}}
+.es-a h3{font-size:clamp(2rem,5vw,3.4rem);line-height:.98;max-width:11em}
+.es-a p{margin-top:12px;max-width:26em;color:var(--tm)}
+.es-f{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:24px;padding-top:18px;border-top:1px solid rgba(244,240,232,.14)}
+.es-f b{display:block;font-weight:600}.es-f span{font-size:.8rem;color:var(--tm)}
+.es-go{flex:none;display:grid;place-items:center;width:48px;height:48px;border:1px solid var(--ac);border-radius:50%;color:var(--ac);transition:background .3s,color .3s,transform .4s cubic-bezier(.22,1,.36,1)}
+.es-a:hover .es-go{background:var(--ac);color:#0B0B0C;transform:translateX(4px)}
+.es-c{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:20px}
+.es-dots{display:flex;gap:4px}
+.es-dots button{height:28px;padding:0 3px;border:0;background:none;cursor:pointer}
+.es-dots b{display:block;position:relative;width:clamp(28px,6vw,44px);height:4px;border-radius:4px;background:var(--border);overflow:hidden}
+.es-dots i{position:absolute;inset:0;background:var(--accent);transform:scaleX(0);transform-origin:0 50%}
+.es-dots button[aria-current=true] i{animation:esb var(--dur,5500ms) linear forwards}
+.es-dots.paused button[aria-current=true] i{animation-play-state:paused}
+.es-dots.still button[aria-current=true] i{animation:none;transform:none}
+@keyframes esb{to{transform:scaleX(1)}}
+.es-nav{display:flex;gap:8px}
+.es-nav button{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:none;color:var(--fg);cursor:pointer;transition:background .2s,border-color .2s}
+.es-nav button:hover{background:var(--border)}
+.es-more{margin-top:32px}
+@media(prefers-reduced-motion:reduce){.es-s{transition:none}.es-sp,.es-gl{animation:none}}
