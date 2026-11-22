@@ -268,13 +268,22 @@ textarea:focus{border-color:var(--ink);box-shadow:0 0 0 3px var(--focus)}
 </header>
 <main id="view"></main>
 <footer class="foot"><a class="btn alt" href="https://unrestdu.in/join-us.html" target="_blank" rel="noopener">Join the team</a><p>Exam Buddy by Unrest. Made for DU students. Not affiliated with University of Delhi. <a href="#/admin">Team login</a></p></footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>window.__INLINE={"data/courses.json": {"_note": "SAMPLE subject lists. Verify against official DU syllabus before launch.", "courses": [{"id": "bsc-maths", "name": "B.Sc. (Hons.) Mathematics", "short": "Maths Hons", "subjects": {"1": ["Calculus", "Algebra"], "2": ["Differential Equations", "Analytical Geometry"], "3": ["Real Analysis", "Linear Algebra"], "4": ["Group Theory", "Probability"], "5": ["Metric Spaces", "Numerical Methods"], "6": ["Complex Analysis", "Ring Theory"], "7": ["Advanced Calculus", "Mechanics"], "8": ["Topology", "Number Theory"]}}, {"id": "ba-econ", "name": "B.A. (Hons.) Economics", "short": "Economics Hons", "subjects": {"1": ["Microeconomics I", "Mathematical Methods I"], "2": ["Macroeconomics I", "Mathematical Methods II"], "3": ["Microeconomics II", "Statistics for Economics"], "4": ["Macroeconomics II", "Indian Economy"], "5": ["Econometrics", "Public Economics"], "6": ["Development Economics", "International Economics"], "7": ["Advanced Microeconomics", "Research Methods"], "8": ["Advanced Macroeconomics", "Financial Economics"]}}, {"id": "bcom-hons", "name": "B.Com. (Hons.)", "short": "B.Com Hons", "subjects": {"1": ["Financial Accounting", "Business Law"], "2": ["Corporate Accounting", "Business Mathematics"], "3": ["Cost Accounting", "Income Tax"], "4": ["Corporate Law", "Business Statistics"], "5": ["Auditing", "Financial Management"], "6": ["Management Accounting", "Marketing"], "7": ["GST", "Investment Analysis"], "8": ["Strategic Management", "Banking"]}}, {"id": "ba-english", "name": "B.A. (Hons.) English", "short": "English Hons", "subjects": {"1": ["Indian Classical Literature", "European Classical Literature"], "2": ["Indian Writing in English", "British Poetry"], "3": ["British Drama", "American Literature"], "4": ["Literary Criticism", "Romantic Poetry"], "5": ["Modern European Drama", "Postcolonial Literatures"], "6": ["Women's Writing", "Modern Indian Writing"], "7": ["Literary Theory", "Shakespeare"], "8": ["Victorian Literature", "Twentieth Century Fiction"]}}, {"id": "bsc-cs", "name": "B.Sc. (Hons.) Computer Science", "short": "CS Hons", "subjects": {"1": ["Programming Fundamentals", "Discrete Structures"], "2": ["Data Structures", "Computer System Architecture"], "3": ["Operating Systems", "Database Management"], "4": ["Algorithms", "Computer Networks"], "5": ["Software Engineering", "Theory of Computation"], "6": ["Artificial Intelligence", "Compiler Design"], "7": ["Machine Learning", "Cryptography"], "8": ["Distributed Systems", "Information Security"]}}]}, "data/papers.json": {"_note": "SAMPLE DATA. Replace with real extracted papers. courseId + semester drive who sees what.", "papers": [{"id": "m-calc-2023", "courseId": "bsc-maths", "semester": 1, "subject": "Calculus", "year": 2023, "url": "#", "added": "2026-11-20", "questions": [{"q": "State and prove Rolle's theorem.", "topic": "Mean Value Theorems", "marks": 6}, {"q": "Find the nth derivative of y = e^(ax) sin(bx).", "topic": "Successive Differentiation", "marks": 6}, {"q": "Trace the curve y^2(a - x) = x^3.", "topic": "Curve Tracing", "marks": 8}, {"q": "Evaluate the limit of (sin x - x)/x^3 as x tends to 0 using L'Hopital's rule.", "topic": "Limits and Indeterminate Forms", "marks": 5}]}, {"id": "m-calc-2022", "courseId": "bsc-maths", "semester": 1, "subject": "Calculus", "year": 2022, "url": "#", "added": "2026-11-20", "questions": [{"q": "State and prove Rolle's theorem.", "topic": "Mean Value Theorems", "marks": 6}, {"q": "State Leibnitz theorem and use it to find the nth derivative of x^2 sin x.", "topic": "Successive Differentiation", "marks": 6}, {"q": "Find the asymptotes of x^3 + y^3 = 3axy.", "topic": "Asymptotes", "marks": 6}, {"q": "Trace the curve y^2(a - x) = x^3.", "topic": "Curve Tracing", "marks": 8}]}, {"id": "m-calc-2021", "courseId": "bsc-maths", "semester": 1, "subject": "Calculus", "year": 2021, "url": "#", "questions": [{"q": "Find the asymptotes of x^3 + y^3 = 3axy.", "topic": "Asymptotes", "marks": 6}, {"q": "State Taylor's theorem with Lagrange's remainder.", "topic": "Mean Value Theorems", "marks": 5}, {"q": "Evaluate the limit of (sin x - x)/x^3 as x tends to 0 using L'Hopital's rule.", "topic": "Limits and Indeterminate Forms", "marks": 5}]}, {"id": "m-la-2023", "courseId": "bsc-maths", "semester": 3, "subject": "Linear Algebra", "year": 2023, "url": "#", "questions": [{"q": "Prove that every finite dimensional vector space has a basis.", "topic": "Basis and Dimension", "marks": 6}, {"q": "State and prove the rank-nullity theorem.", "topic": "Linear Transformations", "marks": 8}, {"q": "Find eigenvalues and eigenvectors of the given 3x3 matrix.", "topic": "Eigenvalues", "marks": 6}]}, {"id": "m-la-2022", "courseId": "bsc-maths", "semester": 3, "subject": "Linear Algebra", "year": 2022, "url": "#", "questions": [{"q": "State and prove the rank-nullity theorem.", "topic": "Linear Transformations", "marks": 8}, {"q": "Diagonalize the given 3x3 matrix.", "topic": "Eigenvalues", "marks": 6}, {"q": "Show that the solution set of a homogeneous system is a subspace.", "topic": "Vector Spaces", "marks": 5}]}, {"id": "m-ms-2023", "courseId": "bsc-maths", "semester": 5, "subject": "Metric Spaces", "year": 2023, "url": "#", "questions": [{"q": "Prove that every convergent sequence in a metric space is Cauchy.", "topic": "Sequences in Metric Spaces", "marks": 6}, {"q": "Define an open set and show that an open ball is open.", "topic": "Open and Closed Sets", "marks": 5}]}, {"id": "m-ms-2022", "courseId": "bsc-maths", "semester": 5, "subject": "Metric Spaces", "year": 2022, "url": "#", "questions": [{"q": "Prove that every convergent sequence in a metric space is Cauchy.", "topic": "Sequences in Metric Spaces", "marks": 6}, {"q": "State and prove Cantor's intersection theorem.", "topic": "Completeness", "marks": 8}]}, {"id": "m-an-2023", "courseId": "bsc-maths", "semester": 7, "subject": "Advanced Calculus", "year": 2023, "url": "#", "questions": [{"q": "State and prove the inverse function theorem.", "topic": "Multivariable Calculus", "marks": 8}]}, {"id": "e-micro-2023", "courseId": "ba-econ", "semester": 1, "subject": "Microeconomics I", "year": 2023, "url": "#", "questions": [{"q": "Derive the demand curve from utility maximisation.", "topic": "Consumer Theory", "marks": 8}, {"q": "Explain the Slutsky decomposition.", "topic": "Consumer Theory", "marks": 6}]}]}, "data/decks.json": {"_note": "SAMPLE DATA. Replace with real decks.", "decks": [{"id": "calc", "name": "Calculus essentials", "cards": [{"q": "Rolle's theorem: conditions?", "a": "f continuous on [a,b], differentiable on (a,b), f(a) = f(b). Then some c in (a,b) has f'(c) = 0."}, {"q": "Leibnitz theorem gives?", "a": "nth derivative of a product uv as a binomial-style sum of derivatives of u and v."}, {"q": "When is L'Hopital's rule valid?", "a": "Limit is 0/0 or infinity/infinity, and the limit of f'/g' exists."}, {"q": "Vertical asymptote test?", "a": "Find x = c where the function blows up to plus or minus infinity as x tends to c."}]}, {"id": "la", "name": "Linear Algebra essentials", "cards": [{"q": "Rank-nullity theorem?", "a": "For linear T: V to W with V finite dimensional, dim V = rank(T) + nullity(T)."}, {"q": "Eigenvalue definition?", "a": "Scalar lambda with Av = lambda v for some nonzero vector v."}, {"q": "Basis means?", "a": "A linearly independent set that spans the space."}, {"q": "When is a matrix diagonalizable?", "a": "When it has n linearly independent eigenvectors."}]}]}}</script>
 <script>const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const view = $('#view');
-let COURSES = [], PAPERS = [], DECKS = [], PROFILE = null, SB = null, cleanup = null, IS_ADMIN = false;
+let COURSES = [], PAPERS = [], DECKS = [], PROFILE = null, SB = null, FB = null, SKEW = 0, cleanup = null, IS_ADMIN = false;
 const LS_PROFILE = 'eb_profile';
+const FB_CONFIG = {
+  apiKey: 'AIzaSyDBJ0hHjVyEnwg7mV7ECeG163K7fs1fsiE',
+  authDomain: 'du-verse-e75db.firebaseapp.com',
+  databaseURL: 'https://du-verse-e75db-default-rtdb.asia-southeast1.firebasedatabase.app',
+  projectId: 'du-verse-e75db',
+  appId: '1:84735746102:web:6fe5353a0586db71323897'
+};
 
 const getJSON = p => (window.__INLINE && window.__INLINE[p]) ? Promise.resolve(window.__INLINE[p]) : fetch(p).then(r => r.json());
 const uniq = arr => [...new Set(arr)].sort();
@@ -310,16 +319,54 @@ function updateBadge(bump) {
   if (bump) { b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); }
 }
 
-/* ---------- realtime transport (Supabase, or same-browser demo) ---------- */
+/* ---------- realtime transport (Firebase, Supabase, or same-browser demo) ---------- */
 function makeTransport(name, nick, h, meta = {}) {
   const id = nick.replace(/[^A-Za-z0-9]/g, '').slice(0, 10) + '-' + Math.random().toString(36).slice(2, 6);
   let cur = { id, nick, ...meta };
-  const handle = (ev, p) => {
-    if (ev === 'msg') h.onMsg && h.onMsg(p);
+  const handle = (ev, p, mine) => {
+    if (ev === 'msg') h.onMsg && h.onMsg(p, mine);
     else if (ev === 'timer') h.onTimer && h.onTimer(p);
     else if (ev === 'hello') h.onHello && h.onHello();
   };
   const clean = arr => arr.map(x => ({ id: x.id, nick: String(x.nick || '?').slice(0, 20), room: x.room || null, rname: x.rname || null }));
+
+  if (FB) {
+    // Events older than the join time are replayed only for chat, so latecomers see recent messages but not stale timers.
+    const uid = firebase.auth().currentUser.uid, TS = firebase.database.ServerValue.TIMESTAMP;
+    const pRef = FB.ref('studyroom/presence/' + name + '/' + uid + '_' + id.split('-').pop());
+    const pAll = FB.ref('studyroom/presence/' + name), evRef = FB.ref('studyroom/events/' + name);
+    const since = Date.now() + SKEW;
+    const q = evRef.orderByChild('t').startAt(since - 10 * 60000);
+    let online = false, ready = false;
+    const put = () => pRef.set({ ...cur, t: TS }).catch(() => {});
+    const send = (ev, p) => {
+      const e = { ev, u: uid, s: id, t: TS };
+      if (p && Object.keys(p).length) e.p = typeof p.endsAt === 'number' ? { ...p, endsAt: p.endsAt + SKEW } : p;
+      evRef.push(e).catch(() => {});
+    };
+    const onConn = FB.ref('.info/connected').on('value', s => {
+      online = !!s.val(); if (!online) return;
+      pRef.onDisconnect().remove(); put();
+      if (!ready) { ready = true; send('hello', {}); h.onReady && h.onReady(true); }
+    });
+    const onPres = pAll.on('value', s => h.onPresence && h.onPresence(clean(Object.values(s.val() || {}))));
+    const onEv = q.on('child_added', s => {
+      const e = s.val() || {}, p = e.p || {};
+      if (e.s === id) return;
+      if (e.t < since) { if (e.ev === 'msg') handle('msg', p, e.u === uid); return; }
+      handle(e.ev, typeof p.endsAt === 'number' ? { ...p, endsAt: p.endsAt - SKEW } : p);
+    });
+    evRef.orderByChild('t').endAt(since - 10 * 60000).limitToFirst(50).once('value', s => s.forEach(c => { c.ref.remove().catch(() => {}); }));
+    return {
+      id,
+      send,
+      track: m => { cur = { ...cur, ...m }; if (online) put(); },
+      close: () => {
+        FB.ref('.info/connected').off('value', onConn); pAll.off('value', onPres); q.off('child_added', onEv);
+        pRef.onDisconnect().cancel(); pRef.remove().catch(() => {});
+      }
+    };
+  }
 
   if (SB) {
     const ch = SB.channel(name, { config: { broadcast: { self: false }, presence: { key: id } } });
@@ -379,7 +426,7 @@ function lobbyStart(nick) {
   if (Lobby.ch) return;
   Lobby.nick = nick;
   Lobby.ch = makeTransport('lobby', nick, {
-    onMsg: p => pushLobbyMsg({ n: String(p.n || '?').slice(0, 20), t: String(p.t || '').slice(0, 300) }),
+    onMsg: (p, mine) => pushLobbyMsg({ n: String(p.n || '?').slice(0, 20), t: String(p.t || '').slice(0, 300), mine }),
     onPresence: l => { Lobby.users = l; lobEmit('presence'); },
     onReady: live => { Lobby.live = live; Lobby.ready = true; lobEmit('ready'); }
   });
@@ -398,6 +445,17 @@ async function boot() {
     const [c, d] = await Promise.all([getJSON('data/courses.json'), getJSON('data/decks.json')]);
     COURSES = c.courses; DECKS = d.decks;
   } catch (e) { view.innerHTML = '<p class="lead">Could not load data. Serve via a web server, not file://.</p>'; return; }
+
+  if (window.firebase) {
+    try {
+      firebase.initializeApp(FB_CONFIG);
+      const auth = firebase.auth();
+      await new Promise(res => { const off = auth.onAuthStateChanged(u => { off(); res(u); }); });
+      if (!auth.currentUser) await auth.signInAnonymously();
+      FB = firebase.database();
+      FB.ref('.info/serverTimeOffset').on('value', s => { SKEW = s.val() || 0; });
+    } catch (e) { console.warn('Firebase unavailable, demo mode', e); FB = null; }
+  }
 
   if (window.SUPABASE_URL && window.SUPABASE_KEY && window.supabase) {
     try {
@@ -635,6 +693,12 @@ function openSuggest() {
 
 async function saveSuggestion(courseName, note) {
   const nick = getNick() || null;
+  if (FB) {
+    const s = { course: courseName, u: firebase.auth().currentUser.uid, t: firebase.database.ServerValue.TIMESTAMP };
+    if (note) s.note = note;
+    if (nick) s.nick = nick;
+    try { await FB.ref('studyroom/suggestions').push(s); return null; } catch (e) { return 'Could not send. Try again later.'; }
+  }
   if (SB) {
     const { error } = await SB.from('room_suggestions').insert({ course_name: courseName, note: note || null, nick });
     return error ? 'Could not send. Try again later.' : null;
@@ -698,7 +762,7 @@ function room(id) {
   const add = (n, t, mine) => { msgs.insertAdjacentHTML('beforeend', `<div class="m ${mine ? 'mine' : ''}"><b>${esc(mine ? 'You' : n)}</b>${esc(t)}</div>`); msgs.scrollTop = msgs.scrollHeight; };
 
   const net = makeTransport('room:' + id, nick, {
-    onMsg: p => add(String(p.n || '?').slice(0, 20), String(p.t || '').slice(0, 300)),
+    onMsg: (p, mine) => add(String(p.n || '?').slice(0, 20), String(p.t || '').slice(0, 300), mine),
     onTimer: p => { Object.assign(T, p); draw(); },
     onHello: () => { if (T.running) net.send('timer', T); },
     onPresence: list => { const w = $('#who'); if (w) w.innerHTML = uniq(list.map(u => u.nick)).map(n => `<span>${esc(n)}</span>`).join(''); },
@@ -875,7 +939,7 @@ function parseQs(text) {
 async function adminOut() { await SB.auth.signOut(); location.hash = '#/'; location.reload(); }
 
 async function admin() {
-  if (!SB) { view.innerHTML = '<h2>Team login</h2><p class="lead">Admin needs the live Supabase connection. It does not work in demo mode.</p>'; return; }
+  if (!SB) { view.innerHTML = '<h2>Team login</h2><p class="lead">Publishing PYQs is not open yet. Study rooms and chat are live.</p>'; return; }
 
   if (!IS_ADMIN) {
     const { data: { user } } = await SB.auth.getUser();

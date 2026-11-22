@@ -1,0 +1,194 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "campus": {
+      "ok": {
+        ".read": "auth != null && auth.token.email === 'manaspandeya@gmail.com' && auth.token.email_verified === true",
+        "$uid": {
+          ".read": "auth != null && (auth.uid === $uid || (auth.token.email === 'manaspandeya@gmail.com' && auth.token.email_verified === true))",
+          ".write": "auth != null && ((auth.uid === $uid && auth.token.firebase.sign_in_provider !== 'anonymous' && newData.exists() && newData.child('m').val() === 'un' && newData.child('h').isString()) || (auth.token.email === 'manaspandeya@gmail.com' && auth.token.email_verified === true))",
+          ".validate": "newData.hasChildren(['m']) && (newData.child('m').val() === 'un' || newData.child('m').val() === 'du') && (!newData.child('h').exists() || (newData.child('h').isString() && newData.child('h').val().matches(/^[a-z0-9_.]{3,24}$/)))"
+        }
+      },
+      "pr": {
+        ".read": "auth != null && (root.child('campus/ok/' + auth.uid).exists() || (auth.token.email === 'manaspandeya@gmail.com' && auth.token.email_verified === true))",
+        "$uid": {
+          ".write": "auth != null && auth.uid === $uid && (root.child('campus/ok/' + auth.uid).exists() || (auth.token.email === 'manaspandeya@gmail.com' && auth.token.email_verified === true))",
+          ".validate": "newData.hasChildren(['n','lk','ok','jt'])",
+          "n": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 14"
+          },
+          "lk": {
+            ".validate": "newData.hasChildren()"
+          },
+          "ok": {
+            ".validate": "newData.val() === 'du' || newData.val() === 'un' || newData.val() === 'staff'"
+          },
+          "jt": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      },
+      "p": {
+        ".read": "auth != null && (root.child('campus/ok/' + auth.uid).exists() || (auth.token.email === 'manaspandeya@gmail.com' && auth.token.email_verified === true))",
+        "$scene": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && (root.child('campus/ok/' + auth.uid).exists() || (auth.token.email === 'manaspandeya@gmail.com' && auth.token.email_verified === true))",
+            ".validate": "newData.hasChildren(['x','y','f','m'])",
+            "x": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3600"
+            },
+            "y": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 2200"
+            },
+            "f": {
+              ".validate": "newData.val() === 1 || newData.val() === -1"
+            },
+            "m": {
+              ".validate": "newData.val() === 0 || newData.val() === 1"
+            },
+            "sy": {
+              "t": {
+                ".validate": "newData.isString() && newData.val().length <= 60"
+              },
+              "ts": {
+                ".validate": "newData.isNumber()"
+              },
+              "$other": {
+                ".validate": false
+              }
+            },
+            "em": {
+              "i": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4"
+              },
+              "ts": {
+                ".validate": "newData.isNumber()"
+              },
+              "$other": {
+                ".validate": false
+              }
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      }
+    },
+    "studyroom": {
+      "presence": {
+        "$chan": {
+          ".read": "auth != null",
+          "$pid": {
+            ".write": "auth != null && $pid.beginsWith(auth.uid + '_') && $chan.matches(/^(lobby|room:[a-z0-9-]{1,30})$/)",
+            ".validate": "newData.hasChildren(['id','nick','t'])",
+            "id": {
+              ".validate": "newData.isString() && newData.val().length <= 40"
+            },
+            "nick": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 20"
+            },
+            "room": {
+              ".validate": "newData.isString() && newData.val().length <= 40"
+            },
+            "rname": {
+              ".validate": "newData.isString() && newData.val().length <= 60"
+            },
+            "t": {
+              ".validate": "newData.isNumber()"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      },
+      "events": {
+        "$chan": {
+          ".read": "auth != null",
+          ".indexOn": [
+            "t"
+          ],
+          "$eid": {
+            ".write": "auth != null && $chan.matches(/^(lobby|room:[a-z0-9-]{1,30})$/) && ((!data.exists() && newData.child('u').val() === auth.uid) || (!newData.exists() && data.child('t').val() < now - 600000))",
+            ".validate": "newData.hasChildren(['ev','u','s','t']) && newData.child('t').val() <= now && newData.child('t').val() > now - 60000",
+            "ev": {
+              ".validate": "newData.val() === 'msg' || newData.val() === 'timer' || newData.val() === 'hello'"
+            },
+            "u": {
+              ".validate": "newData.isString() && newData.val().length <= 128"
+            },
+            "s": {
+              ".validate": "newData.isString() && newData.val().length <= 40"
+            },
+            "t": {
+              ".validate": "newData.isNumber()"
+            },
+            "p": {
+              "n": {
+                ".validate": "newData.isString() && newData.val().length <= 20"
+              },
+              "t": {
+                ".validate": "newData.isString() && newData.val().length <= 300"
+              },
+              "phase": {
+                ".validate": "newData.val() === 'focus' || newData.val() === 'break'"
+              },
+              "running": {
+                ".validate": "newData.isBoolean()"
+              },
+              "endsAt": {
+                ".validate": "newData.isNumber()"
+              },
+              "remaining": {
+                ".validate": "newData.isNumber()"
+              },
+              "focus": {
+                ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 180"
+              },
+              "brk": {
+                ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 60"
+              },
+              "$other": {
+                ".validate": false
+              }
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      },
+      "suggestions": {
+        ".read": "auth != null && auth.token.email === 'manaspandeya@gmail.com' && auth.token.email_verified === true",
+        "$sid": {
+          ".write": "auth != null && !data.exists()",
+          ".validate": "newData.hasChildren(['course','u','t']) && newData.child('u').val() === auth.uid",
+          "course": {
+            ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 80"
+          },
+          "note": {
+            ".validate": "newData.isString() && newData.val().length <= 500"
+          },
+          "nick": {
+            ".validate": "newData.isString() && newData.val().length <= 20"
+          },
+          "u": {
+            ".validate": "newData.isString() && newData.val().length <= 128"
+          },
+          "t": {
+            ".validate": "newData.isNumber() && newData.val() <= now"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    }
+  }
+}
