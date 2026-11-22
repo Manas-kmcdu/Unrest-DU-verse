@@ -16,6 +16,8 @@
 .fs-row{display:flex;flex-direction:column;gap:3px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.06);border-left:3px solid var(--tc);color:#fff}
 .fs-row b{font-size:.85rem;font-weight:600}
 .scr .fs-row small{margin-top:0;font-size:.7rem;color:rgba(255,255,255,.6)}
+.scr>div.shot{padding:0;background:#000}
+.shot img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
 /* background music toggle */
 #un-music{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:45;display:grid;place-items:center;width:46px;height:46px;padding:0;border:1px solid var(--border);border-radius:50%;background:var(--nav-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:var(--fg);cursor:pointer;transition:transform .2s}
 #un-music:active{transform:scale(.94)}
