@@ -3,15 +3,9 @@
   "trailingSlash": true,
   "redirects": [
     {
-      "source": "/",
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "www.unrestdu.in" }],
-      "destination": "https://unrestdu.in/",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.unrestdu.in" }],
-      "destination": "https://unrestdu.in/:path*",
+      "destination": "https://unrestdu.in/$1",
       "permanent": true
     }
   ],
