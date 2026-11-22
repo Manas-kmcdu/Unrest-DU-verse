@@ -4,18 +4,14 @@
 :root{--air:"Airone","Lexend","Inter Tight",Inter,sans-serif;--t0:#56602B;--t1:#8A6A1C;--t2:#363D8E;--t3:#8B2E2E;--t4:#1F5B57}
 /* hero layout: text left, mosaic right */
 .hero .wrap{display:flex;flex-direction:column;justify-content:space-between;gap:clamp(28px,5vw,56px);padding-bottom:clamp(28px,4vw,48px)}
-.ht{flex:1;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:center}
-.hr .sub{margin-top:0}
+.ht{flex:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:center}
+.hero .hl .cta{margin-top:28px}
 .hero h1{font-size:clamp(2.6rem,6.6vw,6rem)}
-@media(max-width:900px){.ht{grid-template-columns:1fr;gap:20px}.hero h1{font-size:clamp(2.4rem,11vw,4rem)}}
-.livebar{display:flex;align-items:center;gap:12px;width:fit-content;max-width:100%;margin-top:28px;padding:10px 16px;border:1px solid var(--border);border-radius:99px;font-size:.875rem}
-.livebar i{flex:none;width:8px;height:8px;border-radius:50%;background:#2FD07F;animation:lp 2s infinite}
-@keyframes lp{0%{box-shadow:0 0 0 0 rgba(47,208,127,.55)}70%,100%{box-shadow:0 0 0 8px rgba(47,208,127,0)}}
-.livebar span{transition:opacity .25s,transform .25s}.livebar span.sw{opacity:0;transform:translateY(6px)}
-/* live tiles: 3x2, each tile swaps colleges one at a time */
-.mw{margin-top:28px}
+@media(max-width:900px){.ht{grid-template-columns:1fr;gap:36px}.hero h1{font-size:clamp(2.4rem,11vw,4rem)}}
+/* live tiles: 3x3, each tile swaps colleges one at a time */
+.mw{margin-top:0}
 .mosaic{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:2px;border-radius:0;overflow:hidden;background:var(--bg);box-shadow:0 0 0 1px var(--border)}
-.mosaic li{aspect-ratio:16/10;opacity:0;animation:tin .6s cubic-bezier(.22,1,.36,1) forwards;animation-delay:calc(var(--k,0)*70ms + .3s)}
+.mosaic li{aspect-ratio:5/4;opacity:0;animation:tin .6s cubic-bezier(.22,1,.36,1) forwards;animation-delay:calc(var(--k,0)*70ms + .3s)}
 @keyframes tin{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
 @media(max-width:560px){.mosaic li{aspect-ratio:4/3}}
 .tile{position:relative;display:block;width:100%;height:100%;padding:clamp(10px,1.1vw,14px);background:var(--tc);color:#fff;overflow:hidden;isolation:isolate;transition:background-color .6s,filter .25s,transform .35s cubic-bezier(.22,1,.36,1)}

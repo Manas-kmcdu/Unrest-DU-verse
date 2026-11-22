@@ -1,15 +1,14 @@
-/* Home: six live tiles in the hero (3x2). One tile at a time swaps to another college; a real join pulls that college onto a tile.
-   Plus ticker, banner and top-5 leaderboard. Data/counts/ranking: assets/college-core.js. Live joins: UnrestLive (assets/live.js). */
+/* Home: nine live tiles in the hero (3x3). One tile at a time swaps to another college; a real join pulls that college onto a tile.
+   Plus banner and top-5 leaderboard. Data/counts/ranking: assets/college-core.js. Live joins: UnrestLive (assets/live.js). */
 (function () {
   var C = window.UnrestColleges, wall = document.getElementById("cw");
   if (!C || !wall) return;
   var $ = function (s) { return document.querySelector(s); }, L = window.UnrestLive;
-  var rm = matchMedia("(prefers-reduced-motion: reduce)").matches, BASE = "colleges/", N = 6, EVERY = rm ? 6000 : 1700;
-  var ORDER = [0, 4, 2, 5, 1, 3], slots = [], pool = [], ptr = 0, turn = 0, held = -1, recent = [], hold = 0, tmsg = null, tidx = 0, started = false;
+  var rm = matchMedia("(prefers-reduced-motion: reduce)").matches, BASE = "colleges/", N = 9, EVERY = rm ? 6000 : 1500;
+  var ORDER = [0, 4, 8, 2, 6, 1, 5, 7, 3], slots = [], pool = [], ptr = 0, turn = 0, held = -1, started = false;
   var colour = function (c) { return C.list().indexOf(c) % 5; };
-  var short = function (slug) { var c = C.find(slug); return c ? c.shortName : slug; };
 
-  function nbrs(s) { var r = Math.floor(s / 3), k = s % 3, o = []; if (k > 0) o.push(s - 1); if (k < 2) o.push(s + 1); if (r > 0) o.push(s - 3); if (r < 1) o.push(s + 3); return o; }
+  function nbrs(s) { var r = Math.floor(s / 3), k = s % 3, o = []; if (k > 0) o.push(s - 1); if (k < 2) o.push(s + 1); if (r > 0) o.push(s - 3); if (r < 2) o.push(s + 3); return o; }
   function fit(el) {
     var w = el.parentNode.clientWidth - 26; if (w <= 0) return;
     var longest = Math.max.apply(null, el.textContent.split(/\s+/).map(function (x) { return x.length; }));
@@ -53,7 +52,7 @@
   if (window.ResizeObserver) new ResizeObserver(function () { [].forEach.call(wall.querySelectorAll(".ab"), fit); }).observe(wall);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { [].forEach.call(wall.querySelectorAll(".ab"), fit); });
 
-  /* a real join: show that college on a tile (swapping one in if needed), pulse it, count it up, update ticker + leaderboard */
+  /* a real join: show that college on a tile (swapping one in if needed), pulse it, count it up, update the leaderboard */
   function pulse(s, n) {
     var a = slots[s].firstChild, b = a.querySelector("b"), from = +b.dataset.n, to = C.getCount(slots[s].c); b.dataset.n = to;
     if (rm) { b.textContent = to; return; }
@@ -62,28 +61,10 @@
     var t0 = performance.now(); (function f(t) { var q = Math.min(1, (t - t0) / 500); b.textContent = Math.round(from + (to - from) * q); if (q < 1) requestAnimationFrame(f); })(t0);
   }
   function bump(ev) {
-    recent.push(ev); var c = C.find(ev.slug), s = slots.findIndex(function (l) { return l.c === c; });
+    var c = C.find(ev.slug), s = slots.findIndex(function (l) { return l.c === c; });
     if (s > -1) pulse(s, ev.n); else if (c) { s = nextSlot(); swap(s, c); setTimeout(function () { pulse(s, ev.n); }, rm ? 0 : 500); }
-    leaderboard(); say(live(), true);
+    leaderboard();
   }
-  function live() {
-    var now = Date.now(), by = {}, last = {}; recent = recent.filter(function (e) { return now - e.t < 10 * 60000; });
-    recent.forEach(function (e) { by[e.slug] = (by[e.slug] || 0) + e.n; last[e.slug] = e.t; });
-    var best = null; for (var s in by) if (!best || last[s] > last[best]) best = s;
-    if (!best) return null;
-    var m = Math.floor((now - last[best]) / 60000), n = by[best];
-    return n + (n === 1 ? " student" : " students") + " from " + short(best) + " joined Unrest " + (m < 1 ? "just now" : m + " min ago");
-  }
-  function base() {
-    var r = C.list().slice().sort(function (a, b) { return C.getCount(b) - C.getCount(a); }), tot = r.reduce(function (s, c) { return s + C.getCount(c); }, 0);
-    return [r[0].shortName + " leads with " + C.getCount(r[0]) + " students on Unrest", tot + " students across " + r.length + " colleges", "Find your college. Join the wall."];
-  }
-  function say(t, force) {
-    var el = $("#livet"); if (!el || !t || t === tmsg) return; if (force) hold = Date.now() + 6000;
-    tmsg = t; if (rm) { el.textContent = t; return; }
-    el.classList.add("sw"); setTimeout(function () { el.textContent = t; el.classList.remove("sw"); }, 220);
-  }
-  setInterval(function () { if (Date.now() < hold) return; var l = live(); if (l) say(l); else { var b = base(); say(b[tidx++ % b.length]); } }, 5500);
   function leaderboard() { C.renderLeaderboard($("#lbh"), { n: 5, base: BASE, highlight: C.getMine() }); }
 
   /* banner: two rows moving opposite ways; speeds up with scroll, pauses on hover; names link to the college pages */
@@ -106,7 +87,7 @@
       requestAnimationFrame(loop);
     })();
   }
-  function start() { if (started) return; started = true; build(); banner(); leaderboard(); say(base()[0]); if (L) L.on(bump); }
+  function start() { if (started) return; started = true; build(); banner(); leaderboard(); if (L) L.on(bump); }
   if (C.hasEndpoint()) {
     C.loadCounts().then(function (ok) { if (!started) start(); else if (ok) { slots.forEach(function (l, i) { fill(i, l.c); }); leaderboard(); } });
     setTimeout(start, 1500);
