@@ -1,31 +1,37 @@
-/* Feature tiles drive the phone mockup: hover or focus a tile to show its screen, otherwise it cycles. */
+/* Feature tiles: all seven stay visible. The phone only cycles the three real app screenshots. */
 (function () {
   var F = [
+    { n: "PYQs", d: "Past papers for your course, sorted by semester.", h: "studyroom/#/pyqs", c: "--t2" },
     { n: "Flatmates", d: "Find a room or a roommate near campus.", h: "#get", c: "--t0", s: "assets/app/roommate.webp" },
     { n: "Hangouts", d: "Travel buddies, sports and plans on campus.", h: "#get", c: "--t1", s: "assets/app/hangout.webp" },
+    { n: "Friends", d: "Meet verified students from every college.", h: "#get", c: "--t3" },
+    { n: "Events", d: "Fests, parties and Unrest events.", h: "events/", c: "--t4" },
+    { n: "Merchandise", d: "Metro card skins, journals and limited drops.", h: "#store", c: "--t2" },
     { n: "Updates", d: "A feed for DU, your college and your course.", h: "#get", c: "--t1", s: "assets/app/kmc-feed.webp" }
   ];
+  var shots = F.map(function (f, i) { return f.s ? i : -1; }).filter(function (i) { return i >= 0; });
   var ul = document.getElementById("ft"), scr = document.getElementById("fscr"), cap = document.getElementById("fcap");
   if (!ul || !scr) return;
 
   ul.innerHTML = F.map(function (f, i) {
-    return '<li><a class="tile ftile" href="' + f.h + '" data-i="' + i + '" style="--tc:var(' + f.c + ')"><span class="ab">' + f.n + '</span><span class="fd">' + f.d + '</span></a></li>';
+    return '<li' + (i === 0 ? ' class="w2"' : '') + '><a class="tile ftile" href="' + f.h + '" data-i="' + i + '" style="--tc:var(' + f.c + ')"><span class="ab">' + f.n + '</span><span class="fd">' + f.d + '</span></a></li>';
   }).join("");
-  scr.innerHTML = F.map(function (f) {
-    return '<div class="shot"><img src="' + f.s + '" alt="" loading="lazy" decoding="async"></div>';
+  scr.innerHTML = shots.map(function (i) {
+    return '<div class="shot" data-i="' + i + '"><img src="' + F[i].s + '" alt="" loading="lazy" decoding="async"></div>';
   }).join("");
 
-  var screens = scr.children, tiles = ul.querySelectorAll(".ftile"), cur = -1, hold = false;
+  var screens = scr.children, tiles = ul.querySelectorAll(".ftile"), cur = -1, hold = false, cycle = 0;
   function show(i) {
-    if (i === cur) return;
+    var si = shots.indexOf(i);
+    if (si < 0) si = cycle;
+    else cycle = si;
+    if (i === cur && screens[si] && screens[si].classList.contains("on")) return;
     cur = i;
-    for (var k = 0; k < screens.length; k++) {
-      screens[k].classList.toggle("on", k === i);
-      tiles[k].classList.toggle("on", k === i);
-    }
+    for (var k = 0; k < screens.length; k++) screens[k].classList.toggle("on", k === si);
+    for (k = 0; k < tiles.length; k++) tiles[k].classList.toggle("on", k === i);
     if (cap) cap.textContent = "From the app.";
   }
-  show(0);
+  show(shots[0]);
   Array.prototype.forEach.call(tiles, function (t) {
     var i = +t.getAttribute("data-i");
     function on() { hold = true; show(i); }
@@ -34,7 +40,11 @@
     t.addEventListener("mouseleave", off); t.addEventListener("blur", off);
   });
   if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    setInterval(function () { if (!hold && !document.hidden) show((cur + 1) % F.length); }, 3200);
+    setInterval(function () {
+      if (hold || document.hidden) return;
+      cycle = (cycle + 1) % shots.length;
+      show(shots[cycle]);
+    }, 3200);
   }
 })();
 

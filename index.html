@@ -61,16 +61,16 @@
  <div class="wrap" style="padding-top:56px;padding-bottom:clamp(64px,9vw,112px)"><div class="lbw"><p class="eb">Leaderboard</p><h3 class="lbh">Top colleges on Unrest</h3><div id="lbh"></div></div></div></section>
 
 <section id="corridor" class="d"><div class="pin" id="cpin"><div class="stick cor" style="padding-left:0;padding-right:0"><div class="wrap">
- <p class="eb">Corridor</p><h2>The campus hallway, online.</h2>
- <p class="mu" style="margin-top:24px;max-width:28em">Corridor matches you with someone from your course. You start anonymous. If it clicks, keep talking.</p></div>
- <ul class="crow" id="crow"></ul><div class="wrap"><p class="pl">Illustrative messages.</p></div></div></div></section>
+ <p class="eb">Corridor</p><h2>Anonymous speed matching.</h2>
+ <p class="mu" style="margin-top:24px;max-width:28em">Get matched with someone from your course. You start anonymous. Talk for a few minutes. If it clicks, keep going.</p></div>
+ <ul class="crow" id="crow"></ul></div></div></section>
 
 <section class="l"><div class="wrap pad"><p class="eb">Things to do</p><h2>There&rsquo;s always something happening.</h2>
- <div class="cols">
- <div><h3>Sports</h3><ul><li>Cricket</li><li>Football</li><li>Badminton</li><li>Running</li></ul></div>
- <div><h3>Events</h3><ul><li>Fests</li><li>Parties</li><li>Meetups</li><li>Concerts</li></ul></div>
- <div><h3>Communities</h3><ul><li>Clubs</li><li>Societies</li><li>Interest groups</li></ul></div>
- <div><h3>Plans</h3><ul><li>Trips</li><li>Hangouts</li><li>Activities</li></ul></div></div>
+ <ul class="todo">
+ <li class="card"><h3>Sports</h3></li>
+ <li class="card"><h3>Events</h3></li>
+ <li class="card"><h3>Communities</h3></li>
+ <li class="card"><h3>Plans</h3></li></ul>
  <div class="mq"><div class="mt" id="mt"></div></div>
  <p style="margin-top:48px"><a class="btn" href="#get">See what&rsquo;s happening</a></p></div></section>
 
@@ -126,7 +126,7 @@ function screen(el,label){el.innerHTML='<i></i><i></i><i></i><i></i>'+skel(label
 var m=["Hindu","Cricket","Kirori Mal","Fests","Ramjas","Badminton","St. Stephen's","Trips","LSR","Meetups","Venky","Running","Jesus & Mary","Clubs"];
 var h=m.map(function(t){return '<span>'+t+'</span>'}).join("");$("#mt").innerHTML=h+h;
 /* corridor cards */
-var cm=[["Same course","Anyone sorted the reading list for this sem?"],["North Campus","Who's up for a 5-a-side after lectures?"],["Same course","Which society is actually worth joining?"],["South Campus","Best chai near campus. Go."],["Same course","Anyone going to the fest on Saturday?"],["North Campus","Looking for people to start a book club."]];
+var cm=[["60s left","Same course · matched just now"],["45s left","North Campus · Economics"],["30s left","Same course · Year 2"],["15s left","South Campus · matched just now"],["Keep talking?","Same course · Chemistry"],["New match","North Campus · History"]];
 $("#crow").innerHTML=cm.map(function(c){return '<li class="cc"><div><span>Anonymous</span><span>'+c[0]+'</span></div><p>'+c[1]+'</p></li>'}).join("");
 /* scroll */
 var nav=$("#nav"),pg=$("#pg"),vi=$("#vi"),nds=document.querySelectorAll(".nd"),cp=$("#cpin"),cr=$("#crow"),vf=$("#vf");
@@ -146,7 +146,7 @@ if(!rm){
  /* word-by-word headline reveals */
  document.querySelectorAll("section:not(.hero) h2").forEach(function(h){var d=0;h.innerHTML=h.textContent.split(" ").map(function(w){return '<span class="w"><i style="--d:'+(d++)+'">'+w+'</i></span>'}).join(" ")});
  /* staggered entrances */
- [".grid4 .card",".cols>div",".posters>a",".vs li",".br li",".stu li",".chips span",".about li"].forEach(function(q){document.querySelectorAll(q).forEach(function(el,i){el.classList.add("rv");el.style.setProperty("--d",i%4)})});
+ [".grid4 .card",".todo .card",".posters>a",".vs li",".br li",".stu li",".chips span",".about li"].forEach(function(q){document.querySelectorAll(q).forEach(function(el,i){el.classList.add("rv");el.style.setProperty("--d",i%4)})});
  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var t=e.target;t.classList.add("in");io.unobserve(t);if(t.classList.contains("rv"))setTimeout(function(){t.classList.remove("rv","in")},1400)})},{threshold:.2,rootMargin:"0px 0px -8% 0px"});
  document.querySelectorAll("section:not(.hero) h2,.rv").forEach(function(el){io.observe(el)});
  /* pointer: cursor, magnetic buttons, hero tilt, poster glow */
