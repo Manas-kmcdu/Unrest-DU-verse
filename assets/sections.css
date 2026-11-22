@@ -7,5 +7,8 @@
 .cc:nth-child(6n+5){--sc:#9B111E}
 .cc:nth-child(6n){--sc:#3E7D2B}
 #reps{--surf:#FFD23F;--fg:#0B0B0C;--muted:rgba(11,11,12,.72);--border:rgba(11,11,12,.22);--card:rgba(255,255,255,.3);--shadow:rgba(11,11,12,.3);--accent:#0B0B0C;--accent-hover:#2A2A2E;color-scheme:light}
+.roles{grid-template-columns:repeat(3,1fr)}
+.roles .card{min-height:150px}
+@media(max-width:700px){.roles{grid-template-columns:1fr;gap:10px;margin-top:40px}.roles .card{min-height:0;padding:18px 20px}.roles .card p{margin-top:6px}}
 #brands{--fg:#fff;--muted:rgba(255,255,255,.78);--border:rgba(255,255,255,.3);--accent:#fff;--accent-hover:#F3E3E5;background:#9B111E;color:#fff}
 #brands .btn{color:#9B111E}
