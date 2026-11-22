@@ -54,8 +54,8 @@ core.setColleges(colleges);
 const idx = read("index.html");
 const pick = (re, what) => { const m = idx.match(re); if (!m) throw new Error("index.html: could not find " + what); return m[0]; };
 const header = pick(/<header class="d">[\s\S]*?<\/header>/, "<header class=\"d\">")
-  .replace(/href="#top"/g, 'href="../../"').replace(/href="#/g, 'href="../../#').replace(/href="events\//g, 'href="../../events/').replace(/href="studyroom\//g, 'href="../../studyroom/');
-const footer = pick(/<footer class="d">[\s\S]*?<\/footer>/, "<footer class=\"d\">").replace(/href="events\//g, 'href="../../events/').replace(/href="studyroom\//g, 'href="../../studyroom/');
+  .replace(/href="#top"/g, 'href="../../"').replace(/href="#/g, 'href="../../#').replace(/href="events\//g, 'href="../../events/').replace(/href="pov\//g, 'href="../../pov/').replace(/href="studyroom\//g, 'href="../../studyroom/');
+const footer = pick(/<footer class="d">[\s\S]*?<\/footer>/, "<footer class=\"d\">").replace(/href="events\//g, 'href="../../events/').replace(/href="pov\//g, 'href="../../pov/').replace(/href="studyroom\//g, 'href="../../studyroom/');
 const icons = pick(/<link rel="icon"[^>]*>/, "favicon link") + "\n" + pick(/<link rel="apple-touch-icon"[^>]*>/, "apple-touch-icon link");
 const fonts = pick(/<link rel="preconnect"[^>]*>\s*<link href="https:\/\/fonts\.googleapis\.com[^>]*>/, "Google Fonts links");
 
@@ -180,7 +180,7 @@ for (const d of fs.readdirSync(dir)) {
 }
 
 if (SITE) {
-  const urls = [SITE + "/", SITE + "/events/", SITE + "/studyroom/", ...colleges.map((c) => `${SITE}/colleges/${c.slug}/`)];
+  const urls = [SITE + "/", SITE + "/events/", SITE + "/pov/", SITE + "/studyroom/", ...colleges.map((c) => `${SITE}/colleges/${c.slug}/`)];
   write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${esc(u)}</loc></url>`).join("\n")}\n</urlset>\n`);
 }
 console.log(`built ${colleges.length} college pages, assets/colleges-data.js${SITE ? ", sitemap.xml" : ""}`);
