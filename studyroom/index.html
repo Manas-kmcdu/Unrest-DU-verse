@@ -349,7 +349,11 @@ function makeTransport(name, nick, h, meta = {}) {
       pRef.onDisconnect().remove(); put();
       if (!ready) { ready = true; send('hello', {}); h.onReady && h.onReady(true); }
     });
-    const onPres = pAll.on('value', s => h.onPresence && h.onPresence(clean(Object.values(s.val() || {}))));
+    const onPres = pAll.on('value', s => {
+      const all = s.val() || {};
+      if (online && !all[pRef.key]) put();
+      h.onPresence && h.onPresence(clean(Object.values(all)));
+    });
     const onEv = q.on('child_added', s => {
       const e = s.val() || {}, p = e.p || {};
       if (e.s === id) return;
