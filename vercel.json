@@ -1,6 +1,20 @@
 {
   "cleanUrls": true,
   "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.unrestdu.in" }],
+      "destination": "https://unrestdu.in/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.unrestdu.in" }],
+      "destination": "https://unrestdu.in/:path*",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
