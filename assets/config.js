@@ -6,5 +6,10 @@
 window.UNREST_CONFIG = {
   COUNTS_ENDPOINT: "",
   SIGNUP_ENDPOINT: "",
-  SITE_URL: "https://unrestdu.in"
+  SITE_URL: "https://unrestdu.in",
+  /* Interface-only switches. Leave both false on the live site until Firebase is connected.
+     LIVE_DEMO     : simulate people joining so the tile wall and ticker animate.
+     REGISTER_DEMO : the register form pretends to succeed (nothing is created). */
+  LIVE_DEMO: false,
+  REGISTER_DEMO: false
 };
