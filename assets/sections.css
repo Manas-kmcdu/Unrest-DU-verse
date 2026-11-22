@@ -1,0 +1,11 @@
+/* Home page section colours. Fixed in both themes, so each block re-points the theme tokens its children use. */
+#what .card,.cc{--fg:#fff;--muted:rgba(255,255,255,.8);--border:transparent;--accent:#fff;--bubble:rgba(255,255,255,.16);background:var(--sc);color:#fff}
+#what .card:nth-child(1),.cc:nth-child(6n+1){--sc:#2F5BFF}
+#what .card:nth-child(2),.cc:nth-child(6n+2){--sc:#D9561E}
+#what .card:nth-child(3),.cc:nth-child(6n+3){--sc:#1F7A6E}
+#what .card:nth-child(4),.cc:nth-child(6n+4){--sc:#6B3FD1}
+.cc:nth-child(6n+5){--sc:#9B111E}
+.cc:nth-child(6n){--sc:#3E7D2B}
+#reps{--surf:#FFD23F;--fg:#0B0B0C;--muted:rgba(11,11,12,.72);--border:rgba(11,11,12,.22);--card:rgba(255,255,255,.3);--shadow:rgba(11,11,12,.3);--accent:#0B0B0C;--accent-hover:#2A2A2E;color-scheme:light}
+#brands{--fg:#fff;--muted:rgba(255,255,255,.78);--border:rgba(255,255,255,.3);--accent:#fff;--accent-hover:#F3E3E5;background:#9B111E;color:#fff}
+#brands .btn{color:#9B111E}

@@ -89,8 +89,8 @@
   /* banner: two rows moving opposite ways; speeds up with scroll, pauses on hover; names link to the college pages */
   function banner() {
     var host = $("#cbn"); if (!host) return; var Ls = C.list();
-    var r1 = Ls.map(function (c) { return '<a class="cbi" href="' + C.esc(C.pageHref(c.slug, BASE)) + '" tabindex="-1" style="--c:' + C.esc(c.accentColour) + '">' + C.esc(c.shortName) + '</a><span class="cbs" aria-hidden="true">&#10022;</span>'; }).join("");
-    var r2 = Ls.slice().reverse().map(function (c) { return '<a class="cbp" href="' + C.esc(C.pageHref(c.slug, BASE)) + '" tabindex="-1" style="--c:' + C.esc(c.accentColour) + '"><i></i>' + C.esc(c.name) + '<small>' + c.campus + '</small></a>'; }).join("");
+    function item(c) { return '<a class="cbi" href="' + C.esc(C.pageHref(c.slug, BASE)) + '" tabindex="-1" style="--c:' + C.esc(c.accentColour) + '">' + C.esc(c.shortName) + '</a>'; }
+    var r1 = Ls.map(item).join(""), r2 = Ls.slice().reverse().map(item).join("");
     host.innerHTML = '<div class="cbr"><div class="cbt">' + r1 + r1 + '</div></div><div class="cbr b"><div class="cbt">' + r2 + r2 + '</div></div>';
     host.setAttribute("aria-hidden", "true");
     if (rm) { [].forEach.call(host.querySelectorAll(".cbr"), function (r) { r.classList.add("static"); }); return; }
