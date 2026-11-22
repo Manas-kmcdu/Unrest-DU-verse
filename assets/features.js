@@ -1,29 +1,18 @@
 /* Feature tiles drive the phone mockup: hover or focus a tile to show its screen, otherwise it cycles. */
 (function () {
   var F = [
-    { n: "PYQs", d: "Past papers for your course, sorted by semester.", h: "studyroom/#/pyqs", c: "--t2",
-      r: [["Microeconomics I", "B.A. (Hons.) Economics · Sem 1"], ["Financial Accounting", "B.Com (Hons.) · Sem 1"], ["Linear Algebra", "B.Sc. (Hons.) Maths · Sem 2"]] },
     { n: "Flatmates", d: "Find a room or a roommate near campus.", h: "#get", c: "--t0", s: "assets/app/roommate.webp" },
     { n: "Hangouts", d: "Travel buddies, sports and plans on campus.", h: "#get", c: "--t1", s: "assets/app/hangout.webp" },
-    { n: "Friends", d: "Meet verified students from every college.", h: "#get", c: "--t3",
-      r: [["Aanya", "Hindu College · Economics"], ["Kabir", "Kirori Mal College · B.Com"], ["Ishita", "LSR · Psychology"]] },
-    { n: "Events", d: "Fests, parties and Unrest events.", h: "events/", c: "--t4",
-      r: [["Trick or Treat", "30 October · Halloween House"], ["Versus", "1v1 Football Tournament"], ["Diwali Party", "Details soon"]] },
-    { n: "Merchandise", d: "Metro card skins, journals and limited drops.", h: "#store", c: "--t2",
-      r: [["Metro Card Skins", "Cover your card with your campus"], ["Journals", "For notes, plans and bad ideas"], ["Limited drops", "Small runs"]] },
     { n: "Updates", d: "A feed for DU, your college and your course.", h: "#get", c: "--t1", s: "assets/app/kmc-feed.webp" }
   ];
   var ul = document.getElementById("ft"), scr = document.getElementById("fscr"), cap = document.getElementById("fcap");
   if (!ul || !scr) return;
 
   ul.innerHTML = F.map(function (f, i) {
-    return '<li' + (i === 0 ? ' class="w2"' : '') + '><a class="tile ftile" href="' + f.h + '" data-i="' + i + '" style="--tc:var(' + f.c + ')"><span class="ab">' + f.n + '</span><span class="fd">' + f.d + '</span></a></li>';
+    return '<li><a class="tile ftile" href="' + f.h + '" data-i="' + i + '" style="--tc:var(' + f.c + ')"><span class="ab">' + f.n + '</span><span class="fd">' + f.d + '</span></a></li>';
   }).join("");
   scr.innerHTML = F.map(function (f) {
-    if (f.s) return '<div class="shot"><img src="' + f.s + '" alt="" loading="lazy" decoding="async"></div>';
-    return '<div><p class="fs-top"><span>unrest</span><b>' + f.n + '</b></p>' + f.r.map(function (r) {
-      return '<p class="fs-row" style="--tc:var(' + f.c + ')"><b>' + r[0] + '</b><small>' + r[1] + '</small></p>';
-    }).join("") + '</div>';
+    return '<div class="shot"><img src="' + f.s + '" alt="" loading="lazy" decoding="async"></div>';
   }).join("");
 
   var screens = scr.children, tiles = ul.querySelectorAll(".ftile"), cur = -1, hold = false;
@@ -34,7 +23,7 @@
       screens[k].classList.toggle("on", k === i);
       tiles[k].classList.toggle("on", k === i);
     }
-    if (cap) cap.textContent = F[i].s ? "From the app." : "Illustrative screen.";
+    if (cap) cap.textContent = "From the app.";
   }
   show(0);
   Array.prototype.forEach.call(tiles, function (t) {
